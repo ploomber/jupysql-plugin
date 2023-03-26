@@ -97,12 +97,10 @@ namespace Private {
 
     var newTokenList = keywords["keywords"]
 
-    const completionList = newTokenList.filter((t) => t.value.startsWith(token.value)).map((t) => t.value);
+    const completionList = newTokenList.filter((t) => t.value.startsWith(token.value.toUpperCase())).map((t) => t.value);
 
     // Remove duplicate completions from the list
     const matches = Array.from(new Set<string>(completionList));
-
-    console.log(JSON.parse(JSON.stringify(matches)));
 
     return {
       start: token.offset,
