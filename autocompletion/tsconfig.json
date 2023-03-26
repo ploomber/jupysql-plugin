@@ -16,9 +16,9 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "target": "ES2018",
     "types": []
   },
-  "include": ["src/*"]
+  "include": ["src/*", "src/keywords.json"]
 }
