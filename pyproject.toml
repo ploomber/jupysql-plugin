@@ -3,7 +3,7 @@ requires = ["hatchling>=1.4.0", "jupyterlab>=3.4.7,<4.0.0", "hatch-nodejs-versio
 build-backend = "hatchling.build"
 
 [project]
-name = "autocompletion"
+name = "jupysql_autocompletion"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.7"
@@ -33,24 +33,24 @@ source = "nodejs"
 fields = ["description", "authors", "urls"]
 
 [tool.hatch.build.targets.sdist]
-artifacts = ["autocompletion/labextension"]
+artifacts = ["jupysql_autocompletion/labextension"]
 exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"autocompletion/labextension" = "share/jupyter/labextensions/autocompletion"
-"install.json" = "share/jupyter/labextensions/autocompletion/install.json"
+"jupysql_autocompletion/labextension" = "share/jupyter/labextensions/jupysql-autocompletion"
+"install.json" = "share/jupyter/labextensions/jupysql-autocompletion/install.json"
 
 [tool.hatch.build.hooks.version]
-path = "autocompletion/_version.py"
+path = "jupysql_autocompletion/_version.py"
 
 [tool.hatch.build.hooks.jupyter-builder]
 dependencies = ["hatch-jupyter-builder>=0.5"]
 build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
-    "autocompletion/labextension/static/style.js",
-    "autocompletion/labextension/package.json",
+    "jupysql_autocompletion/labextension/static/style.js",
+    "jupysql_autocompletion/labextension/package.json",
 ]
-skip-if-exists = ["autocompletion/labextension/static/style.js"]
+skip-if-exists = ["jupysql_autocompletion/labextension/static/style.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 build_cmd = "build:prod"
@@ -60,7 +60,7 @@ npm = ["jlpm"]
 build_cmd = "install:extension"
 npm = ["jlpm"]
 source_dir = "src"
-build_dir = "autocompletion/labextension"
+build_dir = "jupysql_autocompletion/labextension"
 
 [tool.jupyter-releaser.options]
 version_cmd = "hatch version"
