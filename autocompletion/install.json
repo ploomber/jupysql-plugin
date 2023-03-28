@@ -1,5 +1,0 @@
-{
-  "packageManager": "python",
-  "packageName": "autocompletion",
-  "uninstallInstructions": "Use your Python package manager (pip, conda, etc.) to uninstall the package autocompletion"
-}
