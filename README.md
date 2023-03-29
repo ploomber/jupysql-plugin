@@ -1,4 +1,4 @@
-# jupysql_plugin
+# jupysql-plugin
 
 This is a Jupyterlab extension.
 
@@ -14,7 +14,7 @@ It currently supports autocompletion for the most common SQL keywords. Autocompl
 To install the extension, execute:
 
 ```bash
-pip install jupysql_plugin
+pip install jupysql-plugin
 ```
 
 ## Uninstall
@@ -22,7 +22,7 @@ pip install jupysql_plugin
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupysql_plugin
+pip uninstall jupysql-plugin
 ```
 
 ## Contributing
@@ -41,7 +41,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the jupysql_plugin directory
+# Change directory to the jupysql-plugin directory
 # Install package in development mode
 pip install -e "."
 # Link your development version of the extension with JupyterLab
@@ -70,7 +70,7 @@ jupyter lab build --minimize=False
 ### Development uninstall
 
 ```bash
-pip uninstall jupysql_plugin
+pip uninstall jupysql-plugin
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
