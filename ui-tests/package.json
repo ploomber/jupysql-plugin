@@ -1,7 +1,7 @@
 {
-  "name": "jupysql-autocompletion-ui-tests",
+  "name": "jupysql-plugin-ui-tests",
   "version": "1.0.0",
-  "description": "JupyterLab jupysql-autocompletion Integration Tests",
+  "description": "JupyterLab jupysql-plugin Integration Tests",
   "private": true,
   "scripts": {
     "start": "jupyter lab --config jupyter_server_test_config.py",

@@ -1,15 +1,15 @@
 {
-  "name": "jupysql-autocompletion",
+  "name": "jupysql-plugin",
   "version": "0.1.0",
-  "description": "Jupyterlab extension for autocompletion in JupySQL",
+  "description": "Jupyterlab extension for JupySQL",
   "keywords": [
     "jupyter",
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/ploomber/jupysql-autocompletion.git",
+  "homepage": "https://github.com/ploomber/jupysql-plugin.git",
   "bugs": {
-    "url": "https://github.com/ploomber/jupysql-autocompletion.git/issues"
+    "url": "https://github.com/ploomber/jupysql-plugin.git/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -25,7 +25,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ploomber/jupysql-autocompletion.git.git"
+    "url": "https://github.com/ploomber/jupysql-plugin.git.git"
   },
   "scripts": {
     "build": "jlpm build:lib && jlpm build:labextension:dev",
@@ -37,7 +37,7 @@
     "clean": "jlpm clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:lintcache": "rimraf .eslintcache .stylelintcache",
-    "clean:labextension": "rimraf jupysql_autocompletion/labextension jupysql_autocompletion/_version.py",
+    "clean:labextension": "rimraf jupysql_plugin/labextension jupysql_plugin/_version.py",
     "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
     "eslint": "jlpm eslint:check --fix",
     "eslint:check": "eslint . --cache --ext .ts,.tsx",
@@ -94,6 +94,6 @@
   },
   "jupyterlab": {
     "extension": true,
-    "outputDir": "jupysql_autocompletion/labextension"
+    "outputDir": "jupysql_plugin/labextension"
   }
 }

@@ -1,5 +1,5 @@
 {
   "packageManager": "python",
-  "packageName": "jupysql_autocompletion",
-  "uninstallInstructions": "Use your Python package manager (pip, conda, etc.) to uninstall the package jupysql_autocompletion"
+  "packageName": "jupysql_plugin",
+  "uninstallInstructions": "Use your Python package manager (pip, conda, etc.) to uninstall the package jupysql_plugin"
 }

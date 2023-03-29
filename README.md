@@ -1,8 +1,8 @@
-# jupysql_autocompletion
+# jupysql_plugin
 
-This is a Jupyterlab extension that provides autocompletion functionality for JupySQL.
+This is a Jupyterlab extension.
 
-It currently supports the most common SQL keywords. Autocomplete suggestions are displayed when user presses tab while writing the keyword.
+It currently supports autocompletion for the most common SQL keywords. Autocomplete suggestions are displayed when user presses tab while writing the keyword.
 
 
 ## Requirements
@@ -14,7 +14,7 @@ It currently supports the most common SQL keywords. Autocomplete suggestions are
 To install the extension, execute:
 
 ```bash
-pip install jupysql_autocompletion
+pip install jupysql_plugin
 ```
 
 ## Uninstall
@@ -22,7 +22,7 @@ pip install jupysql_autocompletion
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupysql_autocompletion
+pip uninstall jupysql_plugin
 ```
 
 ## Contributing
@@ -41,7 +41,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the jupysql_autocompletion directory
+# Change directory to the jupysql_plugin directory
 # Install package in development mode
 pip install -e "."
 # Link your development version of the extension with JupyterLab
@@ -70,12 +70,12 @@ jupyter lab build --minimize=False
 ### Development uninstall
 
 ```bash
-pip uninstall jupysql_autocompletion
+pip uninstall jupysql_plugin
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
 command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `jupysql-autocompletion` within that folder.
+folder is located. Then you can remove the symlink named `jupysql-plugin` within that folder.
 
 ### Testing the extension
 

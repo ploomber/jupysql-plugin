@@ -29,7 +29,7 @@ jobs:
 
           pip install .
           # check package is importable
-          python -c "import jupysql_autocompletion"
+          python -c "import jupysql_plugin"
 
       - name: Test with Jest
         run: | 
