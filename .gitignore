@@ -1,3 +1,14 @@
+# extension artifacts
+jupysql_plugin/labextension
+tsconfig.tsbuildinfo
+yarn.lock
+
+# hatch version file
+jupysql_plugin/_version.py
+
+# node
+node_modules
+
 # documentation builds
 doc/_build
 

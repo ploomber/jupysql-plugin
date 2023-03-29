@@ -24,11 +24,11 @@ hatch version <new-version>
 
 To create a Python source package (`.tar.gz`) and the binary package (`.whl`) in the `dist/` directory, do:
 
+*Note:* The following command needs NodeJS
+
 ```bash
 python -m build
 ```
-
-> `python setup.py sdist bdist_wheel` is deprecated and will not work for this package.
 
 Then to upload the package to PyPI, do:
 
