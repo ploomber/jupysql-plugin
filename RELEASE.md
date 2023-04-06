@@ -6,13 +6,10 @@ The extension can be published to `PyPI` and `npm` manually or using the [Jupyte
 
 ### Python package
 
-This extension can be distributed as Python
-packages. All of the Python
-packaging instructions in the `pyproject.toml` file to wrap your extension in a
-Python package. Before generating a package, we first need to install `build`.
+Create conda environment:
 
 ```bash
-pip install build twine hatch
+conda env create  -f environment.dev.yml -y
 ```
 
 Bump the version using `hatch`. By default this will create a tag.
