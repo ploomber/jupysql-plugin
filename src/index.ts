@@ -157,6 +157,8 @@ function activate_syntax(
 
 /**
  * Initialization data for the jupyterlabs_sql_codemirror extension.
+ * this is based on:
+ * https://github.com/surdouski/jupyterlabs_sql_codemirror
  */
 const extension_sql: JupyterFrontEndPlugin<void> = {
   id: '@ploomber/sql-syntax-highlighting',
