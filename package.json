@@ -57,9 +57,13 @@
   "dependencies": {
     "@jupyterlab/application": "^3.6.2",
     "@jupyterlab/codeeditor": "^3.6.2",
+    "@jupyterlab/codemirror": "^3.6.3",
     "@jupyterlab/completer": "^3.6.2",
     "@jupyterlab/notebook": "^3.6.2",
-    "@jupyterlab/statedb": "^3.6.2"
+    "@jupyterlab/statedb": "^3.6.2",
+    "@types/codemirror": "^5.60.7",
+    "@types/underscore": "^1.11.4",
+    "underscore": "^1.13.6"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
