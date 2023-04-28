@@ -63,6 +63,7 @@
         "@jupyterlab/statedb": "^3.6.2",
         "@types/codemirror": "^5.60.7",
         "@types/underscore": "^1.11.4",
+        "sql-formatter": "^12.2.0",
         "underscore": "^1.13.6"
     },
     "devDependencies": {
