@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.3
+
+* Formatting via `Format SQL` button
+
 ## 0.1.2
 
 * SQL highlighting for  `%%sql` cells
