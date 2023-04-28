@@ -9,7 +9,7 @@ import {
   KernelConnector,
 } from '@jupyterlab/completer';
 
-import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
+import { INotebookTracker, NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
 
 import { CompletionConnector } from './connector';
 
@@ -19,6 +19,17 @@ import { CustomConnector } from './customconnector';
 // for syntax highlighting
 import { CodeMirrorEditor, ICodeMirror } from '@jupyterlab/codemirror';
 import * as _ from 'underscore';
+
+
+import { IDisposable, DisposableDelegate } from '@lumino/disposable';
+
+
+import { ToolbarButton } from '@jupyterlab/apputils';
+
+import { DocumentRegistry } from '@jupyterlab/docregistry';
+import { JupyterlabNotebookCodeFormatter } from './formatter';
+
+
 
 /**
  * The command IDs used by the console plugin.
@@ -169,4 +180,80 @@ const extension_sql: JupyterFrontEndPlugin<void> = {
 };
 
 
-export default [extension, extension_sql];
+
+
+/**
+ * A notebook widget extension that adds a button to the toolbar.
+ */
+export class FormattingExtension
+  implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
+{
+  /**
+   * Create a new extension for the notebook panel widget.
+   *
+   * @param panel Notebook panel
+   * @param context Notebook context
+   * @returns Disposable on the added button
+   */
+
+  private notebookCodeFormatter: JupyterlabNotebookCodeFormatter;
+
+
+  constructor(
+    tracker: INotebookTracker
+  ) {
+    this.notebookCodeFormatter = new JupyterlabNotebookCodeFormatter(
+      tracker
+    );
+  }
+
+
+  createNew(
+    panel: NotebookPanel,
+    context: DocumentRegistry.IContext<INotebookModel>
+  ): IDisposable {
+    const clearOutput = () => {
+      this.notebookCodeFormatter.formatAllCodeCells(undefined, undefined, panel.content)
+    };
+    const button = new ToolbarButton({
+      className: 'format-sql-button',
+      label: 'Format SQL',
+      onClick: clearOutput,
+      tooltip: 'Format all %%sql cells',
+    });
+
+    panel.toolbar.insertItem(10, 'formatSQL', button);
+    return new DisposableDelegate(() => {
+      button.dispose();
+    });
+  }
+}
+
+
+
+
+/**
+ * Activate the extension.
+ *
+ * @param app Main application object
+ */
+const formatting_plugin: JupyterFrontEndPlugin<void> = {
+  activate: (
+    app: JupyterFrontEnd,
+    tracker: INotebookTracker,
+  ) => {
+
+    app.docRegistry.addWidgetExtension('Notebook', new FormattingExtension(
+      tracker,
+    ));
+  },
+  autoStart: true,
+  id: "formatting",
+  requires: [
+    INotebookTracker,
+  ]
+};
+
+
+
+export default [extension, extension_sql, formatting_plugin];
