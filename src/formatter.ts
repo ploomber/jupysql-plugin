@@ -1,3 +1,4 @@
+// inspired by: https://github.com/ryantam626/jupyterlab_code_formatter
 import { Cell, CodeCell } from '@jupyterlab/cells';
 import { INotebookTracker, Notebook } from '@jupyterlab/notebook';
 import { Widget } from '@lumino/widgets';
@@ -14,28 +15,6 @@ export class JupyterlabNotebookCodeFormatter {
         this.notebookTracker = notebookTracker;
     }
 
-    protected formatCode(
-        code: string[],
-        formatter: string,
-        options: any,
-        notebook: boolean,
-        cache: boolean
-    ) {
-        return "format"
-    }
-
-
-    public async formatAction(config: any, formatter?: string) {
-        return this.formatCells(true, config, formatter);
-    }
-
-    public async formatSelectedCodeCells(
-        config: any,
-        formatter?: string,
-        notebook?: Notebook
-    ) {
-        return this.formatCells(true, config, formatter, notebook);
-    }
 
     public async formatAllCodeCells(
         config: any,
@@ -98,7 +77,7 @@ export class JupyterlabNotebookCodeFormatter {
                 }
             }
         } catch (error) {
-            await showErrorMessage('Jupyterlab Code Formatter Error', error);
+            await showErrorMessage('Jupysql plugin formatting', error);
         }
         this.working = false;
     }
