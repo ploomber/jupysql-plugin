@@ -19,6 +19,8 @@ See the docs on [hatch-nodejs-version](https://github.com/agoose77/hatch-nodejs-
 hatch version <new-version>
 ```
 
+The previous command will update the version in the `package.json` file.
+
 To create a Python source package (`.tar.gz`) and the binary package (`.whl`) in the `dist/` directory, do:
 
 *Note:* The following command needs NodeJS
