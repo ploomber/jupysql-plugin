@@ -22,6 +22,7 @@ The previous command will update the version in the `package.json` file. You hav
 
 ```bash
 git tag -a VERSION -m MESSAGE
+git push --tag
 ```
 
 To create a Python source package (`.tar.gz`) and the binary package (`.whl`) in the `dist/` directory, do:
