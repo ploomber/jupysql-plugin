@@ -12,14 +12,17 @@ Create conda environment:
 conda env create  -f environment.dev.yml -y
 ```
 
-Bump the version using `hatch`. By default this will create a tag.
-See the docs on [hatch-nodejs-version](https://github.com/agoose77/hatch-nodejs-version#semver) for details.
+Bump the version using `hatch`. See the docs on [hatch-nodejs-version](https://github.com/agoose77/hatch-nodejs-version#semver) for details.
 
 ```bash
 hatch version <new-version>
 ```
 
-The previous command will update the version in the `package.json` file.
+The previous command will update the version in the `package.json` file. You have to manually commit and create the tag:
+
+```bash
+git tag -a VERSION -m MESSAGE
+```
 
 To create a Python source package (`.tar.gz`) and the binary package (`.whl`) in the `dist/` directory, do:
 
