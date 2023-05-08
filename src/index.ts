@@ -29,8 +29,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { JupyterlabNotebookCodeFormatter } from './formatter';
 
-
-
+import { registerCommTargets } from './comm'
 /**
  * The command IDs used by the console plugin.
  */
@@ -57,7 +56,6 @@ const extension: JupyterFrontEndPlugin<void> = {
     notebooks: INotebookTracker
   ) => {
     console.log('JupyterLab custom completer extension is activated!');
-
     // Modelled after completer-extension's notebooks plugin
     notebooks.widgetAdded.connect(
       (sender: INotebookTracker, panel: NotebookPanel) => {
@@ -230,6 +228,30 @@ export class FormattingExtension
 }
 
 
+export class RegisterNotebookCommListener
+  implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
+{
+  /**
+   * Register notebook comm
+   *
+   * @param panel Notebook panel
+   * @param context Notebook context
+   * @returns Disposable on the added button
+   */
+  createNew(
+    panel: NotebookPanel,
+    context: DocumentRegistry.IContext<INotebookModel>
+  ): IDisposable {
+
+    setTimeout(() => {
+      registerCommTargets(context)
+    }, 5000)
+
+    return new DisposableDelegate(() => {
+      
+    });
+  }
+}
 
 
 /**
@@ -246,6 +268,9 @@ const formatting_plugin: JupyterFrontEndPlugin<void> = {
     app.docRegistry.addWidgetExtension('Notebook', new FormattingExtension(
       tracker,
     ));
+
+    app.docRegistry.addWidgetExtension('Notebook', new RegisterNotebookCommListener());
+
   },
   autoStart: true,
   id: "formatting",
