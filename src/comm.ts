@@ -1,3 +1,5 @@
+// Opens a comm from the frontend to the kernel
+
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { INotebookModel } from '@jupyterlab/notebook';
 
@@ -9,19 +11,25 @@ export const registerCommTargets = (context: DocumentRegistry.IContext<INotebook
   if (!kernel)
     return
 
+  // Listen to updateTableWidget event
   document.addEventListener("onUpdateTableWidget", async (event : Event) => {
     const customEvent = <CustomEvent> event
     const data = customEvent.detail.data
+
+    // Register to table_widget handler in the JupySQL kernel
     const comm = kernel.createComm("comm_target_handle_table_widget");
 
     await comm.open('initializing connection').done;
 
+    // Send data to the Kernel to recevice rows to display
     comm.send(data);
 
+    // Handle recevied rows
     comm.onMsg = (msg) => {
       const content = msg.content;
       const data = <{rows : any}> content.data;
-
+      
+      // Raise event to update table with new rows
       let customEvent = new CustomEvent('onTableWidgetRowsReady', {
         bubbles: true,
         cancelable: true,
