@@ -3,12 +3,13 @@ name: jupysql-plugin
 channels:
   - conda-forge
 
-
 dependencies:
   - python=3.11
   - nodejs
+  - jupyterlab<4 # this will install jlpm
   - pip
   - pip:
     - build
     - twine
     - hatch
+    - -e .
