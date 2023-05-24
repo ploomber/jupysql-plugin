@@ -71,3 +71,14 @@ before-build-python = ["jlpm clean:all"]
 
 [tool.check-wheel-contents]
 ignore = ["W002"]
+
+[tool.nbqa.addopts]
+flake8 = [
+    # notebooks allow non-top imports
+    "--extend-ignore=E402",
+    # jupysql notebooks might have "undefined name" errors
+    # due to the << operator
+    # W503, W504 ignore line break after/before
+    # binary operator since they are conflicting
+    "--ignore=F821, W503, W504",
+]

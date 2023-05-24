@@ -1,7 +1,5 @@
-from random import randint
 from ipywidgets import DOMWidget
-from ipywidgets import DOMWidget, widget_serialization
-from traitlets import Unicode, List
+from traitlets import Unicode
 
 
 module_name = "jupysql-plugin"
@@ -40,9 +38,9 @@ class ExampleWidget(DOMWidget):
         try:
             # Run your function here and check for any errors
             # If no errors, send success message to the frontend
-            if dropdown_value == "A":
+            if dropdown_value == "A" or port_value == 10:
                 raise ValueError("some stuff went bad")
-        except Exception as e:
+        except Exception:
             # If there are errors, send error message to the frontend
             self.send_confirmation_message("Error")
         else:
