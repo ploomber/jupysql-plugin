@@ -1,6 +1,7 @@
 # testing data
 coverage
 ui-tests/playwright-report
+ui-tests/test-results
 
 # extension artifacts
 jupysql_plugin/labextension
