@@ -55,7 +55,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     completionManager: ICompletionManager,
     notebooks: INotebookTracker
   ) => {
-    console.log('JupyterLab custom completer extension is activated!');
+    console.log('JupyterLab extension jupysql-plugin is activated!');
     // Modelled after completer-extension's notebooks plugin
     notebooks.widgetAdded.connect(
       (sender: INotebookTracker, panel: NotebookPanel) => {

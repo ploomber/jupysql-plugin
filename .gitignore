@@ -1,3 +1,7 @@
+# testing data
+coverage
+ui-tests/playwright-report
+
 # extension artifacts
 jupysql_plugin/labextension
 tsconfig.tsbuildinfo
