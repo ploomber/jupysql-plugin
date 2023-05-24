@@ -1,68 +1,44 @@
 # jupysql-plugin
-
-This is a Jupyterlab extension.
-
-It currently supports autocompletion for the most common SQL keywords. Autocomplete suggestions are displayed when user presses tab while writing the keyword.
-
-
-## Requirements
-
-- JupyterLab >= 3.0
-
 ## Install
-
-To install the extension, execute:
 
 ```bash
 pip install jupysql-plugin
-```
-
-## Uninstall
-
-To remove the extension, execute:
-
-```bash
-pip uninstall jupysql-plugin
 ```
 
 ## Contributing
 
 ### Development install
 
-Note: You will need NodeJS to build the extension package. You may install NodeJS using conda as below:
-
-```bash
-conda install nodejs -c conda-forge
+```sh
+conda env create -f environment.dev.yml --force
+conda activate jupysql-plugin
+jlpm install
 ```
 
-The `jlpm` command is JupyterLab's pinned version of
-[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
-`yarn` or `npm` in lieu of `jlpm` below.
-
 ```bash
-# Clone the repo to your local environment
-# Change directory to the jupysql-plugin directory
-# Install package in development mode
 pip install -e "."
-# Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
+jupyter server extension enable jupysql-plugin
 
 # NOTE: the two previous commands will fail if there are missing dependencies
 
-# Rebuild extension Typescript source after making changes
+# rebuild extension Typescript
+# important: we had to set skipLibCheck: true
+# https://discourse.jupyter.org/t/struggling-with-extensions-and-dependencies-versions/19550
 jlpm build
 ```
 
-You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
+To watch for changes and reload:
 
 ```bash
-# Watch the source directory in one terminal, automatically rebuilding when needed
+# in one terminal
 jlpm watch
-# Run JupyterLab in another terminal
+
+# another terminal
 jupyter lab
 ```
 
-With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
+Refresh JupyterLab to load the change in your browser.
 
 By default, the `jlpm build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
 
@@ -73,10 +49,10 @@ jupyter lab build --minimize=False
 ### adding dependencies
 
 ```bash
-npm install PACKAGE
+jlpm add PACKAGE
 
 # example
-npm install @jupyter-widgets/base
+jlpm add @jupyter-widgets/base
 ```
 
 ### Development uninstall
