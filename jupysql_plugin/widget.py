@@ -53,8 +53,8 @@ class ExampleWidget(DOMWidget):
 
 
 # this widget needs
-# npm install bootstrap
-# npm install --save-dev @types/bootstrap
+# jlpm add bootstrap
+# jlpm add --dev @types/bootstrap
 class StockTableWidget(DOMWidget):
     _model_name = Unicode("StockTableModel").tag(sync=True)
     _model_module = Unicode(module_name).tag(sync=True)
