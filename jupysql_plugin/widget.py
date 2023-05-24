@@ -1,6 +1,7 @@
 from random import randint
 from ipywidgets import DOMWidget
-from traitlets import Unicode
+from ipywidgets import DOMWidget, widget_serialization
+from traitlets import Unicode, List
 
 
 module_name = "jupysql-plugin"
@@ -49,3 +50,20 @@ class ExampleWidget(DOMWidget):
 
     def send_confirmation_message(self, message):
         self.send({"method": "display_confirmation_message", "message": message})
+
+
+# this widget needs
+# npm install bootstrap
+# npm install --save-dev @types/bootstrap
+class StockTableWidget(DOMWidget):
+    _model_name = Unicode("StockTableModel").tag(sync=True)
+    _model_module = Unicode(module_name).tag(sync=True)
+    _model_module_version = Unicode(module_version).tag(sync=True)
+    _view_name = Unicode("StockTableView").tag(sync=True)
+    _view_module = Unicode(module_name).tag(sync=True)
+    _view_module_version = Unicode(module_version).tag(sync=True)
+
+    def __init__(self, stock_data=None, **kwargs):
+        if stock_data is not None:
+            self.stock_data = stock_data
+        super().__init__(**kwargs)

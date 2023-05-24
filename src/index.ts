@@ -287,7 +287,8 @@ import { Widget } from '@lumino/widgets';
 
 import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
 
-import * as widgetExports from './widget';
+import { widgetExports } from './index-widgets';
+
 
 import { MODULE_NAME, MODULE_VERSION } from './version';
 
@@ -322,5 +323,4 @@ function activateWidgetExtension(
 }
 
 export * from './version';
-export * from './widget';
 export default [extension, extension_sql, formatting_plugin, examplePlugin];
