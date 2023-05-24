@@ -46,6 +46,9 @@ The `jlpm` command is JupyterLab's pinned version of
 pip install -e "."
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
+
+# NOTE: the two previous commands will fail if there are missing dependencies
+
 # Rebuild extension Typescript source after making changes
 jlpm build
 ```
@@ -65,6 +68,15 @@ By default, the `jlpm build` command generates the source maps for this extensio
 
 ```bash
 jupyter lab build --minimize=False
+```
+
+### adding dependencies
+
+```bash
+npm install PACKAGE
+
+# example
+npm install @jupyter-widgets/base
 ```
 
 ### Development uninstall
