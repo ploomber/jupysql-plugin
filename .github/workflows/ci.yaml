@@ -40,5 +40,5 @@ jobs:
 
       - name: Test with Jest
         run: | 
-          npm install
-          npm test
+          jlpm install
+          jlpm test
