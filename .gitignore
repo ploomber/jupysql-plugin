@@ -1,3 +1,6 @@
+coverage
+ui-tests
+
 # extension artifacts
 jupysql_plugin/labextension
 tsconfig.tsbuildinfo
