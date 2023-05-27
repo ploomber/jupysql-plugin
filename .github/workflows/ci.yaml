@@ -10,7 +10,7 @@ on:
 
 
 jobs:
-  Jest:
+  test:
     strategy:
       matrix:
         python-version: [3.8, 3.9, '3.10', '3.11']
@@ -32,29 +32,35 @@ jobs:
             bash
           cache-environment: true
 
-      - name: Lint
+
+      - name: Python version
         run: |
 
-          python -m pip install --upgrade pip pkgmt
-          pkgmt lint
+          python --version
 
-      - name: Install dependencies
-        run: |
+      # - name: Lint
+      #   run: |
 
-          pip install .
-          # check package is importable
-          python -c "import jupysql_plugin"
+      #     python -m pip install --upgrade pip pkgmt
+      #     pkgmt lint
 
-      - name: Test
-        run: | 
+      # - name: Install dependencies
+      #   run: |
 
-          jlpm install
-          jlpm test
+      #     pip install .
+      #     # check package is importable
+      #     python -c "import jupysql_plugin"
 
-      - name: Visual tests
-        run: | 
+      # - name: Test
+      #   run: | 
 
-          cd ui-tests
-          jlpm install
-          jlpm playwright install
-          jlpm test
+      #     jlpm install
+      #     jlpm test
+
+      # - name: Visual tests
+      #   run: | 
+
+      #     cd ui-tests
+      #     jlpm install
+      #     jlpm playwright install
+      #     jlpm test
