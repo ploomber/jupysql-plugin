@@ -31,33 +31,24 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Lint
+        run: |
+
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade pkgmt
+          pkgmt lint
+
+
+      - name: Install dependencies
+        run: |
+
+          nox --install-only
+
+
       - name: Test
         run: |
 
-          python --version
-          python3 --version
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade nox pyyaml
-          nox
-
-      # - name: Lint
-      #   run: |
-
-      #     python -m pip install --upgrade pip pkgmt
-      #     pkgmt lint
-
-      # - name: Install dependencies
-      #   run: |
-
-      #     pip install .
-      #     # check package is importable
-      #     python -c "import jupysql_plugin"
-
-      # - name: Test
-      #   run: | 
-
-      #     jlpm install
-      #     jlpm test
+          nox --session test --no-install --reuse-existing-virtualenvs
 
       # - name: Visual tests
       #   run: | 

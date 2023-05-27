@@ -19,5 +19,6 @@ def install_environment(session):
 def test(session):
     install_environment(session)
     session.run("python", "--version")
+    session.run("python", "-c", "'import jupysql_plugin'")
     session.run("jlpm", "install")
     session.run("jlpm", "test")
