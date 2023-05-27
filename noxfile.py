@@ -17,3 +17,5 @@ def install_environment(session):
 @nox.session(venv_backend="conda")
 def build(session):
     install_environment(session)
+    session.run("jlpm", "install")
+    session.run("jlpm", "test")
