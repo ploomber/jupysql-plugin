@@ -1,20 +1,18 @@
+from jupysql_plugin import __version__, _module_name
+
 from ipywidgets import DOMWidget
 from traitlets import Unicode
 
 
-module_name = "jupysql-plugin"
-module_version = "0.1.3"
-
-
 class ExampleWidget(DOMWidget):
-    """TODO: Add docstring here"""
+    """A sample widget that displays a form and process it"""
 
     _model_name = Unicode("ExampleModel").tag(sync=True)
-    _model_module = Unicode(module_name).tag(sync=True)
-    _model_module_version = Unicode(module_version).tag(sync=True)
+    _model_module = Unicode(_module_name).tag(sync=True)
+    _model_module_version = Unicode(__version__).tag(sync=True)
     _view_name = Unicode("ExampleView").tag(sync=True)
-    _view_module = Unicode(module_name).tag(sync=True)
-    _view_module_version = Unicode(module_version).tag(sync=True)
+    _view_module = Unicode(_module_name).tag(sync=True)
+    _view_module_version = Unicode(__version__).tag(sync=True)
 
     value = Unicode("Hello World").tag(sync=True)
 
@@ -55,11 +53,11 @@ class ExampleWidget(DOMWidget):
 # jlpm add --dev @types/bootstrap
 class StockTableWidget(DOMWidget):
     _model_name = Unicode("StockTableModel").tag(sync=True)
-    _model_module = Unicode(module_name).tag(sync=True)
-    _model_module_version = Unicode(module_version).tag(sync=True)
+    _model_module = Unicode(_module_name).tag(sync=True)
+    _model_module_version = Unicode(__version__).tag(sync=True)
     _view_name = Unicode("StockTableView").tag(sync=True)
-    _view_module = Unicode(module_name).tag(sync=True)
-    _view_module_version = Unicode(module_version).tag(sync=True)
+    _view_module = Unicode(_module_name).tag(sync=True)
+    _view_module_version = Unicode(__version__).tag(sync=True)
 
     def __init__(self, stock_data=None, **kwargs):
         if stock_data is not None:
