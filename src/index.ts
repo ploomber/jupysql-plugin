@@ -30,6 +30,14 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { JupyterlabNotebookCodeFormatter } from './formatter';
 
 import { registerCommTargets } from './comm'
+
+// widgets
+import { Application, IPlugin } from '@lumino/application';
+import { Widget } from '@lumino/widgets';
+import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
+import { widgetExports } from './index-widgets';
+import { MODULE_NAME, MODULE_VERSION } from './version';
+
 /**
  * The command IDs used by the console plugin.
  */
@@ -279,18 +287,6 @@ const formatting_plugin: JupyterFrontEndPlugin<void> = {
   ]
 };
 
-// widget plugin
-
-import { Application, IPlugin } from '@lumino/application';
-
-import { Widget } from '@lumino/widgets';
-
-import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
-
-import { widgetExports } from './index-widgets';
-
-
-import { MODULE_NAME, MODULE_VERSION } from './version';
 
 const EXTENSION_ID = 'jupysql-plugin:plugin';
 
