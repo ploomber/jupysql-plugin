@@ -48,9 +48,6 @@ class ExampleWidget(DOMWidget):
         self.send({"method": "display_confirmation_message", "message": message})
 
 
-# this widget needs
-# jlpm add bootstrap
-# jlpm add --dev @types/bootstrap
 class StockTableWidget(DOMWidget):
     _model_name = Unicode("StockTableModel").tag(sync=True)
     _model_module = Unicode(_module_name).tag(sync=True)
