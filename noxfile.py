@@ -19,7 +19,10 @@ def install_environment(session):
     session.install(*requirements)
 
 
-@nox.session(venv_backend="conda", python=environ.get("PYTHON_VERSION", "3.11"))
+@nox.session(
+    venv_backend="conda",
+    python=environ.get("PYTHON_VERSION", "3.11"),
+)
 def test(session):
     install_environment(session)
     session.run("python", "--version")

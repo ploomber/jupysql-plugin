@@ -40,7 +40,7 @@ cd ..
 
 ```sh
 cd ./ui-tests
-jlpm playwright test
+jlpm test
 ```
 
 Test results will be shown in the terminal. In case of any test failures, the test report

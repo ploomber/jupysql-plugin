@@ -67,23 +67,19 @@ folder is located. Then you can remove the symlink named `jupysql-plugin` within
 
 ### Testing the extension
 
-#### Frontend tests
-
 This extension is using [Jest](https://jestjs.io/) for JavaScript code testing.
 
-To execute them, execute:
+This extension uses [Playwright](https://playwright.dev/docs/intro/) for the integration tests (aka user level tests).
+More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab. More information are provided within the [ui-tests](./ui-tests/README.md) README.
+
+To run the tests:
 
 ```sh
-jlpm
-jlpm test
+pip install nox pyyaml
+
+# note that this will also create a conda env
+nox --session test
 ```
-
-#### Integration tests
-
-This extension uses [Playwright](https://playwright.dev/docs/intro/) for the integration tests (aka user level tests).
-More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
-
-More information are provided within the [ui-tests](./ui-tests/README.md) README.
 
 ### Packaging the extension
 
