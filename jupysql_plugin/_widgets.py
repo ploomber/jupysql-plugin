@@ -6,7 +6,8 @@ from traitlets import Unicode
 
 class FormWidget(DOMWidget):
     """
-    A sample widget that displays a form and process it. This widget is an example, not intended for end-users
+    A sample widget that displays a form and process it. This widget is an example,
+    not intended for end-users
     """
 
     _model_name = Unicode("FormModel").tag(sync=True)
