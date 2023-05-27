@@ -16,7 +16,8 @@ def install_environment(session):
 
 # NOTE: python=3.11 is hardcoded in the environment.dev.yml
 @nox.session(venv_backend="conda")
-def build(session):
+def test(session):
     install_environment(session)
+    session.run("python", "--version")
     session.run("jlpm", "install")
     session.run("jlpm", "test")
