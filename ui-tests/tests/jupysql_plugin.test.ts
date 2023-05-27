@@ -10,8 +10,12 @@ const filterUpdateNotebooks = item => {
     return basename.includes('_update');
 }
 
+const filterNotebooks = item => {
+    return !item.path.includes(".ipynb_checkpoints");
+}
+
 const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
-    const paths = klaw(path.resolve(__dirname, '../notebooks'), { filter: item => !filterUpdateNotebooks(item), nodir: true });
+    const paths = klaw(path.resolve(__dirname, '../notebooks'), { filter: item => filterNotebooks(item), nodir: true });
     const notebooks = paths.map(item => path.basename(item.path));
 
     const contextPrefix = theme == 'JupyterLab Light' ? 'light' : 'dark';

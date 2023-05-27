@@ -77,7 +77,7 @@ cd ..
 
 ```sh
 cd ./ui-tests
-jlpm playwright test -u
+jlpm playwright test --update-snapshots
 ```
 
 > Some discrepancy may occurs between the snapshots generated on your computer and
