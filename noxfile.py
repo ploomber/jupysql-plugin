@@ -5,6 +5,7 @@ import nox
 from yaml import safe_load
 
 
+# TODO: looks like it's still installing python 3.11 for all tests
 def load_dependencies():
     conda = safe_load(Path("environment.yml").read_text())["dependencies"]
     requirements = conda.pop(-1).get("pip")
