@@ -49,11 +49,3 @@ jobs:
         run: |
 
           nox --session test --no-install --reuse-existing-virtualenvs
-
-      # - name: Visual tests
-      #   run: | 
-
-      #     cd ui-tests
-      #     jlpm install
-      #     jlpm playwright install
-      #     jlpm test
