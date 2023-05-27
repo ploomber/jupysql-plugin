@@ -10,7 +10,7 @@ pip install jupysql-plugin
 ### Development install
 
 ```sh
-conda env create -f environment.dev.yml --force
+conda env create -f environment.yml --force
 conda activate jupysql-plugin
 jlpm install
 ```

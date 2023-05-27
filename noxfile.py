@@ -6,9 +6,8 @@ from yaml import safe_load
 
 
 def load_dependencies():
-    conda = safe_load(Path("environment.dev.yml").read_text())["dependencies"]
+    conda = safe_load(Path("environment.yml").read_text())["dependencies"]
     requirements = conda.pop(-1).get("pip")
-
     conda = [pkg for pkg in conda if not pkg.startswith("python")]
 
     return conda, requirements
