@@ -19,17 +19,24 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+
+
+      - uses: mamba-org/setup-micromamba@v1
         with:
-          python-version: ${{ matrix.python-version }}
+          micromamba-version: '1.3.1-0'
+          environment-file: environment.dev.yml
+          init-shell: >-
+            bash
+          cache-environment: true
 
       - name: Lint
         run: |
-            python -m pip install --upgrade pip pkgmt
-            pkgmt lint
+
+          python -m pip install --upgrade pip pkgmt
+          pkgmt lint
 
       - name: Install dependencies
         run: |
@@ -38,7 +45,16 @@ jobs:
           # check package is importable
           python -c "import jupysql_plugin"
 
-      - name: Test with Jest
+      - name: Test
         run: | 
+
           jlpm install
+          jlpm test
+
+      - name: Visual tests
+        run: | 
+
+          cd ui-tests
+          jlpm install
+          jlpm playwright install
           jlpm test
