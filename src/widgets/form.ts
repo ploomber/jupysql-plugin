@@ -5,21 +5,21 @@ import {
     ISerializers,
 } from '@jupyter-widgets/base';
 
-import { MODULE_NAME, MODULE_VERSION } from './version';
+import { MODULE_NAME, MODULE_VERSION } from '../version';
 
 // Import the CSS
-import '../style/widget.css';
+import '../../style/widget.css';
 
-export class ExampleModel extends DOMWidgetModel {
+export class FormModel extends DOMWidgetModel {
     defaults() {
         return {
             ...super.defaults(),
-            _model_name: ExampleModel.model_name,
-            _model_module: ExampleModel.model_module,
-            _model_module_version: ExampleModel.model_module_version,
-            _view_name: ExampleModel.view_name,
-            _view_module: ExampleModel.view_module,
-            _view_module_version: ExampleModel.view_module_version,
+            _model_name: FormModel.model_name,
+            _model_module: FormModel.model_module,
+            _model_module_version: FormModel.model_module_version,
+            _view_name: FormModel.view_name,
+            _view_module: FormModel.view_module,
+            _view_module_version: FormModel.view_module_version,
             value: 'Hello World',
         };
     }
@@ -29,15 +29,15 @@ export class ExampleModel extends DOMWidgetModel {
         // Add any extra serializers here
     };
 
-    static model_name = 'ExampleModel';
+    static model_name = 'FormModel';
     static model_module = MODULE_NAME;
     static model_module_version = MODULE_VERSION;
-    static view_name = 'ExampleView'; // Set to null if no view
+    static view_name = 'FormView'; // Set to null if no view
     static view_module = MODULE_NAME; // Set to null if no view
     static view_module_version = MODULE_VERSION;
 }
 
-export class ExampleView extends DOMWidgetView {
+export class FormView extends DOMWidgetView {
     render() {
         this.el.classList.add('custom-widget');
 

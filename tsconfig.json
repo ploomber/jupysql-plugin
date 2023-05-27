@@ -25,6 +25,8 @@
   },
   "include": [
     "src/*",
-    "src/keywords.json"
+    "src/keywords.json",
+    "src/widgets/table.ts",
+    "src/widgets/form.ts"
   ]
 }

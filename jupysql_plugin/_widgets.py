@@ -4,13 +4,15 @@ from ipywidgets import DOMWidget
 from traitlets import Unicode
 
 
-class ExampleWidget(DOMWidget):
-    """A sample widget that displays a form and process it"""
+class FormWidget(DOMWidget):
+    """
+    A sample widget that displays a form and process it. This widget is an example, not intended for end-users
+    """
 
-    _model_name = Unicode("ExampleModel").tag(sync=True)
+    _model_name = Unicode("FormModel").tag(sync=True)
     _model_module = Unicode(_module_name).tag(sync=True)
     _model_module_version = Unicode(__version__).tag(sync=True)
-    _view_name = Unicode("ExampleView").tag(sync=True)
+    _view_name = Unicode("FormView").tag(sync=True)
     _view_module = Unicode(_module_name).tag(sync=True)
     _view_module_version = Unicode(__version__).tag(sync=True)
 
@@ -48,11 +50,13 @@ class ExampleWidget(DOMWidget):
         self.send({"method": "display_confirmation_message", "message": message})
 
 
-class StockTableWidget(DOMWidget):
-    _model_name = Unicode("StockTableModel").tag(sync=True)
+class TableWidget(DOMWidget):
+    """Example widget showing how to display a tooltip"""
+
+    _model_name = Unicode("TableModel").tag(sync=True)
     _model_module = Unicode(_module_name).tag(sync=True)
     _model_module_version = Unicode(__version__).tag(sync=True)
-    _view_name = Unicode("StockTableView").tag(sync=True)
+    _view_name = Unicode("TableView").tag(sync=True)
     _view_module = Unicode(_module_name).tag(sync=True)
     _view_module_version = Unicode(__version__).tag(sync=True)
 

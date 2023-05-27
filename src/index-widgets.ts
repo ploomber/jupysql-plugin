@@ -1,5 +1,5 @@
-import * as widget from './widget';
-import * as widget_table from './table-widget';
+import * as widget from './widgets/form';
+import * as widget_table from './widgets/table';
 
 export const widgetExports = {
     ...widget,
