@@ -14,6 +14,7 @@ def install_environment(session):
     session.install(*requirements)
 
 
+# NOTE: python=3.11 is hardcoded in the environment.dev.yml
 @nox.session(venv_backend="conda")
 def build(session):
     install_environment(session)
