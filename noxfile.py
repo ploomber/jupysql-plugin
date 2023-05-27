@@ -1,21 +1,26 @@
-import nox
-
-from yaml import safe_load
 from pathlib import Path
+from os import environ
 
-# https://github.com/wntrblm/nox/issues/260#issuecomment-932966572
-environment = safe_load(Path("environment.dev.yml").read_text())
-conda = environment.get("dependencies")
-requirements = conda.pop(-1).get("pip")
+import nox
+from yaml import safe_load
+
+
+def load_dependencies():
+    environment = safe_load(Path("environment.dev.yml").read_text())
+    conda = [
+        pkg for pkg in environment.get("dependencies") if not pkg.startswith("python")
+    ]
+    requirements = conda.pop(-1).get("pip")
+    return conda, requirements
 
 
 def install_environment(session):
+    conda, requirements = load_dependencies()
     session.conda_install(*conda)
     session.install(*requirements)
 
 
-# NOTE: python=3.11 is hardcoded in the environment.dev.yml
-@nox.session(venv_backend="conda")
+@nox.session(venv_backend="conda", python=environ.get("PYTHON_VERSION", "3.11"))
 def test(session):
     install_environment(session)
     session.run("python", "--version")
