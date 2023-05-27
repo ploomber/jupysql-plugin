@@ -10,11 +10,8 @@ requirements = conda.pop(-1).get("pip")
 
 
 def install_environment(session):
-    for conda_pkg in conda:
-        session.conda_install(conda_pkg)
-    for pkg in requirements:
-        session.install(*pkg.split())
-    session.install("-e", ".")
+    session.conda_install(*conda)
+    session.install(*requirements)
 
 
 @nox.session(venv_backend="conda")
