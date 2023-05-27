@@ -21,6 +21,8 @@ def test(session):
     session.run("python", "--version")
     session.run("python", "-c", "import jupysql_plugin")
     session.run("jlpm", "install")
+    session.install("-e", ".")
+
     session.run("jlpm", "test")
 
     with session.chdir("ui-tests"):
