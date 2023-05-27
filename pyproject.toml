@@ -82,3 +82,8 @@ flake8 = [
     # binary operator since they are conflicting
     "--ignore=F821, W503, W504",
 ]
+
+[tool.pkgmt]
+github = "ploomber/jupysql-plugin"
+env_name = "jupysql-plugin"
+package_name = "jupysql_plugin"
