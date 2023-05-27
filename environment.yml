@@ -5,6 +5,7 @@ channels:
   - conda-forge
 
 dependencies:
+  - python=3.11
   - nodejs=16
   - jupyterlab<4 # this will install jlpm
   - pip
