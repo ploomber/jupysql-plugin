@@ -113,6 +113,7 @@ cd ..
 
 ```sh
 # NOTE: if you don't have JupyterLab running, start it
+cd ./ui-tests
 jlpm start
 ```
 
