@@ -16,7 +16,10 @@ jlpm install
 ```
 
 ```bash
+# Note: this command will take some time the first time as it has to compile the
+# frontend code
 pip install -e "."
+
 jupyter labextension develop . --overwrite
 jupyter server extension enable jupysql-plugin
 
