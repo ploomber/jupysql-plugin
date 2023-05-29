@@ -32,20 +32,20 @@ class FormWidget(DOMWidget):
 
     def _process_form_data(self, form_data):
         # Process the form data received from the frontend
-        dropdown_value = form_data.get("dropdown")
-        port_value = form_data.get("port")
+        protocol = form_data.get("protocol")
+        port_raw = form_data.get("port")
 
-        # Perform desired actions with the form data
-        try:
-            # Run your function here and check for any errors
-            # If no errors, send success message to the frontend
-            if dropdown_value == "A" or port_value == 10:
-                raise ValueError("some stuff went bad")
-        except Exception:
-            # If there are errors, send error message to the frontend
-            self.send_confirmation_message("Error")
+        if port_raw == "":
+            self.send_confirmation_message("Please select a port")
+
+        port = int(port_raw)
+
+        if port < 0:
+            self.send_confirmation_message("Select a valid port value")
         else:
-            self.send_confirmation_message("Success!")
+            self.send_confirmation_message(
+                f"You selected protocol: {protocol} and port: {port}"
+            )
 
     def send_confirmation_message(self, message):
         self.send({"method": "display_confirmation_message", "message": message})
@@ -61,7 +61,7 @@ class TableWidget(DOMWidget):
     _view_module = Unicode(_module_name).tag(sync=True)
     _view_module_version = Unicode(__version__).tag(sync=True)
 
-    def __init__(self, stock_data=None, **kwargs):
-        if stock_data is not None:
-            self.stock_data = stock_data
+    def __init__(self, data=None, **kwargs):
+        if data is not None:
+            self.data = data
         super().__init__(**kwargs)
