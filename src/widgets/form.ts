@@ -43,10 +43,10 @@ export class FormView extends DOMWidgetView {
 
         const template = `
         <form id="myForm">
-        <label for="dropdown">Select an option:</label>
-        <select id="dropdown" name="dropdown">
-          <option value="A">Option A</option>
-          <option value="B">Option B</option>
+        <label for="protocol">Select a protocol:</label>
+        <select id="protocol" name="protocol">
+          <option value="HTTP">HTTP</option>
+          <option value="HTTPS">HTTPS</option>
         </select>
       
         <label for="port">Enter a port:</label>
