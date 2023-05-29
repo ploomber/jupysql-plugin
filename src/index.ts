@@ -302,8 +302,6 @@ const examplePlugin: IPlugin<Application<Widget>, void> = {
 // the "as unknown as ..." typecast above is solely to support JupyterLab 1
 // and 2 in the same codebase and should be removed when we migrate to Lumino.
 
-// export default examplePlugin;
-
 /**
  * Activate the widget extension.
  */
