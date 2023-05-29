@@ -1,4 +1,4 @@
-
+// Form widget. Python backend is implemented in FormWidget
 import {
     DOMWidgetModel,
     DOMWidgetView,

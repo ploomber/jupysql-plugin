@@ -1,3 +1,4 @@
+// Table widget. Python backend is implemented in TableWidget
 import { MODULE_NAME, MODULE_VERSION } from '../version';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,7 +9,6 @@ import {
   ISerializers,
 } from '@jupyter-widgets/base';
 import { Tooltip } from 'bootstrap';
-
 
 export class TableModel extends DOMWidgetModel {
   defaults() {
