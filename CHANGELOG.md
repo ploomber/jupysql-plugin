@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.4
+
+* Comm listeners added for table_widget
+
 ## 0.1.3
 
 * Formatting via `Format SQL` button
