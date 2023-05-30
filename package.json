@@ -54,6 +54,11 @@
         "watch:src": "tsc -w",
         "watch:labextension": "jupyter labextension watch ."
     },
+    "@comment": {
+        "dependencies": {
+            "@lumino/widgets": "An official library to implement the frontend of the widgets: https://github.com/jupyterlab/lumino"
+        }
+    },
     "dependencies": {
         "@jupyter-widgets/base": "^6.0.4",
         "@jupyterlab/application": "^3.6.2",
