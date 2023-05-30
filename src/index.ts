@@ -30,6 +30,14 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { JupyterlabNotebookCodeFormatter } from './formatter';
 
 import { registerCommTargets } from './comm'
+
+// widgets
+import { Application, IPlugin } from '@lumino/application';
+import { Widget } from '@lumino/widgets';
+import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
+import { widgetExports } from './index-widgets';
+import { MODULE_NAME, MODULE_VERSION } from './version';
+
 /**
  * The command IDs used by the console plugin.
  */
@@ -55,7 +63,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     completionManager: ICompletionManager,
     notebooks: INotebookTracker
   ) => {
-    console.log('JupyterLab custom completer extension is activated!');
+    console.log('JupyterLab extension jupysql-plugin is activated!');
     // Modelled after completer-extension's notebooks plugin
     notebooks.widgetAdded.connect(
       (sender: INotebookTracker, panel: NotebookPanel) => {
@@ -248,7 +256,7 @@ export class RegisterNotebookCommListener
     }, 5000)
 
     return new DisposableDelegate(() => {
-      
+
     });
   }
 }
@@ -280,5 +288,33 @@ const formatting_plugin: JupyterFrontEndPlugin<void> = {
 };
 
 
+const EXTENSION_ID = 'jupysql-plugin:plugin';
 
-export default [extension, extension_sql, formatting_plugin];
+/**
+ * The example plugin.
+ */
+const examplePlugin: IPlugin<Application<Widget>, void> = {
+  id: EXTENSION_ID,
+  requires: [IJupyterWidgetRegistry],
+  activate: activateWidgetExtension,
+  autoStart: true,
+} as unknown as IPlugin<Application<Widget>, void>;
+// the "as unknown as ..." typecast above is solely to support JupyterLab 1
+// and 2 in the same codebase and should be removed when we migrate to Lumino.
+
+/**
+ * Activate the widget extension.
+ */
+function activateWidgetExtension(
+  app: Application<Widget>,
+  registry: IJupyterWidgetRegistry
+): void {
+  registry.registerWidget({
+    name: MODULE_NAME,
+    version: MODULE_VERSION,
+    exports: widgetExports,
+  });
+}
+
+export * from './version';
+export default [extension, extension_sql, formatting_plugin, examplePlugin];

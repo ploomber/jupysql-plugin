@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "composite": true,
     "declaration": true,
@@ -18,7 +19,14 @@
     "strict": true,
     "strictNullChecks": false,
     "target": "ES2018",
-    "types": ["jest"]
+    "types": [
+      "jest"
+    ]
   },
-  "include": ["src/*", "src/keywords.json"]
+  "include": [
+    "src/*",
+    "src/keywords.json",
+    "src/widgets/table.ts",
+    "src/widgets/form.ts"
+  ]
 }

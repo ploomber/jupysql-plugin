@@ -40,7 +40,7 @@ cd ..
 
 ```sh
 cd ./ui-tests
-jlpm playwright test
+jlpm test
 ```
 
 Test results will be shown in the terminal. In case of any test failures, the test report
@@ -77,7 +77,7 @@ cd ..
 
 ```sh
 cd ./ui-tests
-jlpm playwright test -u
+jlpm playwright test --update-snapshots
 ```
 
 > Some discrepancy may occurs between the snapshots generated on your computer and
@@ -112,9 +112,20 @@ cd ..
 3. Execute the [Playwright code generator](https://playwright.dev/docs/codegen):
 
 ```sh
+# NOTE: if you don't have JupyterLab running, start it
+cd ./ui-tests
+jlpm start
+```
+
+```sh
 cd ./ui-tests
 jlpm playwright codegen localhost:8888
 ```
+
+The galata framework exposes several convenient methods to mock user actions, most
+of what you need is in the `notebook` object, you can see the [methods here.](https://github.com/jupyterlab/jupyterlab/blob/main/galata/src/helpers/notebook.ts).
+
+To get a sense of how a test looks like, check out [JupyterLab's tests.](https://github.com/jupyterlab/jupyterlab/tree/7a30f77d9c344a9a750e279bd65ac3d420af01d9/galata/test/jupyterlab)
 
 ## Debug tests
 
