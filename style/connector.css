@@ -1,0 +1,10 @@
+.connector-widget .connection-button-container button,
+.connector-widget #createNewConnectionButton {
+    min-width: 250px;
+}
+
+
+.connector-widget .connection-button-container,
+.connector-widget .buttons-container {
+    margin: 20px;
+}
