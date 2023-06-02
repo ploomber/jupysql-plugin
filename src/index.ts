@@ -189,7 +189,7 @@ const extension_sql: JupyterFrontEndPlugin<void> = {
 
 
 /**
- * A notebook widget extension that adds a button to the toolbar.
+ * A notebook widget extension that adds a format button to the toolbar.
  */
 export class FormattingExtension
   implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
@@ -235,6 +235,57 @@ export class FormattingExtension
   }
 }
 
+/**
+ * A notebook widget extension that adds a deployment button to the toolbar.
+ */
+export class DeployingExtension
+  implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
+{
+  /**
+   * Create a new extension for the notebook panel widget.
+   *
+   * @param panel Notebook panel
+   * @param context Notebook context
+   * @returns Disposable on the added button
+   */
+
+  // private notebookCodeFormatter: JupyterlabNotebookCodeFormatter;
+
+
+  constructor(
+    tracker: INotebookTracker
+  ) {
+    // this.notebookCodeFormatter = new JupyterlabNotebookCodeFormatter(
+    //   tracker
+    // );
+  }
+
+
+
+  createNew(
+    panel: NotebookPanel,
+    context: DocumentRegistry.IContext<INotebookModel>
+  ): IDisposable {
+
+    const showAPIKeys = async () => {
+      prompt("Please enter your API:", "random API")
+    }
+
+    const button = new ToolbarButton({
+      className: 'deploy-nb-button',
+      label: 'Deploy Notebook',
+      onClick: showAPIKeys,
+      tooltip: 'Deploy Notebook as dashboards',
+    });
+
+
+    panel.toolbar.insertItem(10, 'deployNB', button);
+
+    return new DisposableDelegate(() => {
+      button.dispose();
+    });
+  }
+}
 
 export class RegisterNotebookCommListener
   implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
@@ -276,7 +327,9 @@ const formatting_plugin: JupyterFrontEndPlugin<void> = {
     app.docRegistry.addWidgetExtension('Notebook', new FormattingExtension(
       tracker,
     ));
-
+    app.docRegistry.addWidgetExtension('Notebook', new DeployingExtension(
+      tracker,
+    ));
     app.docRegistry.addWidgetExtension('Notebook', new RegisterNotebookCommListener());
 
   },
