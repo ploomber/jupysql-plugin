@@ -5,6 +5,10 @@ from traitlets import Unicode
 import json
 import pickle
 import keyring
+from sql.connection import Connection
+from sqlalchemy import create_engine
+from sql.parse import connection_from_dsn_section
+from configparser import ConfigParser
 
 
 class FormWidget(DOMWidget):
@@ -72,20 +76,26 @@ class TableWidget(DOMWidget):
 
 CONNECTIONS_TEMPLATES = dict(
     {
-        "sqlite": {"fields": [
-            {
-                "id": "connectionName",
-                "label": "connection name",
-                "type": "text",
-            },
-        ], "connection_string": "sqlite://"},
-        "duckdb": {"fields": [
-            {
-                "id": "connectionName",
-                "label": "connection name",
-                "type": "text",
-            },
-        ], "connection_string": "duckdb://"},
+        "sqlite": {
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "connection name",
+                    "type": "text",
+                },
+            ],
+            "connection_string": "sqlite://",
+        },
+        "duckdb": {
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "connection name",
+                    "type": "text",
+                },
+            ],
+            "connection_string": "duckdb://",
+        },
         "postgresql": {
             "fields": [
                 {
@@ -111,8 +121,51 @@ CONNECTIONS_TEMPLATES = dict(
     }
 )
 
+CONFIG_FILE = "connections.ini"
+
+USE_KEYRING = False
+
+
+def _get_predefined_connections():
+    return [
+        {"name": "DuckDB", "db": "duckdb", "values": []},
+        {"name": "SQLite", "db": "sqlite", "values": []},
+    ]
+
+
+def _get_connection_string(db_name, values=None):
+    if USE_KEYRING:
+        # TODO: Get values from current connnections and remove
+        # from the signature
+        connection_string = _get_connection_string_keyring(db_name, values)
+    else:
+        connection_string = _get_connection_string_from_config(db_name)
+
+    return connection_string
+
 
 def _get_stored_connections():
+    if USE_KEYRING:
+        connections = _get_stored_connections_keyring()
+    else:
+        connections = _get_stored_connections_config()
+
+    return connections
+
+
+def _store_connection_details(connection_name, fields):
+    if USE_KEYRING:
+        connection_string = _store_connection_details_keyring(connection_name, fields)
+    else:
+        connection_string = _store_connection_details_config(connection_name, fields)
+
+    return connection_string
+
+
+# Keyring start
+
+
+def _get_stored_connections_keyring():
     connections = []
     try:
         with open("connections.pkl", "rb") as f:
@@ -123,14 +176,7 @@ def _get_stored_connections():
     return connections
 
 
-def _get_predefined_connections():
-    return [
-        {"name": "DuckDB", "db": "duckdb", "values": []},
-        {"name": "SQLite", "db": "sqlite", "values": []},
-    ]
-
-
-def _get_connection_string(db, values):
+def _get_connection_string_keyring(db, values):
     if len(values) == 0:
         connection_string = CONNECTIONS_TEMPLATES[db]["connection_string"]
     else:
@@ -141,31 +187,7 @@ def _get_connection_string(db, values):
     return connection_string
 
 
-def _create_new_connection(new_connection_data):
-    # no_empty_fields = _check_no_empty_fields(new_connection_data)
-    connection_name = new_connection_data.get("connectionName")
-    db_name = new_connection_data.get("dbName")
-
-    is_unique_name = _is_unique_connection_name(connection_name)
-
-    if is_unique_name:
-        database = new_connection_data.get("database")
-        password = new_connection_data.get("password")
-        server = new_connection_data.get("server")
-        user_name = new_connection_data.get("userName")
-
-        fields = {
-            "user_name": user_name,
-            "password": password,
-            "server": server,
-            "database": database,
-        }
-
-        _store_connection_details(db_name, connection_name, fields)
-        print("Done!")
-
-
-def _store_connection_details(db_name, connection_name, fields):
+def _store_connection_details_keyring(db_name, connection_name, fields):
     # find and remove sensitive data
     for field in fields:
         if field == "password":
@@ -173,7 +195,7 @@ def _store_connection_details(db_name, connection_name, fields):
             break
 
     values = [fields[field] for field in fields]
-    list_of_connections = _get_stored_connections()
+    list_of_connections = _get_stored_connections_keyring()
     new_connection = dict({"name": connection_name, "db": db_name, "values": values})
     list_of_connections.append(new_connection)
 
@@ -181,26 +203,98 @@ def _store_connection_details(db_name, connection_name, fields):
         pickle.dump(list_of_connections, f)
 
 
+# Keyring end
+
+
+def _create_new_connection(new_connection_data):
+    connection_name = new_connection_data.get("connectionName")
+    db_name = new_connection_data.get("dbName")
+
+    database = new_connection_data.get("database")
+    password = new_connection_data.get("password")
+    server = new_connection_data.get("server")
+    user_name = new_connection_data.get("userName")
+
+    # fields_keyring = {
+    #     "user_name": user_name,
+    #     "password": password,
+    #     "server": server,
+    #     "database": database,
+    # }
+
+    fields_config = {
+        "username": user_name,
+        "password": password,
+        "host": server,
+        "database": database,
+        "drivername": db_name,
+    }
+
+    _store_connection_details(connection_name, fields_config)
+
+    connection = {
+        "name": connection_name,
+        "db": database,
+    }
+    return connection
+
+
 def _store_password(name, password):
     keyring.set_password("jupysql", name, password)
 
 
 def _is_unique_connection_name(connection_name) -> bool:
-    connections = _get_stored_connections()
-    # is_exists = _get_connection_string_by_name(connections, connection_name)
+    if USE_KEYRING:
+        is_exists = False
+    else:
+        config = ConfigParser()
+        config.read(CONFIG_FILE)
+        is_exists = connection_name in config.sections()
 
-    # if is_exists:
-    #     display(
-    #         HTML(
-    #             f"""
-    #         <script>
-    #             alert("{connection_name} is already exists!")
-    #         </script>
-    #         """
-    #         )
-    #     )
-    # return not is_exists
-    return True
+    return not is_exists
+
+
+# Config start
+
+
+class Config:
+    from pathlib import Path
+
+    dsn_filename = Path(CONFIG_FILE)
+
+
+def _get_stored_connections_config():
+    connections = []
+    config = ConfigParser()
+    config.read(CONFIG_FILE)
+    sections = config.sections()
+    if len(sections) > 0:
+        connections = [{"name": s, "db": config[s]["drivername"]} for s in sections]
+    else:
+        connections = _get_predefined_connections()
+    return connections
+
+
+def _store_connection_details_config(connection_name, fields):
+    # add section test
+    config = ConfigParser()
+    config.read(CONFIG_FILE)
+    config.add_section(connection_name)
+
+    for field in fields:
+        if fields[field]:
+            config.set(connection_name, field, fields[field])
+
+    with open(CONFIG_FILE, "w") as config_file:
+        config.write(config_file)
+
+
+def _get_connection_string_from_config(name):
+    connection_string = connection_from_dsn_section(section=name, config=Config())
+    return connection_string
+
+
+# Config end
 
 
 class ConnectorWidget(DOMWidget):
@@ -234,23 +328,34 @@ class ConnectorWidget(DOMWidget):
 
             if method == "submit_new_connection":
                 new_connection_data = content["data"]
-                _create_new_connection(new_connection_data)
+                connection_name = new_connection_data.get("connectionName")
+                is_unique_name = _is_unique_connection_name(connection_name)
 
-                self.stored_connections = _get_stored_connections()
-                connections = json.dumps(self.stored_connections)
-                self.send({"method": "update_connections", "message": connections})
+                if not is_unique_name:
+                    self.send(
+                        {
+                            "method": "connection_name_exists_error",
+                            "message": connection_name,
+                        }
+                    )
+                else:
+                    connection = _create_new_connection(new_connection_data)
+                    self.stored_connections = _get_stored_connections()
+                    connections = json.dumps(self.stored_connections)
+                    self.send({"method": "update_connections", "message": connections})
+
+                    self._connect(connection)
+                    self.send({"method": "connected", "message": connection["name"]})
 
     def _connect(self, connection):
-        from sql.connection import Connection
-        from sqlalchemy import create_engine
+        # print(f"Connection is {connection}")
 
         name = connection["name"]
-        db = connection["db"]
-        values = connection["values"]
-        print(f"Connection is {connection}")
-        connection_string = _get_connection_string(db, values)
+        # db = connection["db"]
+        # values = connection["values"]
+        # connection_string = _get_connection_string(db, values)
 
-        print(f"connection_string is : {connection_string}")
+        connection_string = _get_connection_string(name)
 
         engine = create_engine(connection_string)
         Connection(engine=engine)

@@ -1,3 +1,18 @@
+/**
+ * TODOs:
+ * 1. Change namings to match the ini file
+ * 2. Remove values from front
+ * 3. Implement remove connection
+ * 4. Fix connection with > 1 parts
+ * 5. Existing connection name + alert V
+ * 6. Tests
+ * 7. Telemetry
+ * 8. Compelling design
+ * 9. Togge ini keyring - V backend, X front
+ * 10. Add more connections
+ * 11. If no connections - add default connections to connections.ini
+ */
+
 import {
     DOMWidgetModel,
     DOMWidgetView,
@@ -12,7 +27,7 @@ import '../../style/connector.css';
 interface Connection {
     name : string,
     db : string,
-    values : []
+    values : [] // todo: remove?
 }
 
 interface ConnectionTemplate {
@@ -56,7 +71,10 @@ export class ConnectorModel extends DOMWidgetModel {
 
 export class ConnectorView extends DOMWidgetView {
     
+    // availble connections
     connections = JSON.parse(this.model.get('connections'));
+
+    // connections templates for creating a new connection
     connectionsTemplates = JSON.parse(this.model.get('connections_templates'));
     
     render() {
@@ -79,15 +97,15 @@ export class ConnectorView extends DOMWidgetView {
         const template = `
         <div id="connectionsManager">
             <div id="connectionsContainer">
-                <h2>
-                    Select connection
-                </h2>
+                <h3>
+                    Select a connection
+                </h3>
 
                 <div id="connectionsButtonsContainer">
                 </div>
 
                 <div>
-                    <h2>Create new connection</h2>
+                    <h3>Create new connection</h3>
 
                     <div class="buttons-container">
                         <button id="createNewConnectionButton">New connection</button>
@@ -96,10 +114,11 @@ export class ConnectorView extends DOMWidgetView {
             </div>
 
             <div id="newConnectionContainer" style = "display: none">
-                <h2>Create new connection</h2>
+                <h3>Create new connection</h3>
                 <select id="selectConnection"></select>
 
-                <form id="connectionForm"></form>
+                <div id="connectionFormContainer">
+                </div>
             </div>
         </div>
         `
@@ -136,7 +155,12 @@ export class ConnectorView extends DOMWidgetView {
         newConnectionButton.addEventListener("click", this.handleCreateNewConnectionClick.bind(this));
     }
 
-    handleConnectionClick(connection : any) {
+    /**
+     * Connects to a database
+     * 
+     * @param connection - connection object
+     */    
+    handleConnectionClick(connection : Connection) {
         const message = {
             method: 'connect',
             data: connection
@@ -167,6 +191,7 @@ export class ConnectorView extends DOMWidgetView {
         const key = select.value;
 
         const connectionTemplate = this.connectionsTemplates[key];
+        
         this.drawNewConnectionForm(connectionTemplate);
     }
 
@@ -178,8 +203,12 @@ export class ConnectorView extends DOMWidgetView {
     drawNewConnectionForm(connectionTemplate : ConnectionTemplate) {
         const { fields } = connectionTemplate;
 
-        const connectionForm = this.el.querySelector("#connectionForm");
-        connectionForm.innerHTML = "";
+        const connectionFormContainer = this.el.querySelector("#connectionFormContainer");
+        connectionFormContainer.innerHTML = "";
+
+        const connectionForm = document.createElement("FORM");
+        connectionForm.id = "connectionForm";
+        connectionFormContainer.appendChild(connectionForm)
         
         fields.forEach(field => {
             const fieldContainer = document.createElement("DIV");
@@ -217,10 +246,14 @@ export class ConnectorView extends DOMWidgetView {
 
     }
 
-
+    /**
+     * Submits new connection form 
+     * 
+     * @param event - Submit event
+     */  
     handleSubmitNewConnection(event : Event) {
         event.preventDefault();
-
+        
         // Extract form data
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
@@ -239,6 +272,11 @@ export class ConnectorView extends DOMWidgetView {
         this.sendFormData(formValues);
     }
 
+    /**
+     * Sends form data to the backend
+     * 
+     * @param formData - FormData object
+     */      
     sendFormData(formData: { [key: string]: string }) {
         // Create a message to send to the Python backend
         const message = {
@@ -252,19 +290,35 @@ export class ConnectorView extends DOMWidgetView {
         this.send(message);
     }
 
+    /**
+     * Handle messages from the backend
+     * 
+     * @param content - The method to invoke with data
+     */     
     handleMessage(content: any) {
-        if (content.method === 'update_connections') {
+        if (content.method === "update_connections") {
             this.connections = JSON.parse(content.message);
 
             this.drawConnectorUI(this.connections);
         }
 
-        if (content.method === 'connected') {
-            const connectionName = content.message
-            this.markConnectedButton(connectionName)
+        if (content.method === "connected") {
+            const connectionName = content.message;
+            this.markConnectedButton(connectionName);
+        }
+
+        if (content.method === "connection_name_exists_error") {
+            const connectionName = content.message;
+            
+            alert(`${connectionName} is already exists`)
         }
     }
 
+    /**
+     * Marks active connection button
+     * 
+     * @param connectionName - Active connection name
+     */    
     markConnectedButton(connectionName : string) {
         this.el.querySelectorAll(`.connection-button-container button`)
         .forEach((button : Element)  => {
