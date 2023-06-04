@@ -1,10 +1,56 @@
+:root {
+    --danger: #f53649;
+    --white: #ffffff; 
+  }
+
 .connector-widget .connection-button-container button,
 .connector-widget #createNewConnectionButton {
     min-width: 250px;
 }
 
+.connector-widget .connection-button-container .connection-button-actions {
+    display: inline-flex;
+}
+
+.connector-widget #connectionsButtonsContainer {
+    display: grid;
+}
+
+.connector-widget .connection-button-container .delete-connection-button {
+    min-width: 85px;
+    margin-left: 10px;
+    height: 40px;
+    background-repeat: no-repeat;
+    background-size: 30px;
+    background-position: center;
+    background-image: url('icons/close-circle.svg');
+    background-color: transparent;
+    border: none;    
+}
 
 .connector-widget .connection-button-container,
 .connector-widget .buttons-container {
     margin: 20px;
+}
+
+button.danger {
+    background-color: var(--danger);
+    color: var(--white);
+    margin-left: 10px;
+}
+
+
+form#connectionForm label {
+    width: 150px;
+}
+
+form#connectionForm input:not(input[type='submit']) {
+    margin: 10px;
+    padding: 5px 10px;
+}
+
+#selectConnection {
+    width: 250px;
+    padding: 5px 10px;
+    margin-bottom: 30px;
 }

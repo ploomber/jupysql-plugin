@@ -1,16 +1,10 @@
 /**
  * TODOs:
- * 1. Change namings to match the ini file
- * 2. Remove values from front
- * 3. Implement remove connection
- * 4. Fix connection with > 1 parts
- * 5. Existing connection name + alert V
  * 6. Tests
  * 7. Telemetry
  * 8. Compelling design
  * 9. Togge ini keyring - V backend, X front
  * 10. Add more connections
- * 11. If no connections - add default connections to connections.ini
  */
 
 import {
@@ -21,13 +15,14 @@ import {
 
 import { MODULE_NAME, MODULE_VERSION } from '../version';
 
+
 // Import the CSS
 import '../../style/connector.css';
 
+
 interface Connection {
     name : string,
-    db : string,
-    values : [] // todo: remove?
+    drivername : string
 }
 
 interface ConnectionTemplate {
@@ -127,15 +122,29 @@ export class ConnectorView extends DOMWidgetView {
         // Draw connection buttons
         connections.forEach((connection: Connection) => {
             const { name } = connection;
+            const name_without_spaces = name.replace(/ /g, "_");
             
             const buttonContainer = document.createElement("DIV");
             buttonContainer.className = "connection-button-container";
-            const button = document.createElement("BUTTON");
-            button.id = `connBtn_${name}`;
-            button.innerHTML = name;
-            button.onclick = this.handleConnectionClick.bind(this, connection);
+
+            const actionsContainer = document.createElement("DIV");
+            actionsContainer.className = "connection-button-actions";
+
+            const connectButton = document.createElement("BUTTON");
+            connectButton.id = `connBtn_${name_without_spaces}`;
+            connectButton.innerHTML = name;
+            connectButton.onclick = this.handleConnectionClick.bind(this, connection);
+
+            const deleteConnection = document.createElement("BUTTON");
+            deleteConnection.className = `delete-connection-button`;
+            deleteConnection.id = `deleteConnBtn_${name_without_spaces}`;
+            deleteConnection.onclick = this.handleDeleteConnectionClick.bind(this, connection);
+
             let connectionsButtonsContainer = this.el.querySelector('#connectionsButtonsContainer');
-            buttonContainer.appendChild(button);
+            actionsContainer.appendChild(connectButton);            
+            actionsContainer.appendChild(deleteConnection);
+
+            buttonContainer.appendChild(actionsContainer);
             connectionsButtonsContainer.appendChild(buttonContainer);
         });
 
@@ -167,6 +176,51 @@ export class ConnectorView extends DOMWidgetView {
         };
 
         this.send(message);      
+    }
+
+    deleteConnection(connection : Connection) {
+        const message = {
+            method: 'delete_connection',
+            data: connection
+        };
+
+        this.send(message);      
+    }
+
+    handleDeleteConnectionClick(connection : Connection) {
+        this.hideDeleteMessageApproval()
+
+        // create new message
+        const deleteConnectionMessage = document.createElement("DIV");
+        deleteConnectionMessage.id = "deleteConnectionMessage";
+        deleteConnectionMessage.innerHTML = 
+        "<h4>Are you sure you want to delete this connection?</h4> <div class='actions' style = 'display: inline-flex'></div>";
+
+        const cancelButton = document.createElement("BUTTON");
+        cancelButton.innerHTML = "Cancel";
+        cancelButton.addEventListener("click", this.hideDeleteMessageApproval.bind(this))
+        deleteConnectionMessage.querySelector(".actions").appendChild(cancelButton);
+
+        const approveButton = document.createElement("BUTTON");
+        approveButton.innerHTML = "Delete connection";
+        approveButton.className = "danger";
+        approveButton.addEventListener("click", this.deleteConnection.bind(this, connection))
+        deleteConnectionMessage.querySelector(".actions").appendChild(approveButton);
+
+        // hide controllers
+        const deleteConnBtn = this.el.querySelector(`#deleteConnBtn_${connection["name"].replace(/ /g, "_")}`);
+        const actionsContainer = <HTMLElement> deleteConnBtn.parentNode;
+        actionsContainer.style.display = "none"
+        
+        // show buttons
+        const buttonsContainer = <HTMLElement> actionsContainer.parentNode;
+        buttonsContainer.appendChild(deleteConnectionMessage);
+    }
+
+    hideDeleteMessageApproval() {
+        this.el.querySelector("#deleteConnectionMessage")?.remove();
+        this.el.querySelectorAll(".connection-button-actions")
+        .forEach(c => (<HTMLElement>c).style.display = "inline-flex");
     }
 
     /**
@@ -266,7 +320,7 @@ export class ConnectorView extends DOMWidgetView {
         
         const select = <HTMLSelectElement>this.el.querySelector("#selectConnection");
 
-        formValues["dbName"] = select.value;
+        formValues["driver"] = select.value;
 
         // Call the function to send form data to the Python backend
         this.sendFormData(formValues);
@@ -307,6 +361,12 @@ export class ConnectorView extends DOMWidgetView {
             this.markConnectedButton(connectionName);
         }
 
+        if (content.method === "deleted") {
+            const connectionName = content.message;
+
+            alert(`${connectionName} deleted successfully`)
+        }
+
         if (content.method === "connection_name_exists_error") {
             const connectionName = content.message;
             
@@ -320,14 +380,14 @@ export class ConnectorView extends DOMWidgetView {
      * @param connectionName - Active connection name
      */    
     markConnectedButton(connectionName : string) {
-        this.el.querySelectorAll(`.connection-button-container button`)
+        this.el.querySelectorAll(`.connection-button-actions button:not(.delete-connection-button)`)
         .forEach((button : Element)  => {
             const buttonStyle = (<HTMLButtonElement> button).style;
             buttonStyle.backgroundColor = "ButtonFace";
             buttonStyle.color = "#000";
         });
 
-        const selectedButtonStyle = (<HTMLButtonElement> this.el.querySelector(`#connBtn_${connectionName}`)).style;
+        const selectedButtonStyle = (<HTMLButtonElement> this.el.querySelector(`#connBtn_${connectionName.replace(/ /g, "_")}`)).style;
         selectedButtonStyle.backgroundColor = "#f57c00";
         selectedButtonStyle.color = "#fff";
     }
