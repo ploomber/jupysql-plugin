@@ -28,7 +28,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { JupyterlabNotebookCodeFormatter } from './formatter';
-
+import { showDeploymentDialog } from './dialog';
 import { registerCommTargets } from './comm'
 
 // widgets
@@ -267,8 +267,13 @@ export class DeployingExtension
     context: DocumentRegistry.IContext<INotebookModel>
   ): IDisposable {
 
+    // const btnOnClick = async () => {
+    //   InputDialog
+    // }
     const showAPIKeys = async () => {
-      prompt("Please enter your API:", "random API")
+      showDeploymentDialog()
+      // var deploymentDialog = new DeploymentDialog({ title: 'Deploy Notebook', })
+      // return deploymentDialog.launch()
     }
 
     const button = new ToolbarButton({
