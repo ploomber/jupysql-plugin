@@ -248,38 +248,19 @@ export class DeployingExtension
    * @param context Notebook context
    * @returns Disposable on the added button
    */
-
-  // private notebookCodeFormatter: JupyterlabNotebookCodeFormatter;
-
-
   constructor(
-    tracker: INotebookTracker
   ) {
-    // this.notebookCodeFormatter = new JupyterlabNotebookCodeFormatter(
-    //   tracker
-    // );
   }
-
-
 
   createNew(
     panel: NotebookPanel,
     context: DocumentRegistry.IContext<INotebookModel>
   ): IDisposable {
 
-    // const btnOnClick = async () => {
-    //   InputDialog
-    // }
-    const showAPIKeys = async () => {
-      showDeploymentDialog()
-      // var deploymentDialog = new DeploymentDialog({ title: 'Deploy Notebook', })
-      // return deploymentDialog.launch()
-    }
-
     const button = new ToolbarButton({
       className: 'deploy-nb-button',
       label: 'Deploy Notebook',
-      onClick: showAPIKeys,
+      onClick: showDeploymentDialog,
       tooltip: 'Deploy Notebook as dashboards',
     });
 
@@ -332,9 +313,7 @@ const formatting_plugin: JupyterFrontEndPlugin<void> = {
     app.docRegistry.addWidgetExtension('Notebook', new FormattingExtension(
       tracker,
     ));
-    app.docRegistry.addWidgetExtension('Notebook', new DeployingExtension(
-      tracker,
-    ));
+    app.docRegistry.addWidgetExtension('Notebook', new DeployingExtension());
     app.docRegistry.addWidgetExtension('Notebook', new RegisterNotebookCommListener());
 
   },
