@@ -11,6 +11,7 @@ from configparser import ConfigParser
 CONNECTIONS_TEMPLATES = dict(
     {
         "sqlite": {
+            "driver": "sqlite",
             "fields": [
                 {
                     "id": "connectionName",
@@ -21,6 +22,7 @@ CONNECTIONS_TEMPLATES = dict(
             "connection_string": "sqlite://",
         },
         "duckdb": {
+            "driver": "duckdb",
             "fields": [
                 {
                     "id": "connectionName",
@@ -31,6 +33,7 @@ CONNECTIONS_TEMPLATES = dict(
             "connection_string": "duckdb://",
         },
         "postgresql": {
+            "driver": "postgresql",
             "fields": [
                 {
                     "id": "connectionName",
@@ -50,7 +53,52 @@ CONNECTIONS_TEMPLATES = dict(
                 {"id": "host", "label": "Host", "type": "text"},
                 {"id": "database", "label": "Database", "type": "text"},
             ],
-            "connection_string": "postgresql://{0}:{1}@{2}/{3}",
+        },
+        "mysql": {
+            "driver": "mysql+pymysql",
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "Connection name",
+                    "type": "text",
+                },
+                {
+                    "id": "username",
+                    "label": "User name",
+                    "type": "text",
+                },
+                {
+                    "id": "password",
+                    "label": "Password",
+                    "type": "password",
+                },
+                {"id": "host", "label": "Host", "type": "text"},
+                {"id": "port", "label": "Port", "type": "number"},
+                {"id": "database", "label": "Database", "type": "text"},
+            ],
+        },
+        "mariaDB": {
+            "driver": "mysql+pymysql",
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "Connection name",
+                    "type": "text",
+                },
+                {
+                    "id": "username",
+                    "label": "User name",
+                    "type": "text",
+                },
+                {
+                    "id": "password",
+                    "label": "Password",
+                    "type": "password",
+                },
+                {"id": "host", "label": "Host", "type": "text"},
+                {"id": "port", "label": "Port", "type": "number"},
+                {"id": "database", "label": "Database", "type": "text"},
+            ],
         },
     }
 )
@@ -58,7 +106,7 @@ CONNECTIONS_TEMPLATES = dict(
 CONFIG_FILE = "connections.ini"
 
 
-def serialize_connections(connections):
+def _serialize_connections(connections):
     """
     Returns connections object as JSON
     """
@@ -66,28 +114,73 @@ def serialize_connections(connections):
 
 
 def _get_predefined_connections():
+    """
+    Returns default connections that not require special
+    configuration
+    """
     return [
         {"name": "DuckDB", "driver": "duckdb"},
         {"name": "SQLite", "driver": "sqlite"},
     ]
 
 
-def _get_connection_string(connection_name):
-    connection_string = _get_connection_string_from_config(connection_name)
+def _get_connection_string(connection_name) -> str:
+    """
+    Returns connection string
+    """
+
+    class Config:
+        from pathlib import Path
+
+        dsn_filename = Path(CONFIG_FILE)
+
+    connection_string = connection_from_dsn_section(
+        section=connection_name, config=Config()
+    )
+
     return connection_string
 
 
-def _get_stored_connections():
-    connections = _get_stored_connections_config()
+def _get_stored_connections() -> list:
+    """
+    Returns a list of stored connections
+    """
+    connections = []
+    config = _get_config_file()
+    sections = config.sections()
+    if len(sections) > 0:
+        connections = [{"name": s, "driver": config[s]["drivername"]} for s in sections]
+    else:
+        connections = _get_predefined_connections()
+        for connection in connections:
+            _store_connection_details(
+                connection["name"], dict({"drivername": connection["driver"]})
+            )
     return connections
 
 
 def _store_connection_details(connection_name, fields):
-    connection_string = _store_connection_details_config(connection_name, fields)
-    return connection_string
+    """
+    Stores connection in the config file
+    """
+    # add section test
+    config = _get_config_file()
+    config.add_section(connection_name)
+
+    for field in fields:
+        if fields[field]:
+            config.set(connection_name, field, fields[field])
+
+    with open(CONFIG_FILE, "w") as config_file:
+        config.write(config_file)
 
 
 def _create_new_connection(new_connection_data):
+    """
+    Creates new connection and stores it in the configuration file
+
+    Returns connection object
+    """
     connection_name = new_connection_data.get("connectionName")
     driver_name = new_connection_data.get("driver")
 
@@ -95,6 +188,7 @@ def _create_new_connection(new_connection_data):
     password = new_connection_data.get("password")
     host = new_connection_data.get("host")
     user_name = new_connection_data.get("username")
+    port = new_connection_data.get("port")
 
     fields_config = {
         "username": user_name,
@@ -102,6 +196,7 @@ def _create_new_connection(new_connection_data):
         "host": host,
         "database": database,
         "drivername": driver_name,
+        "port": port,
     }
 
     _store_connection_details(connection_name, fields_config)
@@ -114,57 +209,24 @@ def _create_new_connection(new_connection_data):
 
 
 def _is_unique_connection_name(connection_name) -> bool:
-    config = ConfigParser()
-    config.read(CONFIG_FILE)
+    config = _get_config_file()
     is_exists = connection_name in config.sections()
 
     return not is_exists
 
 
-class Config:
-    from pathlib import Path
-
-    dsn_filename = Path(CONFIG_FILE)
-
-
-def _get_stored_connections_config():
-    connections = []
+def _get_config_file() -> ConfigParser:
+    """
+    Returns current config file
+    """
     config = ConfigParser()
     config.read(CONFIG_FILE)
-    sections = config.sections()
-    if len(sections) > 0:
-        connections = [{"name": s, "driver": config[s]["drivername"]} for s in sections]
-    else:
-        connections = _get_predefined_connections()
-        for connection in connections:
-            _store_connection_details_config(
-                connection["name"], dict({"drivername": connection["driver"]})
-            )
-    return connections
-
-
-def _store_connection_details_config(connection_name, fields):
-    # add section test
-    config = ConfigParser()
-    config.read(CONFIG_FILE)
-    config.add_section(connection_name)
-
-    for field in fields:
-        if fields[field]:
-            config.set(connection_name, field, fields[field])
-
-    with open(CONFIG_FILE, "w") as config_file:
-        config.write(config_file)
-
-
-def _get_connection_string_from_config(name):
-    connection_string = connection_from_dsn_section(section=name, config=Config())
-    return connection_string
+    return config
 
 
 class ConnectorWidget(DOMWidget):
     """
-    TODO: docstring
+    Manage database connections
     """
 
     _model_name = Unicode("ConnectorModel").tag(sync=True)
@@ -176,7 +238,7 @@ class ConnectorWidget(DOMWidget):
 
     stored_connections = _get_stored_connections()
 
-    connections = Unicode(serialize_connections(stored_connections)).tag(sync=True)
+    connections = Unicode(_serialize_connections(stored_connections)).tag(sync=True)
     connections_templates = Unicode(json.dumps(CONNECTIONS_TEMPLATES)).tag(sync=True)
 
     def __init__(self, *args, **kwargs):
@@ -184,6 +246,9 @@ class ConnectorWidget(DOMWidget):
         self.on_msg(self._handle_message)
 
     def _handle_message(self, widget, content, buffers):
+        """
+        Handles messages from front
+        """
         if "method" in content:
             method = content["method"]
 
@@ -193,7 +258,7 @@ class ConnectorWidget(DOMWidget):
                 self.send({"method": "deleted", "message": connection["name"]})
 
                 self.stored_connections = _get_stored_connections()
-                connections = serialize_connections(self.stored_connections)
+                connections = _serialize_connections(self.stored_connections)
                 self.send({"method": "update_connections", "message": connections})
 
             if method == "connect":
@@ -216,13 +281,16 @@ class ConnectorWidget(DOMWidget):
                 else:
                     connection = _create_new_connection(new_connection_data)
                     self.stored_connections = _get_stored_connections()
-                    connections = serialize_connections(self.stored_connections)
+                    connections = _serialize_connections(self.stored_connections)
                     self.send({"method": "update_connections", "message": connections})
 
                     self._connect(connection)
                     self.send({"method": "connected", "message": connection["name"]})
 
     def _connect(self, connection):
+        """
+        Connects to database
+        """
         name = connection["name"]
         connection_string = _get_connection_string(name)
 
@@ -235,8 +303,7 @@ class ConnectorWidget(DOMWidget):
         """
         connection_name = connection["name"]
 
-        config = ConfigParser()
-        config.read(CONFIG_FILE)
+        config = _get_config_file()
 
         with open(CONFIG_FILE, "r") as f:
             config.readfp(f)

@@ -1,12 +1,3 @@
-/**
- * TODOs:
- * 6. Tests
- * 7. Telemetry
- * 8. Compelling design
- * 9. Togge ini keyring - V backend, X front
- * 10. Add more connections
- */
-
 import {
     DOMWidgetModel,
     DOMWidgetView,
@@ -319,8 +310,10 @@ export class ConnectorView extends DOMWidgetView {
         }
         
         const select = <HTMLSelectElement>this.el.querySelector("#selectConnection");
-
-        formValues["driver"] = select.value;
+        
+        const driver = this.connectionsTemplates[select.value].driver;
+        
+        formValues["driver"] = driver;
 
         // Call the function to send form data to the Python backend
         this.sendFormData(formValues);
