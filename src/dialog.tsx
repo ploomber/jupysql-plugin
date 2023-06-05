@@ -1,94 +1,109 @@
 import React, { useEffect, useState } from 'react';
-
 import { ReactWidget } from '@jupyterlab/apputils'
 import { Dialog as jupyterlabDialog } from '@jupyterlab/apputils';
-import { Box, Button, Grid, Skeleton, TextField } from '@mui/material';
-// import CodeBlock from 'react-copy-code';
-
-// import { Widget } from '@lumino/widgets';
-// import Dialog as muiDialog from '@mui/material/Dialog';
-
-// Loading
-// Text box 
-// Initial deployment dialog
-
-
-export class DeploymentDialog extends jupyterlabDialog<any> {
-
-}
-
+import { Box, Button, Chip, Grid, Skeleton, TextField } from '@mui/material';
 
 export function showDeploymentDialog() {
-    const myWidget = new MainWidget();
-    var deploymentDialog = new DeploymentDialog({ title: 'Deploy Notebook', body: myWidget })
+    const reactWidget = new MainWidget();
+    var deploymentDialog = new jupyterlabDialog({ title: 'Deploy Notebook', body: reactWidget })
     return deploymentDialog.launch()
 }
 
 const MainComponent = (): JSX.Element => {
-    const [isOpenDialog, setIsOpenDialog] = useState(true);
     const [isLoadingRemoteAPI, setIsLoadingRemoteAPI] = useState(true);
-
     const [APIKey, setAPIKey] = useState("");
-    const [hasRemoteAPI, setHasRemoteAPI] = useState(false);
-    const [APIValue, setAPIValue] = useState("");
     const [deploymentURL, setDeploymentURL] = useState(null);
-
+    const [APIValidStatus, setAPIValidStatus] = useState("init")
     useEffect(() => {
         fetchRemoteAPI()
     }, [])
     const fetchRemoteAPI = async () => {
         // Simulate remote fetching, 
-        setInterval(() => {
+        var simulateAPICall = setInterval(() => {
             setIsLoadingRemoteAPI(false);
-            setAPIKey("");
-        }, 3000)
+            clearInterval(simulateAPICall)
+        }, 1500)
     }
 
-    const onPostRemoteAPI = async () => {
+    const onSaveRemoteAPI = async () => {
         // Simulate remote validating, 
-        setHasRemoteAPI(true)
-        // }, 1000)
+        setIsLoadingRemoteAPI(true);
+        setDeploymentURL(null)
+        var simulateAPICall = setInterval(() => {
+            if (APIKey == "") {
+                setAPIValidStatus("error")
+            } else {
+                setAPIValidStatus("success")
+            }
+            clearInterval(simulateAPICall)
+            setIsLoadingRemoteAPI(false)
+        }, 1500)
+
     }
 
     const onPostDeploy = async () => {
-        setDeploymentURL("https://ploomber.io/some_random_url")
+        setDeploymentURL("https://ploomber.io/some_random_url/" + APIKey)
+    }
+
+    const APITextFieldProps: { [status: string]: any } = {
+        "init": {
+            label: "API Key",
+            variant: "outlined",
+            color: "primary"
+        },
+        "success": {
+            label: "Valid API Key",
+            variant: "filled",
+            color: "success"
+        },
+        "error": {
+            label: "Please enter valid API Key",
+            variant: "filled",
+            color: "warning"
+        }
     }
     return (
-        <Box p={5} style={{ minWidth: 500 }}>
-            <Grid container spacing={2} alignItems="center">
-                <Grid container direction='row' alignItems="center">
-
-                    <Grid xs={10}>
-                        {isLoadingRemoteAPI ?
-                            <Skeleton variant="rounded" height={30} />
-                            : <div>
-
+        <Box p={3} style={{ width: 600 }}>
+            <Grid container spacing={4} alignItems="center" >
+                <Grid item container direction='row' alignItems="center" width={"100%"}>
+                    {isLoadingRemoteAPI ? <Skeleton variant="rounded" width={"100%"} height={30} />
+                        :
+                        <Grid container direction="row" alignItems="center" spacing={1}>
+                            <Grid item xs={10}>
                                 <TextField id="api-key"
-                                    defaultValue={APIValue}
-                                    label="API Key"
-                                    variant={hasRemoteAPI ? "filled" : "outlined"}
-                                    color={hasRemoteAPI ? "success" : "primary"}
-                                    fullWidth={true} />
-                            </div>
+                                    size="small"
+                                    onChange={(val) => { setAPIKey(val.target.value) }}
+                                    value={APIKey}
+                                    label={APITextFieldProps[APIValidStatus]["label"]}
+                                    variant={APITextFieldProps[APIValidStatus]["variant"]}
+                                    color={APITextFieldProps[APIValidStatus]["color"]}
+                                    error={APIValidStatus == "error"}
+                                    fullWidth={true}
+                                    focused
+                                />
+                            </Grid>
+                            <Grid item xs={2} alignItems="center" justifyContent="center">
+                                <Button onClick={onSaveRemoteAPI} variant="contained" size="small">SAVE</Button>
+                            </Grid>
+                        </Grid>
+
+                    }
+
+
+                </Grid>
+                {APIValidStatus == "success" && !isLoadingRemoteAPI &&
+                    <Grid item container direction='row' alignItems="center" spacing={4}>
+
+                        <Grid item xs={12}>
+                            <Button onClick={onPostDeploy} variant="contained" size="small" color="primary">Get Deplyoment URL </Button>
+                        </Grid>
+                        {deploymentURL &&
+                            <Grid item xs={12}>
+                                URL: <Chip label={deploymentURL} variant="outlined" />
+                            </Grid>
                         }
                     </Grid>
-                    <Grid xs={2} alignItems="center">
-                        <Button onClick={onPostRemoteAPI}>SAVE</Button>
-                    </Grid>
-
-                </Grid>
-                <Grid container direction='row' alignItems="center" justifyContent={"center"}>
-
-                    <Grid xs={12}>
-                        <Button onClick={onPostDeploy}>Get Deplyoment URL </Button>
-                    </Grid>
-
-                    <Grid xs={12}>
-                        {deploymentURL}
-                    </Grid>
-
-                </Grid>
-                {/* Show ploomber URL to instruct user to generate API  */}
+                }
             </Grid>
         </Box>
     );
@@ -98,7 +113,6 @@ class MainWidget extends ReactWidget {
     constructor() {
         super();
     }
-
     render(): JSX.Element {
         return <MainComponent />;
     }
