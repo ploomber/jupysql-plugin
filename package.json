@@ -60,6 +60,8 @@
         }
     },
     "dependencies": {
+        "@emotion/react": "^11.11.0",
+        "@emotion/styled": "^11.11.0",
         "@jupyter-widgets/base": "^6.0.4",
         "@jupyterlab/application": "^3.6.2",
         "@jupyterlab/codeeditor": "^3.6.2",
@@ -68,9 +70,13 @@
         "@jupyterlab/notebook": "^3.6.2",
         "@jupyterlab/statedb": "^3.6.2",
         "@lumino/widgets": "<2.0.0",
+        "@mui/material": "^5.13.4",
         "@types/codemirror": "^5.60.7",
         "@types/underscore": "^1.11.4",
         "bootstrap": "^5.2.3",
+        "react": "^18.2.0",
+        "react-copy-code": "^2.1.2",
+        "react-spinners": "^0.13.8",
         "sql-formatter": "^12.2.0",
         "underscore": "^1.13.6"
     },
