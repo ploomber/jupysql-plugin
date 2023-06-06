@@ -1,6 +1,6 @@
 {
     "name": "jupysql-plugin",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Jupyterlab extension for JupySQL",
     "keywords": [
         "jupyter",
