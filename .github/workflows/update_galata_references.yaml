@@ -36,7 +36,7 @@ jobs:
         uses: mamba-org/provision-with-micromamba@main
         with:
           environment-name: bqplot-test
-          environment-file: environment.yml
+          environment-file: test-environment.yml
           channels: conda-forge
 
       - name: Install bqplot
