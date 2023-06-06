@@ -10,6 +10,7 @@ export function showDeploymentDialog() {
 }
 
 const MainComponent = (): JSX.Element => {
+    const MOCK_EXISTING_APIKEY = true
     const [isLoadingRemoteAPI, setIsLoadingRemoteAPI] = useState(true);
     const [APIKey, setAPIKey] = useState("");
     const [deploymentURL, setDeploymentURL] = useState(null);
@@ -20,6 +21,10 @@ const MainComponent = (): JSX.Element => {
     const fetchRemoteAPI = async () => {
         // Simulate remote fetching, 
         var simulateAPICall = setInterval(() => {
+            if (MOCK_EXISTING_APIKEY) {
+                setAPIKey("4dae0c4b-3447-432d-8c8f")
+                setAPIValidStatus("success")
+            }
             setIsLoadingRemoteAPI(false);
             clearInterval(simulateAPICall)
         }, 1500)
