@@ -39,6 +39,9 @@ jobs:
           environment-file: environment.yml
           channels: conda-forge
 
+      - name: Install jlpm
+        run: jlpm install
+
       - name: Install bqplot
         run: pip install .
 
