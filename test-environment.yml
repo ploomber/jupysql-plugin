@@ -13,7 +13,7 @@ dependencies:
     - pandas >=1.0.0,<2.0.0
     - bqscales  >=0.3.1
     - scipy
-    - jupyterlab
+    - jupyterlab<4 # this will install jlpm
     - jupyter-packaging
     - pytest
     - nbval
