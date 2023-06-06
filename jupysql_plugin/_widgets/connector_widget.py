@@ -100,6 +100,28 @@ CONNECTIONS_TEMPLATES = dict(
                 {"id": "database", "label": "Database", "type": "text"},
             ],
         },
+        "snowflake": {
+            "driver": "snowflake",
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "Connection name",
+                    "type": "text",
+                },
+                {
+                    "id": "username",
+                    "label": "User name",
+                    "type": "text",
+                },
+                {
+                    "id": "password",
+                    "label": "Password",
+                    "type": "password",
+                },
+                {"id": "host", "label": "Host", "type": "text"},
+                {"id": "database", "label": "Database", "type": "text"},
+            ],
+        },
     }
 )
 
