@@ -33,14 +33,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Conda environment with Micromamba
-        uses: mamba-org/provision-with-micromamba@main
+        uses: mamba-org/setup-micromamba@v1
         with:
           environment-name: jupysql-plugin
           environment-file: environment.yml
-          channels: conda-forge
-
-      - name: Install jlpm
-        run: jlpm install
 
       - name: Install bqplot
         run: pip install .
