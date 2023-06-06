@@ -7,38 +7,47 @@ on:
       - 'dev/**'
   pull_request:
 
-
+defaults:
+  run:
+    shell: bash -l {0}
 
 jobs:
-  Jest:
+  test:
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9, '3.10', '3.11']
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.8, 3.9, '3.10', '3.11']
+        # setup-python doesn't have conda on windows
+        # we only have snapshots for macos, ignoring ubuntu-latest
+        os: [macos-latest]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+        env:
+          PYTHON_VERSION: ${{ matrix.python-version }}
 
       - name: Lint
         run: |
-            python -m pip install --upgrade pip pkgmt
-            pkgmt lint
+
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade pkgmt nox pyyaml
+          pkgmt lint
+
 
       - name: Install dependencies
         run: |
 
-          pip install .
-          # check package is importable
-          python -c "import jupysql_plugin"
+          nox --install-only
 
-      - name: Test with Jest
-        run: | 
-          npm install
-          npm test
+      - name: Test
+        run: |
+
+          nox --session test --no-install --reuse-existing-virtualenvs

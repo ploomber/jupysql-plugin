@@ -1,5 +1,8 @@
+# testing data
+.nox
 coverage
-ui-tests
+ui-tests/playwright-report
+ui-tests/test-results
 
 # extension artifacts
 jupysql_plugin/labextension

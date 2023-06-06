@@ -22,8 +22,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-dependencies = [
-]
+dependencies = ["ipywidgets"]
+
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
 [tool.hatch.version]
@@ -71,3 +71,19 @@ before-build-python = ["jlpm clean:all"]
 
 [tool.check-wheel-contents]
 ignore = ["W002"]
+
+[tool.nbqa.addopts]
+flake8 = [
+    # notebooks allow non-top imports
+    "--extend-ignore=E402",
+    # jupysql notebooks might have "undefined name" errors
+    # due to the << operator
+    # W503, W504 ignore line break after/before
+    # binary operator since they are conflicting
+    "--ignore=F821, W503, W504",
+]
+
+[tool.pkgmt]
+github = "ploomber/jupysql-plugin"
+env_name = "jupysql-plugin"
+package_name = "jupysql_plugin"
