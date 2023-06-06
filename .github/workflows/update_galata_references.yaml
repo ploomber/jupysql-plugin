@@ -35,8 +35,8 @@ jobs:
       - name: Install Conda environment with Micromamba
         uses: mamba-org/setup-micromamba@v1
         with:
-          environment-name: jupysql-plugin
-          environment-file: environment.yml
+          environment-name: jupysql-plugin-test
+          environment-file: test-environment.yml
 
       - name: Install bqplot
         run: pip install .
