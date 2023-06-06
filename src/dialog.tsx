@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ReactWidget } from '@jupyterlab/apputils'
 import { Dialog as jupyterlabDialog } from '@jupyterlab/apputils';
-import { Box, Button, Chip, Grid, Skeleton, TextField } from '@mui/material';
+import { Box, Button, Chip, Grid, Skeleton, Snackbar, TextField } from '@mui/material';
+import CloudQueue from '@mui/icons-material/CloudQueue';
 
 export function showDeploymentDialog() {
     const reactWidget = new MainWidget();
@@ -15,6 +16,8 @@ const MainComponent = (): JSX.Element => {
     const [APIKey, setAPIKey] = useState("");
     const [deploymentURL, setDeploymentURL] = useState(null);
     const [APIValidStatus, setAPIValidStatus] = useState("init")
+    const [isShowSnackbar, setIsShowSnackbar] = useState(false)
+
     useEffect(() => {
         fetchRemoteAPI()
     }, [])
@@ -69,7 +72,7 @@ const MainComponent = (): JSX.Element => {
     }
     return (
         <Box p={3} style={{ width: 600 }}>
-            <Grid container spacing={4} alignItems="center" >
+            <Grid container spacing={4} alignItems="center" direction="column">
                 <Grid item container direction='row' alignItems="center" width={"100%"}>
                     {isLoadingRemoteAPI ? <Skeleton variant="rounded" width={"100%"} height={30} />
                         :
@@ -97,20 +100,30 @@ const MainComponent = (): JSX.Element => {
 
                 </Grid>
                 {APIValidStatus == "success" && !isLoadingRemoteAPI &&
-                    <Grid item container direction='row' alignItems="center" spacing={4}>
+                    <Grid item container alignItems="center" spacing={4} direction="column">
 
-                        <Grid item xs={12}>
-                            <Button onClick={onPostDeploy} variant="contained" size="small" color="primary">Get Deplyoment URL </Button>
+                        <Grid item justifyContent="center" xs={12}>
+                            <Button onClick={onPostDeploy} variant="contained" size="small" color="primary" disabled={deploymentURL} endIcon={<CloudQueue />}>Get Deplyoment URL </Button>
                         </Grid>
                         {deploymentURL &&
-                            <Grid item xs={12}>
-                                URL: <Chip label={deploymentURL} variant="outlined" />
+                            <Grid item justifyContent="center" xs={12}>
+                                URL:
+                                <Chip label={deploymentURL} variant="outlined" onClick={() => {
+                                    navigator.clipboard.writeText(deploymentURL)
+                                    setIsShowSnackbar(true)
+                                }} />
+                                <Snackbar
+                                    open={isShowSnackbar}
+                                    onClose={() => setIsShowSnackbar(false)}
+                                    autoHideDuration={2000}
+                                    message="Copied to clipboard"
+                                />
                             </Grid>
                         }
                     </Grid>
                 }
             </Grid>
-        </Box>
+        </Box >
     );
 };
 
