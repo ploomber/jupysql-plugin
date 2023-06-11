@@ -55,7 +55,7 @@ jobs:
   create-image-artifacts-if-test-failed:
     needs: test
     if: ${{ failure() }}
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout
@@ -100,12 +100,6 @@ jobs:
       - name: Generate updated Galata References
         run: yarn run test:update
         working-directory: ui-tests
-
-      - name: Compress snapshots
-        run: |
-          sudo apt install optipng
-          optipng *.png
-        working-directory: ui-tests/tests/jupysql_plugin.test.ts-snapshots
 
       - name: Upload test snapshots
         uses: actions/upload-artifact@v3
