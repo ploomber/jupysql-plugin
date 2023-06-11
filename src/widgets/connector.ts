@@ -37,8 +37,8 @@ export class ConnectorModel extends DOMWidgetModel {
             _view_name: ConnectorModel.view_name,
             _view_module: ConnectorModel.view_module,
             _view_module_version: ConnectorModel.view_module_version,
-            connections : "",
-            connections_templates : ""
+            connections : ConnectorModel.connections,
+            connections_templates : ConnectorModel.connections_templates
         };
     }
 
@@ -53,6 +53,8 @@ export class ConnectorModel extends DOMWidgetModel {
     static view_name = 'ConnectorModel'; // Set to null if no view
     static view_module = MODULE_NAME; // Set to null if no view
     static view_module_version = MODULE_VERSION;
+    static connections : any[] = [];
+    static connections_templates : any[] = [];
 }
 
 export class ConnectorView extends DOMWidgetView {
@@ -62,6 +64,7 @@ export class ConnectorView extends DOMWidgetView {
 
     // connections templates for creating a new connection
     connectionsTemplates = JSON.parse(this.model.get('connections_templates'));
+    
     
     render() {
         this.el.classList.add('connector-widget');
@@ -79,25 +82,45 @@ export class ConnectorView extends DOMWidgetView {
      */
     drawConnectorUI(connections : Array<Connection>) {
         this.el.innerHTML = ""
-
         const template = `
         <div id="connectionsManager">
-            <div id="connectionsContainer">
+            <div id="connectionsContainer" class="block">
                 <h3>
-                    Select a connection
+                    Connections
                 </h3>
 
-                <div id="connectionsButtonsContainer">
+                <div class="connections-guidelines block">
+                    <i>
+                        * Connections are loaded from connections.ini file
+                    </i>
+
+                    <i class="no-config-file" style = "display: none;">
+                        * No connections.ini file found. You may need to restart the kernel.
+                    </i>
+
+                    <i class="restart-kernel" style = "display: none;">
+                        * No connections found in connections.ini file. You may need to restart the kernel.
+                    </i>                    
                 </div>
 
-                <div>
+                <div id="connectionsButtonsContainer" class="block">
+                </div>
+
+                <div class="block">
                     <h3>Create new connection</h3>
 
-                    <div class="buttons-container">
+                    <div class="buttons-container block">
                         <button id="createNewConnectionButton">New connection</button>
                     </div>
                 </div>
             </div>
+
+            <div class="user-error-message lm-Widget p-Widget lm-Panel p-Panel jp-OutputArea-child" style = "display: none">
+            <div class="lm-Widget jp-RenderedText" data-mime-type="application/vnd.jupyter.stderr">
+            <pre></pre>
+            </div>
+            </div>
+
 
             <div id="newConnectionContainer" style = "display: none">
                 <h3>Create new connection</h3>
@@ -139,7 +162,6 @@ export class ConnectorView extends DOMWidgetView {
             connectionsButtonsContainer.appendChild(buttonContainer);
         });
 
-
         // Draw new connection select
         const select = this.el.querySelector("#selectConnection");
         Object.keys(this.connectionsTemplates).forEach(key => {
@@ -153,6 +175,14 @@ export class ConnectorView extends DOMWidgetView {
 
         const newConnectionButton = this.el.querySelector("#createNewConnectionButton");
         newConnectionButton.addEventListener("click", this.handleCreateNewConnectionClick.bind(this));
+        
+        setTimeout(() => {
+            const message = {
+                method: 'check_config_file'
+            };
+            debugger
+            this.send(message);
+        }, 500)
     }
 
     /**
@@ -184,8 +214,10 @@ export class ConnectorView extends DOMWidgetView {
         // create new message
         const deleteConnectionMessage = document.createElement("DIV");
         deleteConnectionMessage.id = "deleteConnectionMessage";
-        deleteConnectionMessage.innerHTML = 
-        "<h4>Are you sure you want to delete this connection?</h4> <div class='actions' style = 'display: inline-flex'></div>";
+
+        const warningMessage = `<div>Are you sure you want to delete <strong>${connection["name"]}</strong>?<div> 
+        <div>Please note that by doing so, you will permanently remove <strong>${connection["name"]}</strong> from the ini file.<div>`
+        deleteConnectionMessage.innerHTML = `${warningMessage} <div class='actions' style = 'margin-top: 10px; display: inline-flex'></div>`;
 
         const cancelButton = document.createElement("BUTTON");
         cancelButton.innerHTML = "Cancel";
@@ -361,9 +393,28 @@ export class ConnectorView extends DOMWidgetView {
         }
 
         if (content.method === "connection_name_exists_error") {
-            const connectionName = content.message;
-            
-            alert(`${connectionName} is already exists`)
+            const connectionName = content.message;            
+            const error = `${connectionName} is already exists`;
+            this.showErrorMessage(error);
+        }
+
+        if (content.method === "connection_error") {
+            const error = content.message;
+            this.showErrorMessage(error);
+        }
+
+        if (content.method === "check_config_file") {
+            const isExist = content.message;
+            const i = <HTMLElement>this.el.querySelector(".connections-guidelines .no-config-file")
+            if (isExist) {
+                i.style.display = "none";
+
+                const iKernelMessage = <HTMLElement>this.el.querySelector(".connections-guidelines .no-config-file")
+                iKernelMessage.style.display = (this.connections.length === 0) ? "block" : "none";
+
+            } else {
+                i.style.display = "block";
+            }
         }
     }
 
@@ -383,6 +434,13 @@ export class ConnectorView extends DOMWidgetView {
         const selectedButtonStyle = (<HTMLButtonElement> this.el.querySelector(`#connBtn_${connectionName.replace(/ /g, "_")}`)).style;
         selectedButtonStyle.backgroundColor = "#f57c00";
         selectedButtonStyle.color = "#fff";
+    }
+
+    showErrorMessage(error : string) {
+        const errorEl = <HTMLDivElement>this.el.querySelector(".user-error-message");
+        const errorMessageContainer = errorEl.querySelector("pre");
+        errorMessageContainer.innerHTML = `${error}`;
+        errorEl.style.display = "block";
     }
 
 }

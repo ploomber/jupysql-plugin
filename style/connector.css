@@ -54,3 +54,11 @@ form#connectionForm input:not(input[type='submit']) {
     padding: 5px 10px;
     margin-bottom: 30px;
 }
+
+.warning-message {
+    margin-bottom: 10px;
+}
+
+.block {
+    margin: 30px 0px;
+}

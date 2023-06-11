@@ -7,6 +7,7 @@ from sql.connection import Connection
 from sqlalchemy import create_engine
 from sql.parse import connection_from_dsn_section
 from configparser import ConfigParser
+from pathlib import Path
 
 CONNECTIONS_TEMPLATES = dict(
     {
@@ -15,7 +16,7 @@ CONNECTIONS_TEMPLATES = dict(
             "fields": [
                 {
                     "id": "connectionName",
-                    "label": "Connection name",
+                    "label": "Connection alias",
                     "type": "text",
                 },
             ],
@@ -26,7 +27,7 @@ CONNECTIONS_TEMPLATES = dict(
             "fields": [
                 {
                     "id": "connectionName",
-                    "label": "Connection name",
+                    "label": "Connection alias",
                     "type": "text",
                 },
             ],
@@ -37,7 +38,7 @@ CONNECTIONS_TEMPLATES = dict(
             "fields": [
                 {
                     "id": "connectionName",
-                    "label": "Connection name",
+                    "label": "Connection alias",
                     "type": "text",
                 },
                 {
@@ -59,7 +60,7 @@ CONNECTIONS_TEMPLATES = dict(
             "fields": [
                 {
                     "id": "connectionName",
-                    "label": "Connection name",
+                    "label": "Connection alias",
                     "type": "text",
                 },
                 {
@@ -82,7 +83,7 @@ CONNECTIONS_TEMPLATES = dict(
             "fields": [
                 {
                     "id": "connectionName",
-                    "label": "Connection name",
+                    "label": "Connection alias",
                     "type": "text",
                 },
                 {
@@ -105,7 +106,7 @@ CONNECTIONS_TEMPLATES = dict(
             "fields": [
                 {
                     "id": "connectionName",
-                    "label": "Connection name",
+                    "label": "Connection alias",
                     "type": "text",
                 },
                 {
@@ -135,25 +136,12 @@ def _serialize_connections(connections):
     return json.dumps(connections)
 
 
-def _get_predefined_connections():
-    """
-    Returns default connections that not require special
-    configuration
-    """
-    return [
-        {"name": "DuckDB", "driver": "duckdb"},
-        {"name": "SQLite", "driver": "sqlite"},
-    ]
-
-
 def _get_connection_string(connection_name) -> str:
     """
     Returns connection string
     """
 
     class Config:
-        from pathlib import Path
-
         dsn_filename = Path(CONFIG_FILE)
 
     connection_string = connection_from_dsn_section(
@@ -172,13 +160,12 @@ def _get_stored_connections() -> list:
     sections = config.sections()
     if len(sections) > 0:
         connections = [{"name": s, "driver": config[s]["drivername"]} for s in sections]
-    else:
-        connections = _get_predefined_connections()
-        for connection in connections:
-            _store_connection_details(
-                connection["name"], dict({"drivername": connection["driver"]})
-            )
+
     return connections
+
+
+def is_config_exist() -> bool:
+    return Path(CONFIG_FILE).is_file()
 
 
 def _store_connection_details(connection_name, fields):
@@ -274,6 +261,10 @@ class ConnectorWidget(DOMWidget):
         if "method" in content:
             method = content["method"]
 
+            if method == "check_config_file":
+                is_exist = is_config_exist()
+                self.send({"method": "check_config_file", "message": is_exist})
+
             if method == "delete_connection":
                 connection = content["data"]
                 self._delete_connection(connection)
@@ -284,9 +275,12 @@ class ConnectorWidget(DOMWidget):
                 self.send({"method": "update_connections", "message": connections})
 
             if method == "connect":
-                connection = content["data"]
-                self._connect(connection)
-                self.send({"method": "connected", "message": connection["name"]})
+                try:
+                    connection = content["data"]
+                    self._connect(connection)
+                    self.send({"method": "connected", "message": connection["name"]})
+                except Exception as e:
+                    self.send_error_message_to_front(e)
 
             if method == "submit_new_connection":
                 new_connection_data = content["data"]
@@ -305,9 +299,18 @@ class ConnectorWidget(DOMWidget):
                     self.stored_connections = _get_stored_connections()
                     connections = _serialize_connections(self.stored_connections)
                     self.send({"method": "update_connections", "message": connections})
+                    try:
+                        self._connect(connection)
+                        self.send(
+                            {"method": "connected", "message": connection["name"]}
+                        )
+                    except Exception as e:
+                        self.send_error_message_to_front(e)
 
-                    self._connect(connection)
-                    self.send({"method": "connected", "message": connection["name"]})
+    def send_error_message_to_front(self, error):
+        error_prefix = error.__class__.__name__
+        error_message = f"{error_prefix} : {str(error)}"
+        self.send({"method": "connection_error", "message": error_message})
 
     def _connect(self, connection):
         """
@@ -317,7 +320,7 @@ class ConnectorWidget(DOMWidget):
         connection_string = _get_connection_string(name)
 
         engine = create_engine(connection_string)
-        Connection(engine=engine)
+        Connection(engine=engine, alias=name)
 
     def _delete_connection(self, connection):
         """
