@@ -64,6 +64,8 @@ export class ConnectorView extends DOMWidgetView {
 
     // connections templates for creating a new connection
     connectionsTemplates = JSON.parse(this.model.get('connections_templates'));
+
+    activeConnection = ""
     
     
     render() {
@@ -190,11 +192,16 @@ export class ConnectorView extends DOMWidgetView {
 
         const newConnectionButton = this.el.querySelector("#createNewConnectionButton");
         newConnectionButton.addEventListener("click", this.handleCreateNewConnectionClick.bind(this));
+
+        if (this.activeConnection) {
+            this.markConnectedButton(this.activeConnection);
+        }
         
         setTimeout(() => {
             const message = {
                 method: 'check_config_file'
             };
+
 
             this.send(message);
         }, 500)
@@ -418,6 +425,7 @@ export class ConnectorView extends DOMWidgetView {
 
         if (content.method === "connected") {
             const connectionName = content.message;
+            this.activeConnection = connectionName;
             this.markConnectedButton(connectionName);
         }
 
