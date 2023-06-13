@@ -4,11 +4,20 @@ import { Dialog as jupyterlabDialog } from '@jupyterlab/apputils';
 import { Box, Button, Chip, Grid, Skeleton, Snackbar, TextField } from '@mui/material';
 import CloudQueue from '@mui/icons-material/CloudQueue';
 
+
 export function showDeploymentDialog() {
     const reactWidget = new MainWidget();
     var deploymentDialog = new jupyterlabDialog({ title: 'Deploy Notebook', body: reactWidget })
     return deploymentDialog.launch()
 }
+
+export function showExperimentDialog(notebook: any) {
+    const metadata = notebook.content.model.metadata;
+    const reactWidget = new ExperimentWidget({ metadata: metadata });
+    var deploymentDialog = new jupyterlabDialog({ title: 'Experiment Notebook', body: reactWidget })
+    return deploymentDialog.launch()
+}
+
 
 const MainComponent = (): JSX.Element => {
     const MOCK_EXISTING_APIKEY = true
@@ -127,11 +136,48 @@ const MainComponent = (): JSX.Element => {
     );
 };
 
+const ExperimentComponent = (props: any): JSX.Element => {
+    const flattenText = JSON.stringify(Array.from(props.metadata.entries()))
+    return (
+        <>
+            {flattenText}
+        </>
+    );
+};
+
+const MyButtonComponent = (): JSX.Element => {
+    return (
+        <button>My button</button>
+    )
+}
 class MainWidget extends ReactWidget {
     constructor() {
         super();
     }
     render(): JSX.Element {
         return <MainComponent />;
+    }
+}
+
+class ExperimentWidget extends ReactWidget {
+    private metadata: object
+    constructor(props: any) {
+        super(props);
+        // debugger;
+        console.log("props: ", props.metadata._map)
+        this.metadata = props.metadata._map
+    }
+    render(): JSX.Element {
+        return <ExperimentComponent metadata={this.metadata} />;
+    }
+}
+
+export class MyButtonWidget extends ReactWidget {
+    constructor(notebook: any) {
+        console.log("notebook: ", notebook)
+        super();
+    }
+    render(): JSX.Element {
+        return <MyButtonComponent />;
     }
 }

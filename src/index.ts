@@ -28,7 +28,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { JupyterlabNotebookCodeFormatter } from './formatter';
-import { showDeploymentDialog } from './dialog';
+import { showDeploymentDialog, showExperimentDialog, MyButtonWidget } from './dialog';
 import { registerCommTargets } from './comm'
 
 // widgets
@@ -273,6 +273,47 @@ export class DeployingExtension
   }
 }
 
+/**
+ * A notebook widget extension that adds a deployment button to the toolbar.
+ */
+export class ExperimentingExtension
+  implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
+{
+  /**
+   * Create a new extension for the notebook panel widget.
+   *
+   * @param panel Notebook panel
+   * @param context Notebook context
+   * @returns Disposable on the added button
+   */
+  constructor(
+  ) {
+  }
+
+  createNew(
+    panel: NotebookPanel,
+    context: DocumentRegistry.IContext<INotebookModel>
+  ): IDisposable {
+    const notebook = panel;
+    const handleOnClick = () => {
+      showExperimentDialog(notebook)
+    }
+    const button = new ToolbarButton({
+      className: 'experiment-nb-button',
+      label: 'Experiment Notebook',
+      onClick: handleOnClick,
+      tooltip: 'Experiement Notebook',
+    });
+
+    // const button = new MyButtonWidget(panel.content);
+    panel.toolbar.insertItem(10, 'experimentNB', button);
+
+    return new DisposableDelegate(() => {
+      button.dispose();
+    });
+  }
+}
+
 export class RegisterNotebookCommListener
   implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
 {
@@ -314,6 +355,8 @@ const formatting_plugin: JupyterFrontEndPlugin<void> = {
       tracker,
     ));
     app.docRegistry.addWidgetExtension('Notebook', new DeployingExtension());
+    app.docRegistry.addWidgetExtension('Notebook', new ExperimentingExtension());
+
     app.docRegistry.addWidgetExtension('Notebook', new RegisterNotebookCommListener());
 
   },
