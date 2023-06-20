@@ -1,4 +1,5 @@
 from ._version import __version__  # noqa: F401
+from .server_handlers.dashboard import setup_handlers
 
 _module_name = "jupysql-plugin"
 
@@ -18,7 +19,7 @@ def _load_jupyter_server_extension(server_app):
     server_app: jupyterlab.labapp.LabApp
         JupyterLab application instance
     """
-    # setup_handlers(server_app.web_app)
+    setup_handlers(server_app.web_app)
     server_app.log.info(f"Registered {_module_name} server extension")
 
 
