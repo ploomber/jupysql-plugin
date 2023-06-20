@@ -2,6 +2,7 @@
     "name": "jupysql-plugin",
     "version": "0.1.4",
     "description": "Jupyterlab extension for JupySQL",
+    "private": true,
     "keywords": [
         "jupyter",
         "jupyterlab",
@@ -27,6 +28,12 @@
         "type": "git",
         "url": "https://github.com/ploomber/jupysql-plugin.git.git"
     },
+    "workspaces": {
+        "packages": [
+          "jupysql_plugin",
+          "ui-tests"
+        ]
+      },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",
         "build:prod": "jlpm clean && jlpm build:lib:prod && jlpm build:labextension",
