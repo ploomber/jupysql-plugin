@@ -1,0 +1,144 @@
+:root {
+    --danger: #f53649;
+    --white: #ffffff;
+    --margin: 10px;
+    --primary: #206eef;
+  }
+
+.connector-widget .connection-button-container .connection-button-actions {
+    display: inline-flex;
+    width: 100%;
+}
+
+.connector-widget #connectionsButtonsContainer {
+    display: grid;
+}
+
+.connector-widget .connection-button-container .delete-connection-button {
+    margin-left: 10px;
+    background-repeat: no-repeat;
+    background-size: 24px;
+    background-position: center;
+    background-image: url('icons/delete_outline_black.svg');
+    background-color: transparent;
+    border: none;
+    width: 24px;
+}
+
+.create-new-connection {
+    display: inline-flex;
+    color: var(--primary)
+}
+
+.create-new-connection:hover {
+    cursor: pointer;
+}
+
+.create-new-connection .icon{
+    background-image: url('icons/add_primary.svg');
+    min-width: 30px;
+    height: 30px;
+    background-repeat: no-repeat;
+    background-size: 15px;
+    background-position: center;
+    background-color: transparent;
+    margin: 0;    
+}
+
+.create-new-connection div {
+    margin: auto var(--margin);
+    margin-top: 2px;
+}
+
+.create-new-connection div:nth-child(2) {
+    margin-left: 2px;
+}
+
+.connector-widget .connection-button-container {
+    margin: var(--margin) 0;
+}
+
+.connector-widget hr.divider {
+    margin: 0;
+    margin-top:20px;
+}
+
+.connector-widget button {
+    width: fit-content;
+    border: none;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+.connector-widget button.secondary {
+    background-color: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+}
+
+.connector-widget button.primary {
+    background-color: var(--primary);
+    color: #fff;
+    border: 1px solid var(--primary);
+}
+
+.connector-widget .connection-button-actions .connection-name {
+    margin: auto 30px;
+    margin-left: 0;
+    width: 100%;
+    font-weight: 500;
+}
+
+button.danger {
+    background-color: var(--danger);
+    color: var(--white);
+    margin-left: var(--margin);
+}
+
+form#connectionForm .field-container {
+    display: inline-flex;
+    width: 100%;
+    margin: var(--margin) 0;
+}
+
+form#connectionForm label {
+    width: 50%;
+    margin: auto 0;
+}
+
+form#connectionForm .field {
+    width: -webkit-fill-available;
+    margin-left: var(--margin);
+    padding: 5px 10px;
+}
+
+form#connectionForm input:not(input[type='submit']) {
+    /* margin: 10px;
+    padding: 5px 10px; */
+}
+
+#selectConnection {
+    width: 100%;
+    padding: 6px 10px;
+    margin-bottom: var(--margin);
+}
+
+.warning-message {
+    margin-bottom: var(--margin);
+}
+
+.block {
+    margin: 30px 0px;
+    /* border: 1px solid #000; */
+    width: 600px;
+}
+
+form#connectionForm .buttons-container {
+    text-align: right;
+    margin: var(--margin) 0;
+}
+
+form#connectionForm .buttons-container button:first-child {
+    margin-right: var(--margin);
+}
