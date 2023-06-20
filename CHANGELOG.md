@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.5
+
+* Adds connection helper widget
+
 ## 0.1.4
 
 * Comm listeners added for table_widget

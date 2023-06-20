@@ -1,6 +1,6 @@
 {
     "name": "jupysql-plugin",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "Jupyterlab extension for JupySQL",
     "private": true,
     "keywords": [
@@ -30,10 +30,10 @@
     },
     "workspaces": {
         "packages": [
-          "jupysql_plugin",
-          "ui-tests"
+            "jupysql_plugin",
+            "ui-tests"
         ]
-      },
+    },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",
         "build:prod": "jlpm clean && jlpm build:lib:prod && jlpm build:labextension",
