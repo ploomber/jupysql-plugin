@@ -13,9 +13,8 @@ class RouteHandler(APIHandler):
     # Jupyter server
     @tornado.web.authenticated
     def get(self):
-        self.finish(json.dumps({
-            "data": "This is /dashboard/hello endpoint!"
-        }))
+        self.finish(json.dumps({"data": "This is /dashboard/hello endpoint!"}))
+
 
 def setup_handlers(web_app):
     host_pattern = ".*$"
