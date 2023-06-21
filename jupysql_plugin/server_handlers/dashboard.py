@@ -1,10 +1,8 @@
-import os
 import json
 
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 import tornado
-from tornado.web import StaticFileHandler
 
 
 class RouteHandler(APIHandler):
