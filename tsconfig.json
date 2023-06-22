@@ -27,6 +27,7 @@
     "src/*",
     "src/keywords.json",
     "src/widgets/table.ts",
-    "src/widgets/form.ts"
+    "src/widgets/form.ts",
+    "src/widgets/connector.ts",
   ]
 }

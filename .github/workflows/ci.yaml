@@ -51,3 +51,58 @@ jobs:
         run: |
 
           nox --session test --no-install --reuse-existing-virtualenvs
+
+  create-image-artifacts-if-test-failed:
+    needs: test
+    if: ${{ failure() }}
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git to use https
+        run: git config --global hub.protocol https
+
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: jupysql-plugin
+          environment-file: environment.yml
+
+      - name: Set up environment variables
+        env:
+          REUSE_EXISTING_SERVER: true
+        run: |
+          echo "REUSE_EXISTING_SERVER=$REUSE_EXISTING_SERVER" >> $GITHUB_ENV
+
+      - name: Install JupySQL-Plugin
+        run: |
+          pip install -e "."
+
+      - name: Install Galata
+        run: |
+          yarn playwright install chromium
+        working-directory: ui-tests
+
+      - name: Launch JupyterLab
+        run: yarn run start:detached
+        working-directory: ui-tests
+
+      - name: Wait for JupyterLab
+        uses: ifaxity/wait-on-action@v1
+        with:
+          resource: http-get://localhost:8888/api
+          timeout: 20000
+
+      - name: Generate updated Galata References
+        run: yarn run test:update
+        working-directory: ui-tests
+
+      - name: Upload test snapshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: snapshots
+          path: ui-tests/tests/jupysql_plugin.test.ts-snapshots

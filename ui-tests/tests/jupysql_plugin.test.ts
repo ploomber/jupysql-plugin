@@ -11,7 +11,7 @@ const filterUpdateNotebooks = item => {
 }
 
 const filterNotebooks = item => {
-    return !item.path.includes(".ipynb_checkpoints");
+    return item.path.includes(".ipynb");
 }
 
 const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
