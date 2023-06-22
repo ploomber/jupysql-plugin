@@ -28,7 +28,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { JupyterlabNotebookCodeFormatter } from './formatter';
-import { showDeploymentDialog, showExperimentDialog, MyButtonWidget } from './dialog';
+import { showDeploymentDialog, showExperimentDialog } from './dialog';
 import { registerCommTargets } from './comm'
 
 // widgets
