@@ -9,23 +9,27 @@ import tornado
 import requests
 import os
 
+
 class RouteHandler(APIHandler):
     """
-    Endpoint: /dashboard/apikey, setter/getter for the API Key through ploomber_core UserSettings
+    Endpoint: /dashboard/apikey, setter/getter for the API Key through ploomber_core
     The File is located in: ~/.ploomber/stats/config.yaml
     """
+
     @tornado.web.authenticated
     def get(self):
-        """ Return cloud_key as API Key"""
+        """Return cloud_key as API Key"""
         key = UserSettings().cloud_key
         self.finish(json.dumps({"data": key}))
 
     @tornado.web.authenticated
     def post(self):
         input_data = self.get_json_body()
-        user_key = input_data['api_key']
+        user_key = input_data["api_key"]
         settings = UserSettings()
         settings.cloud_key = user_key
+
+
 class JobHandler(APIHandler):
     """
     Endpoint: /dashboard/job
@@ -33,9 +37,10 @@ class JobHandler(APIHandler):
     1. notebook file
     2. requirements.txt
     """
+
     @tornado.web.authenticated
     def post(self):
-        """ 
+        """
         post data:
         1. api_key
         2. project_id (optional)
@@ -45,25 +50,30 @@ class JobHandler(APIHandler):
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
-        access_token = input_data['api_key']
-        project_id = input_data['project_id']
-        notebook_path_relative = input_data['notebook_path']
+        access_token = input_data["api_key"]
+        project_id = input_data["project_id"]
+        notebook_path_relative = input_data["notebook_path"]
 
-
-        # New project deployment, the endpoint is: {domain}/jobs/webapp/new
+        # New project deployment: {domain}/jobs/webapp/new
         if project_id:
             URL = URL + project_id
         else:
-        # Existing project deployment, the endpoint is: {domain}/jobs/webapp/{project_id}
+            # Existing project deployment: {domain}/jobs/webapp/{project_id}
             URL = URL + "new"
 
         # Get the requirement file paths
-        # We assume the requirements.txt will be located as same folder as notebook file now
+        # 1. notebook_path: from request
+        # 2. requirement_txt_path: located as same folder as notebook file
         notebook_path = os.path.join(root_dir, notebook_path_relative)
-        requirement_txt_path = os.path.join(os.path.dirname(notebook_path), 'requirements.txt')
+        requirement_txt_path = os.path.join(
+            os.path.dirname(notebook_path), "requirements.txt"
+        )
 
         # Issue new job request
-        files = [('files', open(notebook_path, 'rb')), ('files', open(requirement_txt_path, 'rb'))]    
+        files = [
+            ("files", open(notebook_path, "rb")),
+            ("files", open(requirement_txt_path, "rb")),
+        ]
         headers = {"access_token": access_token}
         res = requests.post(URL, headers=headers, files=files)
 
