@@ -36,7 +36,7 @@ const DialogContent = (props: any): JSX.Element => {
         fetchAPIKey()
     }, [])
 
-    // When API Key is verified, init the first time deployment flow
+    // When API Key is verified, init. the first time deployment flow
     useEffect(() => {
         if (APIValidStatus === "success") {
             if (!projectId) {
@@ -51,7 +51,7 @@ const DialogContent = (props: any): JSX.Element => {
     }, [APIValidStatus])
 
 
-    // TODO: The API Key should stored in config file 
+    // The API Key should stored in config file 
     const fetchAPIKey = async () => {
 
         await requestAPI<any>('apikey')
@@ -68,8 +68,8 @@ const DialogContent = (props: any): JSX.Element => {
         setIsLoadingRemoteAPI(false);
     }
 
-    const onSaveRemoteAPI = async () => {
-        // Simulate remote validating, 
+    const onSaveAPIKey = async () => {
+        // When the user enters the API Key, store in the config file through /dashboard/apikey API
         setIsLoadingRemoteAPI(true);
 
         const dataToSend = { 'api_key': APIKey };
@@ -92,6 +92,7 @@ const DialogContent = (props: any): JSX.Element => {
     }
 
     const deployNotebook = async () => {
+        setIsLoadingDeployStatus(true)
         const dataToSend = { 'notebook_path': notebook_relative_path, 'api_key': APIKey, 'project_id': projectId };
         await requestAPI<any>('job', {
             body: JSON.stringify(dataToSend),
@@ -113,9 +114,7 @@ const DialogContent = (props: any): JSX.Element => {
             );
         });
 
-        setTimeout(() => {
-            setIsLoadingDeployStatus(false)
-        }, 1000)
+        setIsLoadingDeployStatus(false)
 
     }
 
@@ -165,7 +164,7 @@ const DialogContent = (props: any): JSX.Element => {
                                             />
                                         </Grid>
                                         <Grid item xs={2} alignItems="center" justifyContent="center">
-                                            <Button onClick={onSaveRemoteAPI} variant="contained" size="small">CONFIRM</Button>
+                                            <Button onClick={onSaveAPIKey} variant="contained" size="small">CONFIRM</Button>
                                         </Grid>
                                     </Grid>
                                 </Grid>
