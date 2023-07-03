@@ -3,74 +3,118 @@ import { ReactWidget } from '@jupyterlab/apputils'
 import { Dialog as jupyterlabDialog } from '@jupyterlab/apputils';
 import { Box, Button, Chip, Grid, Snackbar, TextField, Link, CircularProgress, Typography } from '@mui/material';
 import CloudQueue from '@mui/icons-material/CloudQueue';
+// import SERVICE_URL from './const/env';
+import { requestAPI } from './utils/util';
 
 
-export function showDeploymentDialog() {
-    const reactWidget = new MainWidget();
-    var deploymentDialog = new jupyterlabDialog({ title: 'Deploy Notebook', body: reactWidget })
-    return deploymentDialog.launch()
-}
-
-export function showExperimentDialog(notebook: any) {
-    const metadata = notebook.content.model.metadata;
-    const reactWidget = new ExperimentWidget({ metadata: metadata });
-    var deploymentDialog = new jupyterlabDialog({ title: 'Experiment Notebook', body: reactWidget })
+export function showDeploymentDialog(panel: any, context: any) {
+    const dialogWidget = new DialogWidget({ notebookPath: panel.context.contentsModel.path, metadata: panel.model.metadata, context: context });
+    var deploymentDialog = new jupyterlabDialog({ title: 'Deploy Notebook', body: dialogWidget })
     return deploymentDialog.launch()
 }
 
 
-const MainComponent = (): JSX.Element => {
-    const MOCK_EXISTING_APIKEY = false
-    const MOCK_FIRST_TIME_DEPLOY = false
+const DialogContent = (props: any): JSX.Element => {
+    // For deployment workflow, we need:
+    // 1. The path of notebook file 
+    // 2. project_id value stored in notebook file
+    const notebook_relative_path = props.notebook_path;
+    const [projectId] = useState(props?.metadata?.get("project_id") || "");
+
     const [isLoadingRemoteAPI, setIsLoadingRemoteAPI] = useState(true);
     const [isLoadingDeployStatus, setIsLoadingDeployStatus] = useState(false);
+    const [isShowSnackbar, setIsShowSnackbar] = useState(false)
+    const [isShowFirstTimeDeployPrompt, setIsShowFirstTimeDeployPrompt] = useState(false)
+
     const [APIKey, setAPIKey] = useState("");
     const [deploymentURL, setDeploymentURL] = useState(null);
     const [APIValidStatus, setAPIValidStatus] = useState("init")
-    const [isShowSnackbar, setIsShowSnackbar] = useState(false)
-    const [isShowFirstTimeDeployPrompt, setIsShowFirstTimeDeployPrompt] = useState(false)
+    const [deployErrorMessage, setDeployErrorMessage] = useState("")
+
+
     useEffect(() => {
-        fetchRemoteAPI()
+        fetchAPIKey()
     }, [])
-    const fetchRemoteAPI = async () => {
-        // Simulate remote fetching, 
-        setTimeout(() => {
-            if (MOCK_EXISTING_APIKEY) {
-                setAPIKey("4dae0c4b-3447-432d-8c8f")
-                setAPIValidStatus("success")
+
+    // When API Key is verified, init the first time deployment flow
+    useEffect(() => {
+        if (APIValidStatus === "success") {
+            if (!projectId) {
+                console.log("First time deployment")
+                setIsShowFirstTimeDeployPrompt(true)
+            } else {
+                console.log("Not First time deployment")
+                setIsShowFirstTimeDeployPrompt(false)
+                deployNotebook()
             }
-            setIsLoadingRemoteAPI(false);
-        }, 1000)
+        }
+    }, [APIValidStatus])
+
+
+    // TODO: The API Key should stored in config file 
+    const fetchAPIKey = async () => {
+
+        await requestAPI<any>('apikey')
+            .then(response => {
+                if (response?.data != null) {
+                    setAPIKey(response.data)
+                    setAPIValidStatus("success")
+                }
+            }).catch(reason => {
+                console.error(
+                    `The jupyterlab_examples_server server extension appears to be missing.\n${reason}`
+                );
+            });
+        setIsLoadingRemoteAPI(false);
     }
 
     const onSaveRemoteAPI = async () => {
         // Simulate remote validating, 
         setIsLoadingRemoteAPI(true);
-        setDeploymentURL(null)
-        setTimeout(() => {
-            if (APIKey == "") {
-                setAPIValidStatus("error")
-            } else {
-                setAPIValidStatus("success")
-            }
-            setIsLoadingRemoteAPI(false)
-        }, 1000)
 
+        const dataToSend = { 'api_key': APIKey };
+        await requestAPI<any>('apikey', {
+            body: JSON.stringify(dataToSend),
+            method: 'POST'
+        }).then(reply => {
+            setAPIValidStatus("success")
+        }).catch(reason => {
+            console.error(
+                `Error on POST ${dataToSend}.\n${reason}`
+            );
+        });
+        setIsLoadingRemoteAPI(false)
     }
 
-    const onPostDeploy = async () => {
-        setIsLoadingDeployStatus(true);
+    const onClickFirstTimeDeploy = async () => {
+        setIsShowFirstTimeDeployPrompt(false)
+        await deployNotebook()
+    }
+
+    const deployNotebook = async () => {
+        const dataToSend = { 'notebook_path': notebook_relative_path, 'api_key': APIKey, 'project_id': projectId };
+        await requestAPI<any>('job', {
+            body: JSON.stringify(dataToSend),
+            method: 'POST'
+        }).then(reply => {
+            var result = reply["deployment_result"]
+
+            if (result.message) {
+                setDeployErrorMessage(result.message)
+            } else {
+                setDeploymentURL("https://platform.ploomber.io/dashboard/" + result.project_id + "/" + result.id)
+                props?.metadata?.set("project_id", result.project_id)
+                props.context.save()
+            }
+            // Write into notebook projectID
+        }).catch(reason => {
+            console.error(
+                `Error on POST\n${reason}`
+            );
+        });
+
         setTimeout(() => {
             setIsLoadingDeployStatus(false)
-            if (MOCK_FIRST_TIME_DEPLOY) {
-                if (!isShowFirstTimeDeployPrompt) {
-                    setIsShowFirstTimeDeployPrompt(true)
-                    return
-                }
-                setIsShowFirstTimeDeployPrompt(false)
-            }
-            setDeploymentURL("https://ploomber.io/some_random_url/" + APIKey)
-
         }, 1000)
 
     }
@@ -126,40 +170,42 @@ const MainComponent = (): JSX.Element => {
                                     </Grid>
                                 </Grid>
                                 <Grid item container direction='row' alignItems="center" width={"100%"}>
-                                    <Link href="#">New API Key</Link>
+                                    <Link href="#">Click here to get an API Key</Link>
                                 </Grid>
 
                             </div>
                         }
-                        {APIValidStatus == "success" && !isLoadingRemoteAPI &&
+                        {APIValidStatus == "success" &&
                             <Grid item container alignItems="center" spacing={4} direction="column">
+                                {!isShowFirstTimeDeployPrompt ? <>
+                                    {deployErrorMessage ? <Typography variant="subtitle1" gutterBottom>{deployErrorMessage}</Typography> :
+                                        <>
+                                            <Grid item justifyContent="center" xs={12}>
+                                                Check your deployment status here:
 
-                                {isShowFirstTimeDeployPrompt ? <Grid item xs={12} alignItems="center" justifyContent="center">
-                                    {/* First Time Deploy Prompt */}
-                                    <Typography variant="subtitle1" gutterBottom>
-                                        Confirm to deploy
-                                    </Typography>
-                                    <Button onClick={onPostDeploy} variant="contained" size="small" color="primary" disabled={deploymentURL} endIcon={<CloudQueue />}>CONFIRM </Button>
-                                </Grid> :
-                                    <Grid item justifyContent="center" xs={12}>
-                                        <Button onClick={onPostDeploy} variant="contained" size="small" color="primary" disabled={deploymentURL} endIcon={<CloudQueue />}>DEPLOY NOTEBOOK </Button>
-                                    </Grid>
-                                }
-                                {deploymentURL &&
-                                    <Grid item justifyContent="center" xs={12}>
-                                        URL:
-                                        <Chip label={deploymentURL} variant="outlined" onClick={() => {
-                                            navigator.clipboard.writeText(deploymentURL)
-                                            setIsShowSnackbar(true)
-                                        }} />
-                                        <Snackbar
-                                            open={isShowSnackbar}
-                                            onClose={() => setIsShowSnackbar(false)}
-                                            autoHideDuration={2000}
-                                            message="Copied to clipboard"
-                                        />
-                                    </Grid>
-                                }
+                                            </Grid>
+                                            <Grid item justifyContent="center" xs={12}>
+                                                <Chip label={deploymentURL} variant="outlined" onClick={() => {
+                                                    navigator.clipboard.writeText(deploymentURL)
+                                                    setIsShowSnackbar(true)
+                                                }} />
+                                                <Snackbar
+                                                    open={isShowSnackbar}
+                                                    onClose={() => setIsShowSnackbar(false)}
+                                                    autoHideDuration={2000}
+                                                    message="Copied to clipboard"
+                                                />
+                                            </Grid>
+                                        </>
+                                    }
+                                </> : <>
+                                    <>
+                                        <Typography variant="subtitle1" gutterBottom>
+                                            Clicking on deploy will upload your notebook to Ploomber Cloud servers
+                                        </Typography>
+                                        <Button onClick={onClickFirstTimeDeploy} variant="contained" size="small" color="primary" disabled={deploymentURL} endIcon={<CloudQueue />}>CONFIRM </Button>
+                                    </>
+                                </>}
                             </Grid>
                         }
                     </Grid>
@@ -169,48 +215,17 @@ const MainComponent = (): JSX.Element => {
     );
 };
 
-const ExperimentComponent = (props: any): JSX.Element => {
-    const flattenText = JSON.stringify(Array.from(props.metadata.entries()))
-    return (
-        <>
-            {flattenText}
-        </>
-    );
-};
-
-const MyButtonComponent = (): JSX.Element => {
-    return (
-        <button>My button</button>
-    )
-}
-class MainWidget extends ReactWidget {
-    constructor() {
-        super();
-    }
-    render(): JSX.Element {
-        return <MainComponent />;
-    }
-}
-
-class ExperimentWidget extends ReactWidget {
-    private metadata: object
+class DialogWidget extends ReactWidget {
+    private state: any
     constructor(props: any) {
-        super(props);
-        // debugger;
-        console.log("props: ", props.metadata._map)
-        this.metadata = props.metadata._map
-    }
-    render(): JSX.Element {
-        return <ExperimentComponent metadata={this.metadata} />;
-    }
-}
-
-export class MyButtonWidget extends ReactWidget {
-    constructor(notebook: any) {
-        console.log("notebook: ", notebook)
         super();
+        this.state = {
+            notebookPath: props.notebookPath,
+            metadata: props.metadata,
+            context: props.context
+        }
     }
     render(): JSX.Element {
-        return <MyButtonComponent />;
+        return <DialogContent notebook_path={this.state.notebookPath} metadata={this.state.metadata} context={this.state.context} />;
     }
 }

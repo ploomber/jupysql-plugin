@@ -258,16 +258,18 @@ export class DeployingExtension
     context: DocumentRegistry.IContext<INotebookModel>
   ): IDisposable {
 
+    const clickDeploy = () => {
+      showDeploymentDialog(panel, context)
+    }
     const button = new ToolbarButton({
       className: 'deploy-nb-button',
       label: 'Deploy Notebook',
-      onClick: showDeploymentDialog,
+      onClick: clickDeploy,
       tooltip: 'Deploy Notebook as dashboards',
     });
     button.node.setAttribute("data-testid", "deploy-btn");
 
     panel.toolbar.insertItem(10, 'deployNB', button);
-
     return new DisposableDelegate(() => {
       button.dispose();
     });
