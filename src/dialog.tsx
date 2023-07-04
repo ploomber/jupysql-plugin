@@ -3,7 +3,7 @@ import { ReactWidget } from '@jupyterlab/apputils'
 import { Dialog as jupyterlabDialog } from '@jupyterlab/apputils';
 import { Box, Button, Chip, Grid, Snackbar, TextField, Link, CircularProgress, Typography } from '@mui/material';
 import CloudQueue from '@mui/icons-material/CloudQueue';
-// import SERVICE_URL from './const/env';
+import { DEPLOYMENT_ENDPONTS } from './const/env';
 import { requestAPI } from './utils/util';
 
 
@@ -103,7 +103,7 @@ const DialogContent = (props: any): JSX.Element => {
             if (result.message) {
                 setDeployErrorMessage(result.message)
             } else {
-                setDeploymentURL("https://platform.ploomber.io/dashboard/" + result.project_id + "/" + result.id)
+                setDeploymentURL(DEPLOYMENT_ENDPONTS.NEW_JOB + result.project_id + "/" + result.id)
                 props?.metadata?.set("project_id", result.project_id)
                 props.context.save()
             }
@@ -169,7 +169,7 @@ const DialogContent = (props: any): JSX.Element => {
                                     </Grid>
                                 </Grid>
                                 <Grid item container direction='row' alignItems="center" width={"100%"}>
-                                    <Link href="#">Click here to get an API Key</Link>
+                                    <Link href={DEPLOYMENT_ENDPONTS.REGISTER_API} target="_blank" rel="noopener noreferrer">Click here to get an API Key</Link>
                                 </Grid>
 
                             </div>

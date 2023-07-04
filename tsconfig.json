@@ -26,6 +26,7 @@
   "include": [
     "src/*",
     "src/utils/*",
+    "src/const/*",
     "src/keywords.json",
     "src/widgets/table.ts",
     "src/widgets/form.ts",
