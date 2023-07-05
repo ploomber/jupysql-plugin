@@ -9,7 +9,10 @@ import { requestAPI } from './utils/util';
 
 export function showDeploymentDialog(panel: any, context: any) {
     const dialogWidget = new DialogWidget({ notebookPath: panel.context.contentsModel.path, metadata: panel.model.metadata, context: context });
-    var deploymentDialog = new jupyterlabDialog({ title: 'Deploy Notebook', body: dialogWidget })
+    var deploymentDialog = new jupyterlabDialog({
+        title: 'Deploy Notebookk', body: dialogWidget, buttons: [
+        ]
+    })
     return deploymentDialog.launch()
 }
 
@@ -19,7 +22,7 @@ const DialogContent = (props: any): JSX.Element => {
     // 1. The path of notebook file 
     // 2. project_id value stored in notebook file
     const notebook_relative_path = props.notebook_path;
-    const [projectId] = useState(props?.metadata?.ploomber?.get("project_id") || "");
+    const [projectId] = useState(props?.metadata?.get("project_id") || "");
 
     const [isLoadingRemoteAPI, setIsLoadingRemoteAPI] = useState(true);
     const [isLoadingDeployStatus, setIsLoadingDeployStatus] = useState(false);
@@ -102,7 +105,7 @@ const DialogContent = (props: any): JSX.Element => {
                 setDeployErrorMessage(result.message)
             } else {
                 setDeploymentURL(DEPLOYMENT_ENDPONTS.NEW_JOB + result.project_id + "/" + result.id)
-                props?.metadata?.ploomber?.set("project_id", result.project_id)
+                props?.metadata?.set("project_id", result.project_id)
                 props.context.save()
             }
             // Write into notebook projectID
