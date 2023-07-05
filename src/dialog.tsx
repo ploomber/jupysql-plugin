@@ -10,7 +10,17 @@ import { requestAPI } from './utils/util';
 export function showDeploymentDialog(panel: any, context: any) {
     const dialogWidget = new DialogWidget({ notebookPath: panel.context.contentsModel.path, metadata: panel.model.metadata, context: context });
     var deploymentDialog = new jupyterlabDialog({
-        title: 'Deploy Notebookk', body: dialogWidget, buttons: [
+        title: 'Deploy Notebook', body: dialogWidget, buttons: [
+            {
+                label: "Cancel",
+                caption: "",
+                className: "",
+                accept: false,
+                actions: [],
+                displayType: "default",
+                iconClass: "",
+                iconLabel: "",
+            }
         ]
     })
     return deploymentDialog.launch()
