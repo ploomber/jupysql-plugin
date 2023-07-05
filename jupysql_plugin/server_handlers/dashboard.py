@@ -3,7 +3,7 @@ import json
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 from jupyter_server.services.contents import filemanager
-
+from const.dashboard import BACKEND_ENDPOINT
 from ploomber_core.telemetry.telemetry import UserSettings
 import tornado
 import requests
@@ -46,7 +46,7 @@ class JobHandler(APIHandler):
         2. project_id (optional)
         3. notebook file path
         """
-        URL = "https://cloudapi.ploomber.io/jobs/webapp/"
+        API_URL = f"{BACKEND_ENDPOINT}/jobs/webapp/"
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
@@ -56,10 +56,10 @@ class JobHandler(APIHandler):
 
         # New project deployment: {domain}/jobs/webapp/new
         if project_id:
-            URL = URL + project_id
+            API_URL = API_URL + project_id
         else:
             # Existing project deployment: {domain}/jobs/webapp/{project_id}
-            URL = URL + "new"
+            API_URL = API_URL + "new"
 
         # Get the requirement file paths
         # 1. notebook_path: from request
@@ -75,7 +75,7 @@ class JobHandler(APIHandler):
             ("files", open(requirement_txt_path, "rb")),
         ]
         headers = {"access_token": access_token}
-        res = requests.post(URL, headers=headers, files=files)
+        res = requests.post(API_URL, headers=headers, files=files)
 
         # Forward request result
         self.finish(json.dumps({"deployment_result": res.json()}))
