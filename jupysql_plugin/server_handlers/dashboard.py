@@ -7,7 +7,9 @@ from ploomber_core.telemetry.telemetry import UserSettings
 import tornado
 import requests
 import os
+
 BACKEND_ENDPOINT = "https://cloudapi.ploomber.io"
+
 
 class RouteHandler(APIHandler):
     """
