@@ -3,12 +3,11 @@ import json
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 from jupyter_server.services.contents import filemanager
-from const.dashboard import BACKEND_ENDPOINT
 from ploomber_core.telemetry.telemetry import UserSettings
 import tornado
 import requests
 import os
-
+BACKEND_ENDPOINT = "https://cloudapi.ploomber.io"
 
 class RouteHandler(APIHandler):
     """
