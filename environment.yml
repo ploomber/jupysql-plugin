@@ -14,4 +14,3 @@ dependencies:
     - twine
     - hatch
     - jupysql
-    - ploomber-core
