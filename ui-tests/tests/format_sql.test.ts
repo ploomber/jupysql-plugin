@@ -6,7 +6,7 @@ test('test format SQL', async ({ page }) => {
     await page.notebook.openByPath("sample.ipynb");
     await page.notebook.activate("sample.ipynb");
     await page.notebook.addCell("code", "%%sql\nselect * from table")
-    await page.getByRole('button', { name: 'Format SQL' }).click();
+    await page.getByTestId('format-btn').locator('button').click();
     await page.waitForTimeout(2000);
 
     await expect(page.locator('body')).toContainText('SELECT');

@@ -21,7 +21,7 @@ jlpm install
 pip install -e "."
 
 jupyter labextension develop . --overwrite
-jupyter server extension enable jupysql-plugin
+jupyter server extension enable jupysql_plugin
 
 # NOTE: the two previous commands will fail if there are missing dependencies
 
