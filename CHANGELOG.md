@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.6
+
+* Adds `Deploy notebook` button
+
 ## 0.1.5
 
 * Adds connection helper widget
