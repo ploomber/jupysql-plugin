@@ -32,7 +32,7 @@ const DialogContent = (props: any): JSX.Element => {
     // 1. The path of notebook file 
     // 2. project_id value stored in notebook file
     const notebook_relative_path = props.notebook_path;
-    const [projectId] = useState(props?.metadata?.get("project_id") || "");
+    const [projectId] = useState(props?.metadata?.get("ploomber")?.project_id || "");
 
     const [isLoadingRemoteAPI, setIsLoadingRemoteAPI] = useState(true);
     const [isLoadingDeployStatus, setIsLoadingDeployStatus] = useState(false);
@@ -110,19 +110,17 @@ const DialogContent = (props: any): JSX.Element => {
             method: 'POST'
         }).then(reply => {
             var result = reply["deployment_result"]
-
-            if (result.message) {
-                setDeployErrorMessage(result.message)
+            if (result.detail || result.message) {
+                var errorMsg = result.detail || result.message
+                setDeployErrorMessage(errorMsg)
             } else {
                 setDeploymentURL(DEPLOYMENT_ENDPONTS.NEW_JOB + result.project_id + "/" + result.id)
-                props?.metadata?.set("project_id", result.project_id)
+                props?.metadata.set("ploomber", { "project_id": result.project_id })
                 props.context.save()
             }
             // Write into notebook projectID
         }).catch(reason => {
-            console.error(
-                `Error on POST\n${reason}`
-            );
+            setDeployErrorMessage(reason)
         });
 
         setIsLoadingDeployStatus(false)

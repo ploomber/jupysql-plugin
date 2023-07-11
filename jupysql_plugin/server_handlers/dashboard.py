@@ -66,20 +66,34 @@ class JobHandler(APIHandler):
         # 1. notebook_path: from request
         # 2. requirement_txt_path: located as same folder as notebook file
         notebook_path = os.path.join(root_dir, notebook_path_relative)
-        requirement_txt_path = os.path.join(
+        requirements_txt_path = os.path.join(
             os.path.dirname(notebook_path), "requirements.txt"
         )
 
-        # Issue new job request
-        files = [
-            ("files", open(notebook_path, "rb")),
-            ("files", open(requirement_txt_path, "rb")),
-        ]
+        # Fetch requried files
+        upload_files = []
+        self.file_upload(upload_files, requirements_txt_path)
+        self.file_upload(upload_files, notebook_path)
+
         headers = {"access_token": access_token}
-        res = requests.post(API_URL, headers=headers, files=files)
+        res = requests.post(API_URL, headers=headers, files=upload_files)
 
         # Forward request result
         self.finish(json.dumps({"deployment_result": res.json()}))
+
+    def file_upload(self, upload_files, file_path):
+        try:
+            upload_files.append(("files", open(file_path, "rb")))
+        except FileNotFoundError:
+            # self.set_status(400)
+            self.finish(
+                {
+                    "deployment_result": {
+                        "detail": f"Please make sure you have such file: {file_path}"
+                    }
+                }
+            )
+            raise FileNotFoundError
 
 
 def setup_handlers(web_app):
