@@ -27,7 +27,7 @@ export function showDeploymentDialog(panel: any, context: any) {
 }
 
 
-const DialogContent = (props: any): JSX.Element => {
+export const DialogContent = (props: any): JSX.Element => {
     // For deployment workflow, we need:
     // 1. The path of notebook file 
     // 2. project_id value stored in notebook file
