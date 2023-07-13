@@ -27,8 +27,18 @@ class RouteHandler(APIHandler):
     def post(self):
         input_data = self.get_json_body()
         user_key = input_data["api_key"]
-        settings = UserSettings()
-        settings.cloud_key = user_key
+
+        # Valid API Key by /users/me API
+        VALIDATION_API_URL = f"{BACKEND_ENDPOINT}/users/me/"
+        headers = {"access_token": user_key}
+        res = requests.get(VALIDATION_API_URL, headers=headers)
+        print("res: ", res.json())
+        if "_model" in res.json():
+            settings = UserSettings()
+            settings.cloud_key = user_key
+            self.finish({"result": "success"})
+        else:
+            self.finish({"result": "fail", "detail": res.json()})
 
 
 class JobHandler(APIHandler):

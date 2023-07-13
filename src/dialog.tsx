@@ -32,6 +32,7 @@ export const DialogContent = (props: any): JSX.Element => {
     // 1. The path of notebook file 
     // 2. project_id value stored in notebook file
     const notebook_relative_path = props.notebook_path;
+    // const [projectId] = useState(props?.project_id || "");
     const [projectId] = useState(props?.metadata?.get("ploomber")?.project_id || "");
 
     const [isLoadingRemoteAPI, setIsLoadingRemoteAPI] = useState(true);
@@ -43,7 +44,7 @@ export const DialogContent = (props: any): JSX.Element => {
     const [deploymentURL, setDeploymentURL] = useState(null);
     const [APIValidStatus, setAPIValidStatus] = useState("init")
     const [deployErrorMessage, setDeployErrorMessage] = useState("")
-
+    const [snakebarMessage, setSnakebarMessage] = useState("")
 
     useEffect(() => {
         fetchAPIKey()
@@ -87,8 +88,13 @@ export const DialogContent = (props: any): JSX.Element => {
         await requestAPI<any>('apikey', {
             body: JSON.stringify(dataToSend),
             method: 'POST'
-        }).then(reply => {
-            setAPIValidStatus("success")
+        }).then(response => {
+            if (response?.result == "success") {
+                setAPIValidStatus("success")
+            }
+            else {
+                setAPIValidStatus("error")
+            }
         }).catch(reason => {
             console.error(
                 `Error on POST ${dataToSend}.\n${reason}`
@@ -110,18 +116,16 @@ export const DialogContent = (props: any): JSX.Element => {
             method: 'POST'
         }).then(reply => {
             var result = reply["deployment_result"]
-            if (result.detail || result.message) {
+            if (result?.detail || result?.message) {
                 var errorMsg = result.detail || result.message
                 setDeployErrorMessage(errorMsg)
             } else {
-                setDeploymentURL(DEPLOYMENT_ENDPONTS.NEW_JOB + result.project_id + "/" + result.id)
-                props?.metadata.set("ploomber", { "project_id": result.project_id })
-                props.context.save()
+                setDeploymentURL(DEPLOYMENT_ENDPONTS.NEW_JOB + result?.project_id + "/" + result?.id)
+                props?.metadata?.set("ploomber", { "project_id": result?.project_id })
+                props?.context?.save()
             }
             // Write into notebook projectID
-        }).catch(reason => {
-            setDeployErrorMessage(reason)
-        });
+        })
 
         setIsLoadingDeployStatus(false)
 
@@ -160,7 +164,7 @@ export const DialogContent = (props: any): JSX.Element => {
                                 <Grid item container direction='row' alignItems="center" width={"100%"}>
                                     <Grid container direction="row" alignItems="center" spacing={1}>
                                         <Grid item xs={10}>
-                                            <TextField id="api-key"
+                                            <TextField id="api-key-input"
                                                 size="small"
                                                 onChange={(val) => { setAPIKey(val.target.value) }}
                                                 value={APIKey}
@@ -196,12 +200,13 @@ export const DialogContent = (props: any): JSX.Element => {
                                                 <Chip label={deploymentURL} variant="outlined" onClick={() => {
                                                     navigator.clipboard.writeText(deploymentURL)
                                                     setIsShowSnackbar(true)
+                                                    setSnakebarMessage("Copied to clipboard")
                                                 }} />
                                                 <Snackbar
                                                     open={isShowSnackbar}
                                                     onClose={() => setIsShowSnackbar(false)}
                                                     autoHideDuration={2000}
-                                                    message="Copied to clipboard"
+                                                    message={snakebarMessage}
                                                 />
                                             </Grid>
                                         </>
