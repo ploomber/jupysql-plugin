@@ -12,9 +12,9 @@ export function showDeploymentDialog(panel: any, context: any) {
     var deploymentDialog = new jupyterlabDialog({
         title: 'Deploy Notebook', body: dialogWidget, buttons: [
             {
-                label: "Cancel",
+                label: "Close",
                 caption: "",
-                className: "",
+                className: "bg-info",
                 accept: false,
                 actions: [],
                 displayType: "default",
@@ -41,7 +41,7 @@ export const DialogContent = (props: any): JSX.Element => {
     const [isShowFirstTimeDeployPrompt, setIsShowFirstTimeDeployPrompt] = useState(false)
 
     const [APIKey, setAPIKey] = useState("");
-    const [deploymentURL, setDeploymentURL] = useState(null);
+    const [deploymentURL, setDeploymentURL] = useState("");
     const [APIValidStatus, setAPIValidStatus] = useState("init")
     const [deployErrorMessage, setDeployErrorMessage] = useState("")
     const [snakebarMessage, setSnakebarMessage] = useState("")
@@ -198,9 +198,9 @@ export const DialogContent = (props: any): JSX.Element => {
                                             </Grid>
                                             <Grid item justifyContent="center" xs={12}>
                                                 <Chip label={deploymentURL} variant="outlined" onClick={() => {
-                                                    navigator.clipboard.writeText(deploymentURL)
+                                                    window.open(deploymentURL);
                                                     setIsShowSnackbar(true)
-                                                    setSnakebarMessage("Copied to clipboard")
+                                                    setSnakebarMessage("Deployment Success")
                                                 }} />
                                                 <Snackbar
                                                     open={isShowSnackbar}
@@ -216,7 +216,7 @@ export const DialogContent = (props: any): JSX.Element => {
                                         <Typography variant="subtitle1" gutterBottom>
                                             Clicking on deploy will upload your notebook to Ploomber Cloud servers
                                         </Typography>
-                                        <Button onClick={onClickFirstTimeDeploy} variant="contained" size="small" color="primary" disabled={deploymentURL} endIcon={<CloudQueue />}>CONFIRM </Button>
+                                        <Button onClick={onClickFirstTimeDeploy} variant="contained" size="small" color="primary" disabled={deploymentURL !== ""} endIcon={<CloudQueue />}>CONFIRM </Button>
                                     </>
                                 </>}
                             </Grid>
