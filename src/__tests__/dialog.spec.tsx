@@ -145,8 +145,9 @@ describe("Test DialogContent ", () => {
         */
         test("Test Existing Project Re-deployment Success", async () => {
             mockJobDeployResult(DEFAULT_PROJECT_ID);
-            renderDialogContent(DEFAULT_PROJECT_ID)
-            screen.debug()
+            renderDialogContent()
+            expect(await screen.findByText('Clicking on deploy will upload your notebook to Ploomber Cloud servers')).toBeVisible()
+            expect(await screen.getByRole('button')).toHaveTextContent('CONFIRM')
             expect(await screen.findByText("Check your deployment status here:")).toBeVisible()
             expect(await screen.findByText(`https://platform.ploomber.io/dashboards/${DEFAULT_PROJECT_ID}/${DEFAULT_JOB_ID}`)).toBeVisible()
         })
