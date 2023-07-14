@@ -28,6 +28,8 @@ def test(session):
     install_environment(session)
     session.run("python", "--version")
     session.run("python", "-c", "import jupysql_plugin")
+    session.run("nvm", "install", "stable")
+    session.run("nvm", "use", "stable")
     session.run("jlpm", "cache", "clean")
     session.run("jlpm", "install")
     session.install("-e", ".")
@@ -35,6 +37,8 @@ def test(session):
     session.run("jlpm", "test")
 
     with session.chdir("ui-tests"):
+        session.run("nvm", "install", "stable")
+        session.run("nvm", "use", "stable")
         session.run("jlpm", "cache", "clean")
         session.run("jlpm", "install")
         session.run("jlpm", "playwright", "install")
