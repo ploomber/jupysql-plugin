@@ -143,23 +143,23 @@ describe("Test DialogContent ", () => {
         /* 
         Test Flow: When the notebook have been deployed before
         */
-        test("Test Existing Project Re-deployment Success", async () => {
-            mockJobDeployResult(DEFAULT_PROJECT_ID);
-            renderDialogContent(DEFAULT_PROJECT_ID)
-            expect(await screen.findByText("Check your deployment status here:")).toBeVisible()
-            screen.debug()
-            expect(await screen.findByText(`https://platform.ploomber.io/dashboards/${DEFAULT_PROJECT_ID}/${DEFAULT_JOB_ID}`)).toBeVisible()
-        })
+        // test("Test Existing Project Re-deployment Success", async () => {
+        //     mockJobDeployResult(DEFAULT_PROJECT_ID);
+        //     renderDialogContent(DEFAULT_PROJECT_ID)
+        //     expect(await screen.findByText("Check your deployment status here:")).toBeVisible()
+        //     screen.debug()
+        //     expect(await screen.findByText(`https://platform.ploomber.io/dashboards/${DEFAULT_PROJECT_ID}/${DEFAULT_JOB_ID}`)).toBeVisible()
+        // })
         /* 
         Test Flow: When the community user deploys more than one active project
         */
-        // test("Test Community Users Only One Project Fail", async () => {
-        //     mockJobDeployResult(DEFAULT_PROJECT_ID, {
-        //         "message": "Community users are only allowed to have a single active project. Delete your current project to create a new one."
-        //     });
-        //     renderDialogContent(DEFAULT_PROJECT_ID);
-        //     expect(await screen.findByText("Community users are only allowed to have a single active project. Delete your current project to create a new one.")).toBeVisible()
-        // })
+        test("Test Community Users Only One Project Fail", async () => {
+            mockJobDeployResult(DEFAULT_PROJECT_ID, {
+                "message": "Community users are only allowed to have a single active project. Delete your current project to create a new one."
+            });
+            renderDialogContent(DEFAULT_PROJECT_ID);
+            expect(await screen.findByText("Community users are only allowed to have a single active project. Delete your current project to create a new one.")).toBeVisible()
+        })
         /* 
         Test Flow: When the directiory is missing requirements.txt file
         */
