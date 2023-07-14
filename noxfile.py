@@ -35,6 +35,7 @@ def test(session):
     session.run("jlpm", "test")
 
     with session.chdir("ui-tests"):
+        session.run("jlpm", "cache", "clean")
         session.run("jlpm", "install")
         session.run("jlpm", "playwright", "install")
         session.run("jlpm", "test")
