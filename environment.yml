@@ -6,7 +6,7 @@ channels:
 
 dependencies:
   - python=3.11
-  - nodejs==14
+  - nodejs<15
   - jupyterlab<=4 # this will install jlpm
   - pip
   - pip:
