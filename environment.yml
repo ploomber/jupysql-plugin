@@ -6,11 +6,11 @@ channels:
 
 dependencies:
   - python=3.11
-  - nodejs>17
+  - nodejs=16
   - jupyterlab<4 # this will install jlpm
   - pip
   - pip:
     - build
     - twine
-    - hatch>=1.5.0
+    - hatch
     - jupysql
