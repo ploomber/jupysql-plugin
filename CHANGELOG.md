@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.7
+
+* No changes, fixing build
+
 ## 0.1.6
 
 * Adds `Deploy notebook` button
