@@ -82,7 +82,7 @@
         "@types/codemirror": "^5.60.7",
         "@types/underscore": "^1.11.4",
         "bootstrap": "^5.2.3",
-        "react": "^17.0.2",
+        "react": "^18.2.0",
         "sql-formatter": "^12.2.0",
         "underscore": "^1.13.6"
     },
