@@ -32,8 +32,7 @@ class RouteHandler(APIHandler):
         VALIDATION_API_URL = f"{BACKEND_ENDPOINT}/users/me/"
         headers = {"access_token": user_key}
         res = requests.get(VALIDATION_API_URL, headers=headers)
-        print("res: ", res.json())
-        if "_model" in res.json():
+        if res.status_code() == 200:
             settings = UserSettings()
             settings.cloud_key = user_key
             self.finish({"result": "success"})
