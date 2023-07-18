@@ -21,9 +21,14 @@ git push --tag
 
 To create a Python source package (`.tar.gz`) and the binary package (`.whl`) in the `dist/` directory, do:
 
-*Note:* The following command needs NodeJS
+*Note:* The following command needs NodeJS:
+
 
 ```bash
+# clean files before building
+jlpm clean:all
+
+# build the package
 python -m build
 ```
 
