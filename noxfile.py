@@ -28,8 +28,9 @@ def test(session):
     install_environment(session)
     session.run("python", "--version")
     session.run("python", "-c", "import jupysql_plugin")
-    session.run_always("jlpm", "install")
+    session.run("jlpm", "install")
     session.install("-e", ".")
+
     session.run("jlpm", "test")
 
     with session.chdir("ui-tests"):
