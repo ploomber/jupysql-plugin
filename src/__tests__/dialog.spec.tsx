@@ -27,7 +27,7 @@ const mockPostAPI = (result: any, api_key: string) => {
     })
 }
 
-// If projectID is provided, the API is used for re-deployment
+// 
 const mockJobDeployResult = (projectID = "", deployment_result: object = {
     project_id: DEFAULT_PROJECT_ID,
     id: DEFAULT_JOB_ID
@@ -126,7 +126,7 @@ describe("Test DialogContent ", () => {
 
         })
         /* 
-        Test Flow: When the notebook have not been deployed before
+        Test Flow: When the notebook has not been deployed before
         */
         test("Test First Time Deployment Click Confim", async () => {
             mockJobDeployResult();
@@ -141,7 +141,7 @@ describe("Test DialogContent ", () => {
             expect(await screen.findByText(`https://platform.ploomber.io/dashboards/${DEFAULT_PROJECT_ID}/${DEFAULT_JOB_ID}`)).toBeVisible()
         })
         /* 
-        Test Flow: When the notebook have been deployed before
+        Test Flow: When the notebook has been deployed before
         */
         test("Test Existing Project Re-deployment Success", async () => {
             mockJobDeployResult(DEFAULT_PROJECT_ID);
@@ -162,7 +162,7 @@ describe("Test DialogContent ", () => {
             expect(await screen.findByText("Community users are only allowed to have a single active project. Delete your current project to create a new one.")).toBeVisible()
         })
         /* 
-        Test Flow: When the directiory is missing requirements.txt file
+        Test Flow: When the directiory does not contain requirements.txt file
         */
         test("Test requirements.txt file is missing in directiory", async () => {
             mockJobDeployResult(DEFAULT_PROJECT_ID, {
