@@ -14,20 +14,30 @@ const DEFAULT_INVALID_API_KEY = "invalid_api_key"
 const DEFAULT_PROJECT_ID = "project_id_abc"
 const DEFAULT_JOB_ID = "job_id_abc"
 
-
+/* 
+Mock the GET /apikey API
+*/
 const mockEnvWithAPI = (APIKey: any = null) => {
     when((requestAPI as jest.Mock)).calledWith("apikey").mockResolvedValue({
         data: APIKey
     })
 }
-
+/* 
+Mock the POST /apikey API
+*/
 const mockPostAPI = (result: any, api_key: string) => {
     when((requestAPI as jest.Mock)).calledWith("apikey", { "body": `{\"api_key\":\"${api_key}\"}`, "method": "POST" }).mockResolvedValue({
         result: result
     })
 }
 
-// 
+/*
+Mock the job deploy API
+There are three types of responses we are mocking:
+1. Successful first time deployment of the notebook, the projectID should be skipped
+2. Successful re-deplyoment of the notebook, the projectID should be provided 
+3. Failure deployment of the notebook, the projectID and the deployment_result should be provided
+*/
 const mockJobDeployResult = (projectID = "", deployment_result: object = {
     project_id: DEFAULT_PROJECT_ID,
     id: DEFAULT_JOB_ID
