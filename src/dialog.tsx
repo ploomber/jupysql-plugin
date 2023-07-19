@@ -32,7 +32,6 @@ export const DialogContent = (props: any): JSX.Element => {
     // 1. The path of notebook file 
     // 2. project_id value stored in notebook file
     const notebook_relative_path = props.notebook_path;
-    // const [projectId] = useState(props?.project_id || "");
     const [projectId] = useState(props?.metadata?.get("ploomber")?.project_id || "");
 
     const [isLoadingRemoteAPI, setIsLoadingRemoteAPI] = useState(true);
