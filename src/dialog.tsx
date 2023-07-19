@@ -26,6 +26,31 @@ export function showDeploymentDialog(panel: any, context: any) {
     return deploymentDialog.launch()
 }
 
+const ErrorMessageArea = (props: any): JSX.Element => {
+
+
+    // Special handle for missing file 
+    if (props?.message?.type == "missing file") {
+        return (
+            <div data-testid="error-message-area">
+
+                {/* <Chip label={deploymentURL} variant="outlined" onClick={() => {
+                                                    window.open(deploymentURL);
+                                                    setIsShowSnackbar(true)
+                                                    setSnakebarMessage("Deployment Success")
+                                                }} /> */}
+                {/* A requirements.txt file with dependencies is required to deploy your notebook. Please add it at {PATH}. To learn more, see the docs */}
+                <Typography variant="subtitle1" gutterBottom> A <code>{props?.message?.detail?.fileName}</code> file with dependencies is required to deploy your notebook. Please add it at <code>{props?.message?.detail?.filePath}</code>. To learn more, see the <a target="_blank" rel="noopener noreferrer" href="https://docs.cloud.ploomber.io/en/latest/dashboards/jupyterlab-plugin.html#create-sample-notebook-and-requirements-txt">docs</a>
+                </Typography>
+            </div>
+        )
+    }
+    else {
+        return (
+            <Typography variant="subtitle1" gutterBottom>{props?.message?.detail}</Typography>
+        )
+    }
+}
 
 export const DialogContent = (props: any): JSX.Element => {
     // For deployment workflow, we need:
@@ -42,7 +67,7 @@ export const DialogContent = (props: any): JSX.Element => {
     const [APIKey, setAPIKey] = useState("");
     const [deploymentURL, setDeploymentURL] = useState("");
     const [APIValidStatus, setAPIValidStatus] = useState("init")
-    const [deployErrorMessage, setDeployErrorMessage] = useState("")
+    const [deployErrorMessage, setDeployErrorMessage] = useState(null)
     const [snakebarMessage, setSnakebarMessage] = useState("")
 
     useEffect(() => {
@@ -115,8 +140,24 @@ export const DialogContent = (props: any): JSX.Element => {
             method: 'POST'
         }).then(reply => {
             var result = reply["deployment_result"]
-            if (result?.detail || result?.message) {
-                var errorMsg = result.detail || result.message
+            var errorMsg: {
+                type: string,
+                detail: any
+            } = {
+                type: "generic",
+                detail: ""
+            }
+            if (result?.type === "missing file" && result?.detail) {
+                errorMsg.type = result.type
+                errorMsg.detail = {
+                    fileName: "requirements.txt",
+                    filePath: result.detail
+                }
+                setDeployErrorMessage(errorMsg)
+            }
+            else if (result?.detail || result?.message) {
+
+                errorMsg.detail = result.detail || result.message
                 setDeployErrorMessage(errorMsg)
             } else {
                 setDeploymentURL(DEPLOYMENT_ENDPONTS.NEW_JOB + result?.project_id + "/" + result?.id)
@@ -189,7 +230,7 @@ export const DialogContent = (props: any): JSX.Element => {
                         {APIValidStatus == "success" &&
                             <Grid item container alignItems="center" spacing={4} direction="column">
                                 {!isShowFirstTimeDeployPrompt ? <>
-                                    {deployErrorMessage ? <Typography variant="subtitle1" gutterBottom>{deployErrorMessage}</Typography> :
+                                    {deployErrorMessage ? <ErrorMessageArea message={deployErrorMessage} /> :
                                         <>
                                             <Grid item justifyContent="center" xs={12}>
                                                 Check your deployment status here:

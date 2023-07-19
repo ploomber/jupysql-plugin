@@ -176,10 +176,16 @@ describe("Test DialogContent ", () => {
         */
         test("Test requirements.txt file is missing in directiory", async () => {
             mockJobDeployResult(DEFAULT_PROJECT_ID, {
-                "detail": "Please make sure you have such file: /Users/tonykuo/requirements.txt"
+                "detail": "/Users/tonykuo/requirements.txt",
+                "type": "missing file"
             });
+
+
             renderDialogContent(DEFAULT_PROJECT_ID);
-            expect(await screen.findByText("Please make sure you have such file: /Users/tonykuo/requirements.txt")).toBeVisible()
+            await waitFor(() => {
+                expect(screen.getByTestId('error-message-area')).toHaveTextContent('A requirements.txt file with dependencies is required to deploy your notebook. Please add it at /Users/tonykuo/requirements.txt. To learn more, see the docs')
+
+            })
         })
     })
 
