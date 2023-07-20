@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.8
+
+* Improved `Deploy notebook` workflow
+
 ## 0.1.7
 
 * No changes, fixing build
