@@ -27,8 +27,17 @@ class RouteHandler(APIHandler):
     def post(self):
         input_data = self.get_json_body()
         user_key = input_data["api_key"]
-        settings = UserSettings()
-        settings.cloud_key = user_key
+
+        # Valid API Key by /users/me API
+        VALIDATION_API_URL = f"{BACKEND_ENDPOINT}/users/me/"
+        headers = {"access_token": user_key}
+        res = requests.get(VALIDATION_API_URL, headers=headers)
+        if res.status_code == 200:
+            settings = UserSettings()
+            settings.cloud_key = user_key
+            self.finish({"result": "success"})
+        else:
+            self.finish({"result": "fail", "detail": res.json()})
 
 
 class JobHandler(APIHandler):
@@ -85,13 +94,8 @@ class JobHandler(APIHandler):
         try:
             upload_files.append(("files", open(file_path, "rb")))
         except FileNotFoundError:
-            # self.set_status(400)
             self.finish(
-                {
-                    "deployment_result": {
-                        "detail": f"Please make sure you have such file: {file_path}"
-                    }
-                }
+                {"deployment_result": {"detail": file_path, "type": "missing file"}}
             )
             raise FileNotFoundError
 
