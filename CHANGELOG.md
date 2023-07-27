@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.9
+
+* Added support for `jupysql>=0.9`
+
 ## 0.1.8
 
 * Improved `Deploy notebook` workflow
