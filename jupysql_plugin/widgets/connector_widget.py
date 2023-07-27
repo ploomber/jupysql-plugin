@@ -10,7 +10,7 @@ from pathlib import Path
 
 try:
     from sql.connection import SQLAlchemyConnection
-except ModuleNotFoundError:
+except ImportError:
     # if using jupysql<0.9
     from sql.connection import Connection as SQLAlchemyConnection
 
