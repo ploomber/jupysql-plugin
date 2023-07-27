@@ -3,11 +3,16 @@ from jupysql_plugin import __version__, _module_name
 from ipywidgets import DOMWidget
 from traitlets import Unicode
 import json
-from sql.connection import Connection
 from sqlalchemy import create_engine
 from sql.parse import connection_from_dsn_section
 from configparser import ConfigParser
 from pathlib import Path
+
+try:
+    from sql.connection import SQLAlchemyConnection
+except ImportError:
+    # if using jupysql<0.9
+    from sql.connection import Connection as SQLAlchemyConnection
 
 CONNECTIONS_TEMPLATES = dict(
     {
@@ -320,7 +325,7 @@ class ConnectorWidget(DOMWidget):
         connection_string = _get_connection_string(name)
 
         engine = create_engine(connection_string)
-        Connection(engine=engine, alias=name)
+        SQLAlchemyConnection(engine=engine, alias=name)
 
     def _delete_connection(self, connection):
         """
