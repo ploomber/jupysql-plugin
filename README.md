@@ -87,3 +87,18 @@ nox --session test
 ### Packaging the extension
 
 See [RELEASE](RELEASE.md)
+
+### Ploomber Cloud API Endpoint
+
+We use environment variable `PLOOMBER_CLOUD_HOST` to reference the API Endpoint
+
+```sh
+> echo PLOOMBER_CLOUD_HOST
+https://cloudapi.ploomber.io #default
+```
+
+To modify the value of `PLOOMBER_CLOUD_HOST`:
+
+```sh
+> export PLOOMBER_CLOUD_HOST=NEW_HOST
+```
