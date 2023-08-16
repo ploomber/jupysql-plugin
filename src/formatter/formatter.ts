@@ -61,7 +61,7 @@ export class JupyterlabNotebookCodeFormatter {
 
             for (let i = 0; i < selectedCells.length; ++i) {
                 const cell = selectedCells[i];
-                const text = cell.model.value.text
+                const text = cell.model.sharedModel.source
 
                 if (text.startsWith("%%sql")) {
                     const lines = text.split("\n");
@@ -69,7 +69,7 @@ export class JupyterlabNotebookCodeFormatter {
 
                     try {
                         const query = format(lines.join("\n"), { language: 'sql', keywordCase: 'upper' })
-                        cell.model.value.text = sqlCommand + "\n" + query;
+                        cell.model.sharedModel.source = sqlCommand + "\n" + query;
                     } catch (error) {
                     }
 
