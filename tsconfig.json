@@ -27,9 +27,12 @@
     "src/*",
     "src/utils/*",
     "src/const/*",
-    "src/keywords.json",
+    "src/completer/keywords.json",
     "src/widgets/table.ts",
     "src/widgets/form.ts",
     "src/widgets/connector.ts",
+    "src/completer/connector.ts",
+    "src/completer/customconnector.ts",
+    "src/formatter/formatter.ts",
   ]
 }

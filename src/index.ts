@@ -11,9 +11,9 @@ import {
 
 import { INotebookTracker, NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
 
-import { CompletionConnector } from './connector';
+import { CompletionConnector } from './completer/connector';
 
-import { CustomConnector } from './customconnector';
+import { CustomConnector } from './completer/customconnector';
 
 
 // for syntax highlighting
@@ -27,7 +27,7 @@ import { IDisposable, DisposableDelegate } from '@lumino/disposable';
 import { ToolbarButton } from '@jupyterlab/apputils';
 
 import { DocumentRegistry } from '@jupyterlab/docregistry';
-import { JupyterlabNotebookCodeFormatter } from './formatter';
+import { JupyterlabNotebookCodeFormatter } from './formatter/formatter';
 import { showDeploymentDialog } from './dialog';
 import { registerCommTargets } from './comm'
 
