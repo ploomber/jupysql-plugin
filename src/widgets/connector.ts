@@ -12,19 +12,19 @@ import '../../style/connector.css';
 
 
 interface Connection {
-    name : string,
-    drivername : string
+    name: string,
+    drivername: string
 }
 
 interface ConnectionTemplate {
-    fields : Array<Field>,
-    connection_string : string
+    fields: Array<Field>,
+    connection_string: string
 }
 
 interface Field {
     id: string,
-    label : string,
-    type : string
+    label: string,
+    type: string
 }
 
 export class ConnectorModel extends DOMWidgetModel {
@@ -37,8 +37,8 @@ export class ConnectorModel extends DOMWidgetModel {
             _view_name: ConnectorModel.view_name,
             _view_module: ConnectorModel.view_module,
             _view_module_version: ConnectorModel.view_module_version,
-            connections : ConnectorModel.connections,
-            connections_templates : ConnectorModel.connections_templates
+            connections: ConnectorModel.connections,
+            connections_templates: ConnectorModel.connections_templates
         };
     }
 
@@ -53,12 +53,12 @@ export class ConnectorModel extends DOMWidgetModel {
     static view_name = 'ConnectorModel'; // Set to null if no view
     static view_module = MODULE_NAME; // Set to null if no view
     static view_module_version = MODULE_VERSION;
-    static connections : any[] = [];
-    static connections_templates : any[] = [];
+    static connections: any[] = [];
+    static connections_templates: any[] = [];
 }
 
 export class ConnectorView extends DOMWidgetView {
-    
+
     // availble connections
     connections = JSON.parse(this.model.get('connections'));
 
@@ -66,11 +66,11 @@ export class ConnectorView extends DOMWidgetView {
     connectionsTemplates = JSON.parse(this.model.get('connections_templates'));
 
     activeConnection = ""
-    
-    
+
+
     render() {
         this.el.classList.add('connector-widget');
-        
+
         this.drawConnectorUI(this.connections);
 
         // Listen for messages from the Python backend
@@ -82,7 +82,7 @@ export class ConnectorView extends DOMWidgetView {
      * 
      * @param connection : The availble connections
      */
-    drawConnectorUI(connections : Array<Connection>) {
+    drawConnectorUI(connections: Array<Connection>) {
         this.el.innerHTML = ""
         const template = `
         <div id="connectionsManager">
@@ -93,15 +93,15 @@ export class ConnectorView extends DOMWidgetView {
 
                 <div class="connections-guidelines block">
                     <i>
-                        * Connections are loaded from connections.ini file
+                        * Connections are loaded from your connections file (set it with <code>%config SqlMagic.dsn_filename = "path/to/file", default is "odbc.ini"</code>).
                     </i>
 
                     <i class="no-config-file" style = "display: none;">
-                        * No connections.ini file found. You may need to restart the kernel.
+                        * No conections file found. You may need to restart the kernel.
                     </i>
 
                     <i class="restart-kernel" style = "display: none;">
-                        * No connections found in connections.ini file. You may need to restart the kernel.
+                        * No connections found in conections file. You may need to restart the kernel.
                     </i>                    
                 </div>
 
@@ -143,7 +143,7 @@ export class ConnectorView extends DOMWidgetView {
         connections.forEach((connection: Connection) => {
             const { name } = connection;
             const name_without_spaces = name.replace(/ /g, "_");
-            
+
             const buttonContainer = document.createElement("DIV");
             buttonContainer.className = "connection-button-container";
 
@@ -153,7 +153,7 @@ export class ConnectorView extends DOMWidgetView {
             const connectionName = document.createElement("DIV");
             connectionName.className = "connection-name";
             connectionName.innerText = name;
-            actionsContainer.appendChild(connectionName);            
+            actionsContainer.appendChild(connectionName);
 
             const connectButton = document.createElement("BUTTON");
             connectButton.id = `connBtn_${name_without_spaces}`;
@@ -167,7 +167,7 @@ export class ConnectorView extends DOMWidgetView {
             deleteConnection.onclick = this.handleDeleteConnectionClick.bind(this, connection);
 
             let connectionsButtonsContainer = this.el.querySelector('#connectionsButtonsContainer');
-            actionsContainer.appendChild(connectButton);            
+            actionsContainer.appendChild(connectButton);
             actionsContainer.appendChild(deleteConnection);
 
             buttonContainer.appendChild(actionsContainer);
@@ -176,7 +176,7 @@ export class ConnectorView extends DOMWidgetView {
             let divider = document.createElement("HR");
             divider.className = "divider";
             buttonContainer.appendChild(divider);
-            
+
         });
 
         // Draw new connection select
@@ -196,7 +196,7 @@ export class ConnectorView extends DOMWidgetView {
         if (this.activeConnection) {
             this.markConnectedButton(this.activeConnection);
         }
-        
+
         setTimeout(() => {
             const message = {
                 method: 'check_config_file'
@@ -211,26 +211,26 @@ export class ConnectorView extends DOMWidgetView {
      * Connects to a database
      * 
      * @param connection - connection object
-     */    
-    handleConnectionClick(connection : Connection) {
+     */
+    handleConnectionClick(connection: Connection) {
         const message = {
             method: 'connect',
             data: connection
         };
 
-        this.send(message);      
+        this.send(message);
     }
 
-    deleteConnection(connection : Connection) {
+    deleteConnection(connection: Connection) {
         const message = {
             method: 'delete_connection',
             data: connection
         };
 
-        this.send(message);      
+        this.send(message);
     }
 
-    handleDeleteConnectionClick(connection : Connection) {
+    handleDeleteConnectionClick(connection: Connection) {
         this.hideDeleteMessageApproval()
 
         // create new message
@@ -261,18 +261,18 @@ export class ConnectorView extends DOMWidgetView {
 
         // hide controllers
         const deleteConnBtn = this.el.querySelector(`#deleteConnBtn_${connection["name"].replace(/ /g, "_")}`);
-        const actionsContainer = <HTMLElement> deleteConnBtn.parentNode;
+        const actionsContainer = <HTMLElement>deleteConnBtn.parentNode;
         actionsContainer.style.display = "none"
-        
+
         // show buttons
-        const buttonsContainer = <HTMLElement> actionsContainer.parentNode;
+        const buttonsContainer = <HTMLElement>actionsContainer.parentNode;
         buttonsContainer.prepend(deleteConnectionMessage);
     }
 
     hideDeleteMessageApproval() {
         this.el.querySelector("#deleteConnectionMessage")?.remove();
         this.el.querySelectorAll(".connection-button-actions")
-        .forEach(c => (<HTMLElement>c).style.display = "inline-flex");
+            .forEach(c => (<HTMLElement>c).style.display = "inline-flex");
     }
 
     /**
@@ -293,11 +293,11 @@ export class ConnectorView extends DOMWidgetView {
      * Handle select new connection
      */
     handleCreateNewConnectionChange() {
-        const select = (<HTMLSelectElement> this.el.querySelector("#selectConnection"));
+        const select = (<HTMLSelectElement>this.el.querySelector("#selectConnection"));
         const key = select.value;
 
         const connectionTemplate = this.connectionsTemplates[key];
-        
+
         this.drawNewConnectionForm(connectionTemplate);
     }
 
@@ -306,7 +306,7 @@ export class ConnectorView extends DOMWidgetView {
      * 
      * @param connectionTemplate - new connection template
      */
-    drawNewConnectionForm(connectionTemplate : ConnectionTemplate) {
+    drawNewConnectionForm(connectionTemplate: ConnectionTemplate) {
         const { fields } = connectionTemplate;
 
         const connectionFormContainer = this.el.querySelector("#connectionFormContainer");
@@ -315,7 +315,7 @@ export class ConnectorView extends DOMWidgetView {
         const connectionForm = document.createElement("FORM");
         connectionForm.id = "connectionForm";
         connectionFormContainer.appendChild(connectionForm)
-        
+
         fields.forEach(field => {
             const fieldContainer = document.createElement("DIV");
             fieldContainer.className = "field-container";
@@ -327,7 +327,7 @@ export class ConnectorView extends DOMWidgetView {
             input.name = field.id;
             input.className = "field";
             input.setAttribute("type", field.type);
-            
+
             fieldContainer.appendChild(label);
             fieldContainer.appendChild(input);
 
@@ -341,7 +341,7 @@ export class ConnectorView extends DOMWidgetView {
         const cancelButton = document.createElement("BUTTON");
         cancelButton.innerHTML = "Cancel";
         cancelButton.className = "secondary";
-        cancelButton.addEventListener("click", this.drawConnectorUI.bind(this, this.connections))        
+        cancelButton.addEventListener("click", this.drawConnectorUI.bind(this, this.connections))
         buttonsContainer.appendChild(cancelButton);
 
         // submit form button
@@ -360,8 +360,8 @@ export class ConnectorView extends DOMWidgetView {
      * Submits new connection form 
      * 
      * @param event - Submit event
-     */  
-    handleSubmitNewConnection(event : Event) {
+     */
+    handleSubmitNewConnection(event: Event) {
         event.preventDefault();
         let allFieldsFilled = true;
 
@@ -379,11 +379,11 @@ export class ConnectorView extends DOMWidgetView {
                 allFieldsFilled = false
             }
         }
-        
+
         const select = <HTMLSelectElement>this.el.querySelector("#selectConnection");
-        
+
         const driver = this.connectionsTemplates[select.value].driver;
-        
+
         formValues["driver"] = driver;
 
         // todo: validate all inputs are filled
@@ -398,7 +398,7 @@ export class ConnectorView extends DOMWidgetView {
      * Sends form data to the backend
      * 
      * @param formData - FormData object
-     */      
+     */
     sendFormData(formData: { [key: string]: string }) {
         // Create a message to send to the Python backend
         const message = {
@@ -415,7 +415,7 @@ export class ConnectorView extends DOMWidgetView {
      * Handle messages from the backend
      * 
      * @param content - The method to invoke with data
-     */     
+     */
     handleMessage(content: any) {
         if (content.method === "update_connections") {
             this.connections = JSON.parse(content.message);
@@ -432,7 +432,7 @@ export class ConnectorView extends DOMWidgetView {
 
 
         if (content.method === "connection_name_exists_error") {
-            const connectionName = content.message;            
+            const connectionName = content.message;
             const error = `${connectionName} is already exists`;
             this.showErrorMessage(error);
         }
@@ -461,22 +461,22 @@ export class ConnectorView extends DOMWidgetView {
      * Marks active connection button
      * 
      * @param connectionName - Active connection name
-     */    
-    markConnectedButton(connectionName : string) {
+     */
+    markConnectedButton(connectionName: string) {
         this.el.querySelectorAll(`.connection-button-actions button:not(.delete-connection-button)`)
-        .forEach((button : Element)  => {
-            const buttonEl = (<HTMLButtonElement> button);
-            buttonEl.innerHTML = "Connect";
-            buttonEl.classList.remove("primary");
-            buttonEl.classList.add("secondary");
-        });
+            .forEach((button: Element) => {
+                const buttonEl = (<HTMLButtonElement>button);
+                buttonEl.innerHTML = "Connect";
+                buttonEl.classList.remove("primary");
+                buttonEl.classList.add("secondary");
+            });
 
-        const selectedButtonEl = (<HTMLButtonElement> this.el.querySelector(`#connBtn_${connectionName.replace(/ /g, "_")}`));
+        const selectedButtonEl = (<HTMLButtonElement>this.el.querySelector(`#connBtn_${connectionName.replace(/ /g, "_")}`));
         selectedButtonEl.innerText = "Connected";
         selectedButtonEl.classList.add("primary");
     }
 
-    showErrorMessage(error : string) {
+    showErrorMessage(error: string) {
         const errorEl = <HTMLDivElement>this.el.querySelector(".user-error-message");
         const errorMessageContainer = errorEl.querySelector("pre");
         errorMessageContainer.innerHTML = `${error}`;
