@@ -20,6 +20,7 @@ export function showDeploymentDialog(panel: any, context: any) {
                 displayType: "default",
                 iconClass: "",
                 iconLabel: "",
+                ariaLabel: "",
             }
         ]
     })
