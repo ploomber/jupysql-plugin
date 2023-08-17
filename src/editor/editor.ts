@@ -74,6 +74,14 @@ const showStripes = ViewPlugin.fromClass(
             ) {
                 this.decorations = stripeDeco(update.view);
             }
+
+
+            // let docIsSQL = /^\s*SELECT/.test(update.state.doc.sliceString(0, 100))
+            // // let stateIsSQL = tr.startState.facet(language) == htmlLanguage
+            // // if (docIsSQL == stateIsSQL) return null
+            // update.view.dispatch({
+            //     effects: languageConf.reconfigure(docIsSQL ? sql() : sql())
+            // })
         }
     },
     {
@@ -81,13 +89,32 @@ const showStripes = ViewPlugin.fromClass(
     }
 );
 
+
+import { EditorState, Compartment } from "@codemirror/state"
+// import { language } from "@codemirror/language"
+import { python } from "@codemirror/lang-python"
+
+const languageConf = new Compartment
+
+const autoLanguage = EditorState.transactionExtender.of(tr => {
+    // if (!tr.docChanged) return null
+    let docIsSQL = /^\s*%{1,2}sql/.test(tr.newDoc.sliceString(0, 100))
+    // let stateIsSQL = tr.startState.facet(language) == htmlLanguage
+    // if (docIsSQL == stateIsSQL) return null
+    return {
+        effects: languageConf.reconfigure(docIsSQL ? sql() : python())
+    }
+})
+
+
 // Full extension composed of elemental extensions
 export function zebraStripes(options: { step?: number } = {}): Extension {
     return [
         baseTheme,
         typeof options.step !== 'number' ? [] : stepSize.of(options.step),
         showStripes,
-        sql()
+        languageConf.of(python()),
+        autoLanguage,
     ];
 }
 
