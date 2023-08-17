@@ -2620,7 +2620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/codemirror@npm:^3.6.3, @jupyterlab/codemirror@npm:^3.6.5":
+"@jupyterlab/codemirror@npm:^3.6.5":
   version: 3.6.5
   resolution: "@jupyterlab/codemirror@npm:3.6.5"
   dependencies:
@@ -2646,7 +2646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/codemirror@npm:^4.0.9":
+"@jupyterlab/codemirror@npm:^4.0.5, @jupyterlab/codemirror@npm:^4.0.9":
   version: 4.0.9
   resolution: "@jupyterlab/codemirror@npm:4.0.9"
   dependencies:
@@ -3342,7 +3342,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/statedb@npm:^3.6.2, @jupyterlab/statedb@npm:^3.6.5":
+"@jupyterlab/statedb@npm:^3.6.5":
   version: 3.6.5
   resolution: "@jupyterlab/statedb@npm:3.6.5"
   dependencies:
@@ -3352,6 +3352,19 @@ __metadata:
     "@lumino/properties": ^1.8.0
     "@lumino/signaling": ^1.10.0
   checksum: 5973d9b17016110bd6791f10864a2a0d124821cd3456c343d003fecac98db8d09abf5b5345053c91b1597ddb4376b8909eac6277a8040deb802289c2ab35330b
+  languageName: node
+  linkType: hard
+
+"@jupyterlab/statedb@npm:^4.0.0, @jupyterlab/statedb@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@jupyterlab/statedb@npm:4.0.9"
+  dependencies:
+    "@lumino/commands": ^2.1.3
+    "@lumino/coreutils": ^2.1.2
+    "@lumino/disposable": ^2.1.2
+    "@lumino/properties": ^2.0.1
+    "@lumino/signaling": ^2.1.2
+  checksum: 0a813068476a1e2dad5aebbbe2a339e8931ba4e29c873d59a2baeed05ab71307e5a629802fddeaec666cec14e4bee45e0d733abe0b1ea0dbf930c8a427188e7b
   languageName: node
   linkType: hard
 
@@ -3365,19 +3378,6 @@ __metadata:
     "@lumino/properties": ^2.0.1
     "@lumino/signaling": ^2.1.2
   checksum: de507d094afcce7f7d12f9dc846788765616140b2f75ea22997f780056baaaadae0cf9683471a1d96c61d448b38860640c823302aeef0d5e5d7c9cf598074328
-  languageName: node
-  linkType: hard
-
-"@jupyterlab/statedb@npm:^4.0.9":
-  version: 4.0.9
-  resolution: "@jupyterlab/statedb@npm:4.0.9"
-  dependencies:
-    "@lumino/commands": ^2.1.3
-    "@lumino/coreutils": ^2.1.2
-    "@lumino/disposable": ^2.1.2
-    "@lumino/properties": ^2.0.1
-    "@lumino/signaling": ^2.1.2
-  checksum: 0a813068476a1e2dad5aebbbe2a339e8931ba4e29c873d59a2baeed05ab71307e5a629802fddeaec666cec14e4bee45e0d733abe0b1ea0dbf930c8a427188e7b
   languageName: node
   linkType: hard
 
@@ -10374,11 +10374,11 @@ __metadata:
     "@jupyterlab/builder": ^4.0.5
     "@jupyterlab/cells": ^4.0.5
     "@jupyterlab/codeeditor": ^4.0.0
-    "@jupyterlab/codemirror": ^3.6.3
+    "@jupyterlab/codemirror": ^4.0.5
     "@jupyterlab/completer": ^4.0.0
     "@jupyterlab/notebook": ^4.0.0
     "@jupyterlab/settingregistry": ^4.0.0
-    "@jupyterlab/statedb": ^3.6.2
+    "@jupyterlab/statedb": ^4.0.0
     "@jupyterlab/testutils": ^3.0.0
     "@lumino/widgets": ^2.3.0
     "@mui/icons-material": ^5.11.16
