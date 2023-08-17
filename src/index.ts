@@ -27,7 +27,7 @@ import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
 import { widgetExports } from './index-widgets';
 import { MODULE_NAME, MODULE_VERSION } from './version';
 
-
+import editor_plugin from "./editor/editor"
 
 /**
  * Initialization data for the extension.
@@ -219,4 +219,4 @@ function activateWidgetExtension(
 }
 
 export * from './version';
-export default [extension, formatting_plugin, examplePlugin];
+export default [extension, formatting_plugin, examplePlugin, editor_plugin];

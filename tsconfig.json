@@ -34,5 +34,6 @@
     "src/completer/connector.ts",
     "src/completer/customconnector.ts",
     "src/formatter/formatter.ts",
+    "src/editor/editor.ts",
   ]
 }
