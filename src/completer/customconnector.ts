@@ -4,32 +4,22 @@
 // Modified from jupyterlab/packages/completer/src/contextconnector.ts
 
 import { CodeEditor } from '@jupyterlab/codeeditor';
-import { DataConnector } from '@jupyterlab/statedb';
-import { CompletionHandler } from '@jupyterlab/completer';
-
 import {
-  ISessionContext
-} from '@jupyterlab/apputils';
-
-import keywords from './keywords.json';
+  CompletionHandler,
+  ICompletionContext,
+  ICompletionProvider
+} from '@jupyterlab/completer';
 
 /**
  * A custom connector for completion handlers.
  */
-export class CustomConnector extends DataConnector<
-  CompletionHandler.IReply,
-  void,
-  CompletionHandler.IRequest
-> {
+export class CustomCompleterProvider implements ICompletionProvider {
   /**
-   * Create a new custom connector for completion requests.
-   *
-   * @param options - The instatiation options for the custom connector.
+   * The context completion provider is applicable on all cases.
+   * @param context - additional information about context of completion request
    */
-  constructor(options: CustomConnector.IOptions) {
-    super();
-    this._editor = options.editor;
-    this._sessionContext = options.sessionContext;
+  async isApplicable(context: ICompletionContext): Promise<boolean> {
+    return true;
   }
 
   /**
@@ -39,19 +29,21 @@ export class CustomConnector extends DataConnector<
    * @returns Completion reply
    */
   fetch(
-    request: CompletionHandler.IRequest
-  ): Promise<CompletionHandler.IReply> {
-    if (!this._editor) {
+    request: CompletionHandler.IRequest,
+    context: ICompletionContext
+  ): Promise<CompletionHandler.ICompletionItemsReply> {
+    const editor = context.editor;
+
+    if (!editor) {
       return Promise.reject('No editor');
     }
-    return new Promise<CompletionHandler.IReply>((resolve) => {
-      resolve(Private.completionHint(this._editor, this._sessionContext));
+    return new Promise<CompletionHandler.ICompletionItemsReply>(resolve => {
+      resolve(Private.completionHint(editor!));
     });
   }
 
-  private _editor: CodeEditor.IEditor | null;
-  private _sessionContext: ISessionContext | null;
-
+  readonly identifier = 'CompletionProvider:custom';
+  readonly renderer: any = null;
 }
 
 /**
@@ -66,12 +58,8 @@ export namespace CustomConnector {
      * The session used by the custom connector.
      */
     editor: CodeEditor.IEditor | null;
-    sessionContext: ISessionContext | null;
   }
-
 }
-
-
 
 /**
  * A namespace for Private functionality.
@@ -83,30 +71,31 @@ namespace Private {
    * @param editor Editor
    * @returns Completion reply
    */
-
-
-
-
   export function completionHint(
-    editor: CodeEditor.IEditor,
-    sessionContext: ISessionContext
-  ): CompletionHandler.IReply {
+    editor: CodeEditor.IEditor
+  ): CompletionHandler.ICompletionItemsReply {
     // Find the token at the cursor
-    const cursor = editor.getCursorPosition();
-    const token = editor.getTokenForPosition(cursor);
+    const token = editor.getTokenAtCursor();
 
-    var newTokenList = keywords["keywords"]
+    // Create a list of matching tokens.
+    const tokenList = [
+      { value: token.value + 'Magic', offset: token.offset, type: 'magic' },
+      { value: token.value + 'Science', offset: token.offset, type: 'science' },
+      { value: token.value + 'Neither', offset: token.offset }
+    ];
 
-    const completionList = newTokenList.filter((t) => t.value.startsWith(token.value.toUpperCase())).map((t) => t.value);
-
+    // Only choose the ones that have a non-empty type field, which are likely to be of interest.
+    const completionList = tokenList.filter(t => t.type).map(t => t.value);
     // Remove duplicate completions from the list
     const matches = Array.from(new Set<string>(completionList));
+
+    const items = new Array<CompletionHandler.ICompletionItem>();
+    matches.forEach(label => items.push({ label }));
 
     return {
       start: token.offset,
       end: token.offset + token.value.length,
-      matches,
-      metadata: {},
+      items
     };
   }
 }
