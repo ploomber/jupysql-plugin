@@ -61,7 +61,7 @@ export class JupyterlabNotebookCodeFormatter {
 
             for (let i = 0; i < selectedCells.length; ++i) {
                 const cell = selectedCells[i];
-                const text = cell.model.sharedModel.source
+                const text = cell.model.sharedModel.source;
 
                 if (text.startsWith("%%sql")) {
                     const lines = text.split("\n");
@@ -76,7 +76,7 @@ export class JupyterlabNotebookCodeFormatter {
 
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             await showErrorMessage('Jupysql plugin formatting', error);
         }
         this.working = false;
