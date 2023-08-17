@@ -37,9 +37,6 @@ export class FormattingExtension
         this.notebookCodeFormatter = new JupyterlabNotebookCodeFormatter(
             tracker
         );
-
-
-
         settingsChanged.connect(this._onSettingsChanged);
     }
 
@@ -50,8 +47,6 @@ export class FormattingExtension
             this.panel.toolbar.insertItem(10, 'formatSQL', this.formatSQLButton);
         }
     }
-
-
 
     createNew(
         panel: NotebookPanel,
