@@ -18,6 +18,8 @@ import {
     IEditorExtensionRegistry
 } from '@jupyterlab/codemirror';
 
+import { sql } from '@codemirror/lang-sql';
+
 // Defines new styles for this extension
 const baseTheme = EditorView.baseTheme({
     // We need to set some transparency because the stripe are above
@@ -84,7 +86,8 @@ export function zebraStripes(options: { step?: number } = {}): Extension {
     return [
         baseTheme,
         typeof options.step !== 'number' ? [] : stepSize.of(options.step),
-        showStripes
+        showStripes,
+        sql()
     ];
 }
 
