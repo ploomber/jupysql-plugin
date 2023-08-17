@@ -26,8 +26,8 @@ const plugin_editor: JupyterFrontEndPlugin<void> = {
         default: 2,
         factory: () =>
           // The factory will be called for every new CodeMirror editor
-          EditorExtensionRegistry.createConfigurableExtension((step: number) =>
-              zebraStripes({ step })
+          EditorExtensionRegistry.createConfigurableExtension(() =>
+              zebraStripes()
           ),
         // JSON schema defining the CodeMirror extension parameters
         schema: {
