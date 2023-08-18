@@ -10,6 +10,9 @@ test('test options displayed on tab', async ({ page }) => {
     await cell?.type('%%sql\nsel')
     await page.keyboard.press('Tab');
 
+    // delay to ensure the autocompletion options are displayed
+    await page.waitForTimeout(2000);
+
     await expect(page.locator('body')).toContainText('SELECT');
     await expect(page.locator('body')).toContainText('SELECT DISTINCT');
     await expect(page.locator('body')).toContainText('SELECT INTO');
@@ -28,7 +31,8 @@ test('test complete updates cell', async ({ page }) => {
     await page.keyboard.press('Tab')
 
     // delay to ensure the autocompletion options are displayed
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
+
     await page.keyboard.press('Enter');
 
     const cell_updated = await page.notebook.getCell(0)
