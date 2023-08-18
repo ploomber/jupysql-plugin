@@ -12,6 +12,7 @@ pip install jupysql-plugin
 ```sh
 conda env create -f environment.yml --force
 conda activate jupysql-plugin
+conda install nodejs=16 -c conda-forge
 jlpm install
 ```
 

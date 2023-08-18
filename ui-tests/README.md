@@ -21,6 +21,9 @@ To run the tests, you need to:
 1. Compile the extension:
 
 ```sh
+# disable the floating cell toolbar since our tests assume it's hidden
+jupyter labextension disable @jupyterlab/cell-toolbar-extension
+
 jlpm install
 jlpm build:prod
 ```
