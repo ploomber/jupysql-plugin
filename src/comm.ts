@@ -1,7 +1,7 @@
 // Opens a comm from the frontend to the kernel
-
+import { NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
+import { IDisposable, DisposableDelegate } from '@lumino/disposable';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
-import { INotebookModel } from '@jupyterlab/notebook';
 
 
 export const registerCommTargets = (context: DocumentRegistry.IContext<INotebookModel>): void => {
@@ -12,8 +12,8 @@ export const registerCommTargets = (context: DocumentRegistry.IContext<INotebook
     return
 
   // Listen to updateTableWidget event
-  document.addEventListener("onUpdateTableWidget", async (event : Event) => {
-    const customEvent = <CustomEvent> event
+  document.addEventListener("onUpdateTableWidget", async (event: Event) => {
+    const customEvent = <CustomEvent>event
     const data = customEvent.detail.data
 
     // Register to table_widget handler in the JupySQL kernel
@@ -27,19 +27,48 @@ export const registerCommTargets = (context: DocumentRegistry.IContext<INotebook
     // Handle recevied rows
     comm.onMsg = (msg) => {
       const content = msg.content;
-      const data = <{rows : any}> content.data;
-      
+      const data = <{ rows: any }>content.data;
+
       // Raise event to update table with new rows
       let customEvent = new CustomEvent('onTableWidgetRowsReady', {
         bubbles: true,
         cancelable: true,
         composed: false,
-        detail : {
-            data : data
+        detail: {
+          data: data
         }
-        });
-        document.body.dispatchEvent(customEvent);
+      });
+      document.body.dispatchEvent(customEvent);
     }
   })
-  
+
 };
+
+
+
+// comm listener required for JupySQL table widget
+export class RegisterNotebookCommListener
+  implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel>
+{
+  /**
+   * Register notebook comm
+   *
+   * @param panel Notebook panel
+   * @param context Notebook context
+   * @returns Disposable on the added button
+   */
+  createNew(
+    panel: NotebookPanel,
+    context: DocumentRegistry.IContext<INotebookModel>
+  ): IDisposable {
+
+    setTimeout(() => {
+      registerCommTargets(context)
+    }, 5000)
+
+    return new DisposableDelegate(() => {
+
+    });
+  }
+}
+
