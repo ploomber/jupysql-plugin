@@ -1,7 +1,7 @@
 import nox
 
 
-@nox.session(venv_backend="conda")
+@nox.session
 def test(session):
     session.run("python", "--version")
     session.install("-r", "requirements.txt")
