@@ -26,8 +26,9 @@ def install_environment(session):
 )
 def test(session):
     install_environment(session)
+    # our tests assume that the cell toolbar is hidden
     session.run(
-        "jupyter", "labextension", "install", "@jupyterlab/cell-toolbar-extension"
+        "jupyter", "labextension", "disable", "@jupyterlab/cell-toolbar-extension"
     )
     session.run("python", "--version")
 
