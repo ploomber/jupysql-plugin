@@ -26,6 +26,9 @@ def install_environment(session):
 )
 def test(session):
     install_environment(session)
+    session.run(
+        "jupyter", "labextension", "install", "@jupyterlab/cell-toolbar-extension"
+    )
     session.run("python", "--version")
 
     # on github actions, we often get a timeout when installing the dependencies
@@ -39,5 +42,6 @@ def test(session):
 
     with session.chdir("ui-tests"):
         session.run("jlpm", "install")
+        # TODO: this will install all playwright browsers, but we only need one
         session.run("jlpm", "playwright", "install")
         session.run("jlpm", "test")
