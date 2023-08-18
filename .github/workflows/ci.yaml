@@ -16,8 +16,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8, 3.9, '3.10', '3.11']
-        # setup-python doesn't have conda on windows
-        # we only have snapshots for macos, ignoring ubuntu-latest
+        # we're creating macos snapshots
         os: [macos-latest]
 
     runs-on: ${{ matrix.os }}
@@ -27,29 +26,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: yarn
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-        env:
-          PYTHON_VERSION: ${{ matrix.python-version }}
+          cache: pip
 
       - name: Lint
         run: |
-
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade pkgmt nox
           pkgmt lint
 
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: yarn
 
       - name: Install and test
         run: |
-
           nox --session test --verbose
 
       - name: Upload test snapshots
