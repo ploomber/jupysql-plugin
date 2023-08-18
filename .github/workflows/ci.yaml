@@ -46,7 +46,7 @@ jobs:
 
       - name: Install and test
         run: |
-          nox --session test --verbose --no-venv
+          nox --session test --verbose
 
       - name: Upload test snapshots
         uses: actions/upload-artifact@v3
