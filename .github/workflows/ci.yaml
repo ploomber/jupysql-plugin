@@ -57,6 +57,4 @@ jobs:
         if: failure()
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
-          path: |
-            ui-tests/tests/jupysql_plugin.test.ts-snapshots
-            ui-tests/test-results
+          path: ui-tests/test-results
