@@ -42,15 +42,10 @@ jobs:
           pkgmt lint
 
 
-      - name: Install dependencies
+      - name: Install and test
         run: |
 
-          nox --install-only --verbose
-
-      - name: Test
-        run: |
-
-          nox --session test --no-install --reuse-existing-virtualenvs --verbose
+          nox --session test --verbose
 
       - name: Upload test snapshots
         uses: actions/upload-artifact@v3

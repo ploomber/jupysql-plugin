@@ -28,6 +28,7 @@ def test(session):
     install_environment(session)
     session.run("python", "--version")
     session.run("python", "-c", "import jupysql_plugin")
+    session.run("jlpm", "config", "set", "network-timeout", "600000", "-g")
     session.run("jlpm", "install")
     session.install("-e", ".")
 
