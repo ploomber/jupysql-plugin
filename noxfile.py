@@ -1,7 +1,11 @@
 import nox
 
+from os import environ
 
-@nox.session
+
+@nox.session(
+    python=environ.get("PYTHON_VERSION", "3.11"),
+)
 def test(session):
     session.run("python", "--version")
     session.install("-r", "requirements.txt")
