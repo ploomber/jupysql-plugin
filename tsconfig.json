@@ -31,8 +31,13 @@
     "src/widgets/table.ts",
     "src/widgets/form.ts",
     "src/widgets/connector.ts",
+    "src/widgets/index.ts",
+    "src/formatter/formatter.ts",
+    "src/syntax-highlight/index.ts",
+    "src/completer/index.ts",
+    "src/formatter/index.ts",
     "src/completer/connector.ts",
     "src/completer/customconnector.ts",
-    "src/formatter/formatter.ts",
+    "src/deploy-notebook/index.ts",
   ]
 }
