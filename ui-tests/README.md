@@ -43,6 +43,9 @@ cd ./ui-tests
 jlpm test
 ```
 
+> **Note**
+> If the UI tests fail, check the recording. If the video shows that no notebook is opened, it might  be that the tests are trying to open a notebook that doesn't exist, this might happen with notebooks in hidden folders.
+
 Test results will be shown in the terminal. In case of any test failures, the test report
 will be opened in your browser at the end of the tests execution; see
 [Playwright documentation](https://playwright.dev/docs/test-reporters#html-reporter)
