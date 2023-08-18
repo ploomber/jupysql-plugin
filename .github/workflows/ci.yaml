@@ -45,12 +45,12 @@ jobs:
       - name: Install dependencies
         run: |
 
-          nox --install-only
+          nox --install-only --verbose
 
       - name: Test
         run: |
 
-          nox --session test --no-install --reuse-existing-virtualenvs
+          nox --session test --no-install --reuse-existing-virtualenvs --verbose
 
       - name: Upload test snapshots
         uses: actions/upload-artifact@v3
