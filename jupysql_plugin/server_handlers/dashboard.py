@@ -56,7 +56,7 @@ class JobHandler(APIHandler):
         2. project_id (optional)
         3. notebook file path
         """
-        API_URL = f"{BACKEND_ENDPOINT}/jobs/webapp/"
+        API_URL = f"{BACKEND_ENDPOINT}/jobs/webservice/"
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
