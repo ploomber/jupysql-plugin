@@ -27,10 +27,13 @@ def install_environment(session):
 def test(session):
     install_environment(session)
     session.run("python", "--version")
-    session.run("python", "-c", "import jupysql_plugin")
+
+    # on github actions, we often get a timeout when installing the dependencies
     session.run("jlpm", "config", "set", "network-timeout", "600000", "-g")
+
     session.run("jlpm", "install")
     session.install("-e", ".")
+    session.run("python", "-c", "import jupysql_plugin")
 
     session.run("jlpm", "test")
 
