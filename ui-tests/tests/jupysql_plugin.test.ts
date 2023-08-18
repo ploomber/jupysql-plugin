@@ -10,9 +10,15 @@ const filterUpdateNotebooks = item => {
     return basename.includes('_update');
 }
 
+/**
+Returns .ipynb files that are not in hidden directories
+*/
 const filterNotebooks = item => {
-    return item.path.includes(".ipynb");
-}
+    return (
+        item.path.includes(".ipynb") &&
+        !item.path.split(path.sep).some(component => component.startsWith('.'))
+    );
+};
 
 const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, theme: 'JupyterLab Light' | 'JupyterLab Dark') => {
     const paths = klaw(path.resolve(__dirname, '../notebooks'), { filter: item => filterNotebooks(item), nodir: true });
@@ -23,7 +29,7 @@ const testCellOutputs = async (page: IJupyterLabPageFixture, tmpPath: string, th
 
     for (const notebook of notebooks) {
         let results = [];
-        console.log(`CHECKING NOTEBOOK: ${notebook}`)
+        console.log(`Testing notebook: ${notebook}`)
 
         await page.notebook.openByPath(notebook);
         await page.notebook.activate(notebook);
