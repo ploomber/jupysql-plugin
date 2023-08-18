@@ -106,3 +106,9 @@ jobs:
         with:
           name: snapshots
           path: ui-tests/tests/jupysql_plugin.test.ts-snapshots
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: ui-tests/test-results
