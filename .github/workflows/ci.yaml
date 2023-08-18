@@ -43,7 +43,7 @@ jobs:
         run: |
 
           python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade pkgmt nox pyyaml
+          python3 -m pip install --upgrade pkgmt nox
           pkgmt lint
 
 

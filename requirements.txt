@@ -1,0 +1,5 @@
+jupyterlab<4 # this will install jlpm
+build
+twine
+hatch
+jupysql
