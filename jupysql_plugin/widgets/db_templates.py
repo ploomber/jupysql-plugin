@@ -15,7 +15,6 @@ CONNECTIONS_TEMPLATES = dict(
                     "type": "text",
                 },
             ],
-            "connection_string": "sqlite://",
         },
         "duckdb": {
             "driver": "duckdb",
@@ -32,7 +31,6 @@ CONNECTIONS_TEMPLATES = dict(
                     "type": "text",
                 },
             ],
-            "connection_string": "duckdb://",
         },
         "postgresql": {
             "driver": "postgresql",
@@ -45,7 +43,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
                 {
                     "id": "username",
-                    "label": "User name",
+                    "label": "Username",
                     "type": "text",
                 },
                 {
@@ -53,8 +51,22 @@ CONNECTIONS_TEMPLATES = dict(
                     "label": "Password",
                     "type": "password",
                 },
-                {"id": "host", "label": "Host", "type": "text"},
-                {"id": "database", "label": "Database", "type": "text"},
+                {
+                    "id": "host",
+                    "label": "Host",
+                    "type": "text",
+                },
+                {
+                    "id": "database",
+                    "label": "Database",
+                    "type": "text",
+                },
+                {
+                    "id": "port",
+                    "label": "Port",
+                    "type": "number",
+                    "default": 5432,
+                },
             ],
         },
         "mysql": {
@@ -68,7 +80,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
                 {
                     "id": "username",
-                    "label": "User name",
+                    "label": "Username",
                     "type": "text",
                 },
                 {
@@ -76,9 +88,22 @@ CONNECTIONS_TEMPLATES = dict(
                     "label": "Password",
                     "type": "password",
                 },
-                {"id": "host", "label": "Host", "type": "text"},
-                {"id": "port", "label": "Port", "type": "number"},
-                {"id": "database", "label": "Database", "type": "text"},
+                {
+                    "id": "host",
+                    "label": "Host",
+                    "type": "text",
+                },
+                {
+                    "id": "port",
+                    "label": "Port",
+                    "type": "number",
+                    "default": 3306,
+                },
+                {
+                    "id": "database",
+                    "label": "Database",
+                    "type": "text",
+                },
             ],
         },
         "mariaDB": {
@@ -92,7 +117,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
                 {
                     "id": "username",
-                    "label": "User name",
+                    "label": "Username",
                     "type": "text",
                 },
                 {
@@ -100,9 +125,22 @@ CONNECTIONS_TEMPLATES = dict(
                     "label": "Password",
                     "type": "password",
                 },
-                {"id": "host", "label": "Host", "type": "text"},
-                {"id": "port", "label": "Port", "type": "number"},
-                {"id": "database", "label": "Database", "type": "text"},
+                {
+                    "id": "host",
+                    "label": "Host",
+                    "type": "text",
+                },
+                {
+                    "id": "port",
+                    "label": "Port",
+                    "type": "number",
+                    "default": 3306,
+                },
+                {
+                    "id": "database",
+                    "label": "Database",
+                    "type": "text",
+                },
             ],
         },
         "snowflake": {
@@ -116,7 +154,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
                 {
                     "id": "username",
-                    "label": "User name",
+                    "label": "Username",
                     "type": "text",
                 },
                 {
@@ -124,8 +162,22 @@ CONNECTIONS_TEMPLATES = dict(
                     "label": "Password",
                     "type": "password",
                 },
-                {"id": "host", "label": "Host", "type": "text"},
-                {"id": "database", "label": "Database", "type": "text"},
+                {
+                    "id": "host",
+                    "label": "Host",
+                    "type": "text",
+                },
+                {
+                    "id": "port",
+                    "label": "Port",
+                    "type": "number",
+                    "default": 443,
+                },
+                {
+                    "id": "database",
+                    "label": "Database",
+                    "type": "text",
+                },
             ],
         },
     }

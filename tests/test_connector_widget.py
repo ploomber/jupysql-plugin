@@ -43,32 +43,37 @@ def test_method_submit_new_connection(tmp_empty):
     assert set(ConnectionManager.connections) == {"duck"}
 
 
-# TODO: try with a nested directory
-def test_method_submit_new_connection_path(tmp_empty):
-    ConnectorWidgetTesting()._handle_message(
-        None,
-        {
-            "method": "submit_new_connection",
-            "data": {
+@pytest.mark.parametrize(
+    "data, expected",
+    [
+        (
+            {
                 "connectionName": "duck",
                 "driver": "duckdb",
                 "database": "duck.db",
             },
+            """\
+[duck]
+database = duck.db
+drivername = duckdb
+
+""",
+        ),
+    ],
+)
+def test_method_submit_new_connection_path(tmp_empty, data, expected):
+    ConnectorWidgetTesting()._handle_message(
+        None,
+        {
+            "method": "submit_new_connection",
+            "data": data,
         },
         None,
     )
 
     config = Path("odbc.ini").read_text()
 
-    assert (
-        config
-        == """\
-[duck]
-database = duck.db
-drivername = duckdb
-
-"""
-    )
+    assert config == expected
     assert set(ConnectionManager.connections) == {"duck"}
 
 

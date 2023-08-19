@@ -439,7 +439,7 @@ export class ConnectorView extends DOMWidgetView {
 
         if (content.method === "connection_name_exists_error") {
             const connectionName = content.message;
-            const error = `${connectionName} is already exists`;
+            const error = `A connection named ${connectionName} already exists in your connections file`;
             this.showErrorMessage(error);
         }
 
