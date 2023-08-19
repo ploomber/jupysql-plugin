@@ -24,7 +24,8 @@ interface ConnectionTemplate {
 interface Field {
     id: string,
     label: string,
-    type: string
+    type: string,
+    default: string
 }
 
 export class ConnectorModel extends DOMWidgetModel {
@@ -179,11 +180,11 @@ export class ConnectorView extends DOMWidgetView {
 
         });
 
-        // Draw new connection select
+        // Draw new connection dropdown
         const select = this.el.querySelector("#selectConnection");
         Object.keys(this.connectionsTemplates).forEach(key => {
             const option = document.createElement("OPTION");
-            option.setAttribute("value", key);
+            console.log("key", key)
             option.innerHTML = key;
             select.appendChild(option)
         })
@@ -326,6 +327,11 @@ export class ConnectorView extends DOMWidgetView {
             input.id = field.id;
             input.name = field.id;
             input.className = "field";
+
+            if (field.default !== undefined) {
+                input.value = field.default;
+            }
+
             input.setAttribute("type", field.type);
 
             fieldContainer.appendChild(label);
