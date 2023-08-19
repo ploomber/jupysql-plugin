@@ -43,5 +43,5 @@ port = 5432
 )
 def test_create_new_connection(tmp_empty, data, expected):
     connections._create_new_connection(data)
-    content = Path("odbc.ini").read_text()
+    content = Path("jupysql-plugin.ini").read_text()
     assert content == expected

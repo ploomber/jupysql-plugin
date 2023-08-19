@@ -11,6 +11,9 @@ from sql import connection
 # so we need to ensure the magic is initialized before importing the widget
 shell = InteractiveShell()
 sql_magic = SqlMagic(shell)
+
+# set the default dsn filename to odbc.ini so we don't read from the home directory
+sql_magic.dsn_filename = "jupysql-plugin.ini"
 _set_sql_magic(sql_magic)
 
 

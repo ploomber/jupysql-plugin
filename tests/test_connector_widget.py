@@ -71,14 +71,14 @@ def test_method_submit_new_connection_path(tmp_empty, data, expected):
         None,
     )
 
-    config = Path("odbc.ini").read_text()
+    config = Path("jupysql-plugin.ini").read_text()
 
     assert config == expected
     assert set(ConnectionManager.connections) == {"duck"}
 
 
 def test_method_connect(tmp_empty):
-    Path("odbc.ini").write_text(
+    Path("jupysql-plugin.ini").write_text(
         """
 [duck]
 drivername = duckdb
@@ -98,20 +98,20 @@ drivername = duckdb
 
 
 def test_loads_stored_connections_upon_init(tmp_empty):
-    Path("odbc.ini").write_text(
+    Path("jupysql-plugin.ini").write_text(
         """
-[duck]
+[myduckdbconn]
 drivername = duckdb
 """
     )
 
     assert ConnectorWidget().stored_connections == [
-        {"driver": "duckdb", "name": "duck"}
+        {"driver": "duckdb", "name": "myduckdbconn"}
     ]
 
-    Path("odbc.ini").write_text(
+    Path("jupysql-plugin.ini").write_text(
         """
-[duck]
+[myduckdbconn]
 drivername = duckdb
 
 [sqlite]
@@ -120,6 +120,6 @@ drivername = sqlite
     )
 
     assert ConnectorWidget().stored_connections == [
-        {"driver": "duckdb", "name": "duck"},
+        {"driver": "duckdb", "name": "myduckdbconn"},
         {"driver": "sqlite", "name": "sqlite"},
     ]
