@@ -184,7 +184,6 @@ export class ConnectorView extends DOMWidgetView {
         const select = this.el.querySelector("#selectConnection");
         Object.keys(this.connectionsTemplates).forEach(key => {
             const option = document.createElement("OPTION");
-            console.log("key", key)
             option.innerHTML = key;
             select.appendChild(option)
         })
@@ -396,7 +395,7 @@ export class ConnectorView extends DOMWidgetView {
         if (allFieldsFilled) {
             this.sendFormData(formValues);
         } else {
-            this.showErrorMessage("Error : Please fill in all fields.")
+            this.showErrorMessage("Error: Please fill in all fields.")
         }
     }
 
