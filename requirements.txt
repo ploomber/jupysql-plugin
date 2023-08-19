@@ -4,4 +4,4 @@ twine
 hatch
 pytest
 duckdb-engine
-git+https://github.com/ploomber/jupysql
+jupysql
