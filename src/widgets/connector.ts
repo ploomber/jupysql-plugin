@@ -94,7 +94,7 @@ export class ConnectorView extends DOMWidgetView {
 
                 <div class="connections-guidelines block">
                     <i>
-                        * Connections are loaded from your connections file (set it with <code>%config SqlMagic.dsn_filename = "path/to/file", default is "odbc.ini"</code>).
+                        * Connections are loaded from your connections file (set it with <code>%config SqlMagic.dsn_filename = "path/to/file", default is "~/.jupysql/connections.ini"</code>).
                     </i>
 
                     <i class="no-config-file" style = "display: none;">
