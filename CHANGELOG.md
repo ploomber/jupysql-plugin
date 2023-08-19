@@ -2,6 +2,7 @@
 
 ## 0.1.10
 
+* Updates "Deploy Notebook" endpoint
 * jupysql-plugin now requires `jupysql>=0.10`
 
 ## 0.1.9
