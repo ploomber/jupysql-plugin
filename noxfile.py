@@ -10,6 +10,9 @@ def test(session):
     session.run("python", "--version")
     session.install("-r", "requirements.txt")
 
+    # unit tests
+    session.run("pytest", "tests")
+
     # our tests assume that the cell toolbar is hidden
     session.run(
         "jupyter", "labextension", "disable", "@jupyterlab/cell-toolbar-extension"

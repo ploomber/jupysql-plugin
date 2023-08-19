@@ -82,8 +82,11 @@ To run the tests:
 ```sh
 pip install nox pyyaml
 
-# note that this will also create a conda env
+# note that this will also create a venv
 nox --session test
+
+# to only run the python unit tests
+pytest tests
 ```
 
 ### Packaging the extension
