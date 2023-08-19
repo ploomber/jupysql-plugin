@@ -1,21 +1,5 @@
 CONNECTIONS_TEMPLATES = dict(
     {
-        "sqlite": {
-            "driver": "sqlite",
-            "fields": [
-                {
-                    "id": "connectionName",
-                    "label": "Connection alias",
-                    "type": "text",
-                    "default": "sqlite",
-                },
-                {
-                    "id": "database",
-                    "label": "Path to database",
-                    "type": "text",
-                },
-            ],
-        },
         "duckdb": {
             "driver": "duckdb",
             "fields": [
@@ -24,6 +8,22 @@ CONNECTIONS_TEMPLATES = dict(
                     "label": "Connection alias",
                     "type": "text",
                     "default": "duckdb",
+                },
+                {
+                    "id": "database",
+                    "label": "Path to database",
+                    "type": "text",
+                },
+            ],
+        },
+        "sqlite": {
+            "driver": "sqlite",
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "Connection alias",
+                    "type": "text",
+                    "default": "sqlite",
                 },
                 {
                     "id": "database",

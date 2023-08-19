@@ -85,13 +85,16 @@ class ConnectorWidget(DOMWidget):
     _view_module = Unicode(_module_name).tag(sync=True)
     _view_module_version = Unicode(__version__).tag(sync=True)
 
-    stored_connections = _get_stored_connections()
-
-    connections = Unicode(_serialize_connections(stored_connections)).tag(sync=True)
-    connections_templates = Unicode(json.dumps(CONNECTIONS_TEMPLATES)).tag(sync=True)
+    connections = Unicode().tag(sync=True)
+    connections_templates = Unicode().tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.stored_connections = _get_stored_connections()
+        self.connections = _serialize_connections(self.stored_connections)
+        self.connections_templates = json.dumps(CONNECTIONS_TEMPLATES)
+
         self.on_msg(self._handle_message)
 
     def _handle_message(self, widget, content, buffers):

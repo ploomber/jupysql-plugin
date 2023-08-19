@@ -95,3 +95,31 @@ drivername = duckdb
     )
 
     assert set(ConnectionManager.connections) == {"duck"}
+
+
+def test_loads_stored_connections_upon_init(tmp_empty):
+    Path("odbc.ini").write_text(
+        """
+[duck]
+drivername = duckdb
+"""
+    )
+
+    assert ConnectorWidget().stored_connections == [
+        {"driver": "duckdb", "name": "duck"}
+    ]
+
+    Path("odbc.ini").write_text(
+        """
+[duck]
+drivername = duckdb
+
+[sqlite]
+drivername = sqlite
+"""
+    )
+
+    assert ConnectorWidget().stored_connections == [
+        {"driver": "duckdb", "name": "duck"},
+        {"driver": "sqlite", "name": "sqlite"},
+    ]
