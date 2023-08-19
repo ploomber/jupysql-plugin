@@ -4,15 +4,27 @@ from ipywidgets import DOMWidget
 from traitlets import Unicode
 import json
 from sqlalchemy import create_engine
-from sql.parse import connection_from_dsn_section
 from configparser import ConfigParser
 from pathlib import Path
 
+
 try:
+    # renamed in jupysql 0.9.0
     from sql.connection import SQLAlchemyConnection
-except ImportError:
-    # if using jupysql<0.9
-    from sql.connection import Connection as SQLAlchemyConnection
+
+    # this was added in jupysql 0.10.0
+    from sql._current import _get_sql_magic
+
+    # this was renamed in jupysql 0.10.0
+    from sql.parse import connection_str_from_dsn_section
+except (ModuleNotFoundError, ImportError) as e:
+    raise ModuleNotFoundError(
+        "Your jupysql version isn't compatible with this version of jupysql-plugin. "
+        "Please update: pip install jupysql --upgrade"
+    ) from e
+
+CONFIG_FILE = _get_sql_magic().dsn_filename
+
 
 CONNECTIONS_TEMPLATES = dict(
     {
@@ -149,7 +161,7 @@ def _get_connection_string(connection_name) -> str:
     class Config:
         dsn_filename = Path(CONFIG_FILE)
 
-    connection_string = connection_from_dsn_section(
+    connection_string = connection_str_from_dsn_section(
         section=connection_name, config=Config()
     )
 
