@@ -10,10 +10,11 @@ pip install jupysql-plugin
 ### Development install
 
 ```sh
-# TODO: update, we moved into a requirements.txt
-conda env create -f environment.yml --force 
+ conda create --name jupysql-plugin python=3.11 --channel conda-forge --yes
 conda activate jupysql-plugin
-conda install nodejs=16 -c conda-forge
+conda install nodejs=16 --channel conda-forge --yes
+pip install -r requirements.txt
+
 jlpm install
 ```
 
