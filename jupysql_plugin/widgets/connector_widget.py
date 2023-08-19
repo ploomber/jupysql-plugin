@@ -143,8 +143,6 @@ CONNECTIONS_TEMPLATES = dict(
     }
 )
 
-CONFIG_FILE = "connections.ini"
-
 
 def _serialize_connections(connections):
     """
