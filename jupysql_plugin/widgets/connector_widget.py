@@ -15,7 +15,7 @@ from pathlib import Path
 
 try:
     # renamed in jupysql 0.9.0
-    from sql.connection import SQLAlchemyConnection
+    from sql.connection import ConnectionManager
 
     # this was renamed in jupysql 0.10.0
     from sql.parse import connection_str_from_dsn_section
@@ -173,8 +173,10 @@ class ConnectorWidget(DOMWidget):
         name = connection["name"]
         connection_string = _get_connection_string(name)
 
-        engine = create_engine(connection_string)
-        SQLAlchemyConnection(engine=engine, alias=name)
+        # this method contains the error handling logic that helps the user diagnose
+        # connection errors so we use this instead of the SQLAlchemy/DBAPIConnection
+        # constructor
+        ConnectionManager.set(connection_string, alias=name, displaycon=False)
 
     def _delete_connection(self, connection):
         """
