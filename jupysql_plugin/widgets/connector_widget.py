@@ -9,7 +9,6 @@ from jupysql_plugin.widgets.connections import (
 from ipywidgets import DOMWidget
 from traitlets import Unicode
 import json
-from sqlalchemy import create_engine
 from pathlib import Path
 
 
