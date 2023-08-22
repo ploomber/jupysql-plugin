@@ -98,11 +98,11 @@ export class ConnectorView extends DOMWidgetView {
                     </i>
 
                     <i class="no-config-file" style = "display: none;">
-                        * No conections file found. You may need to restart the kernel.
+                        * No connections file found. You may need to restart the kernel.
                     </i>
 
                     <i class="restart-kernel" style = "display: none;">
-                        * No connections found in conections file. You may need to restart the kernel.
+                        * No connections found in connections file. You may need to restart the kernel.
                     </i>                    
                 </div>
 
