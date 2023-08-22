@@ -13,14 +13,17 @@ defaults:
 
 jobs:
   test:
+    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
         python-version: [3.8, 3.9, '3.10', '3.11']
-        # setup-python doesn't have conda on windows
-        # we only have snapshots for macos, ignoring ubuntu-latest
+        # we're creating macos snapshots
         os: [macos-latest]
 
-    runs-on: ${{ matrix.os }}
+    env:
+      PYTHON_VERSION: ${{ matrix.python-version }}
+
 
     steps:
 
@@ -31,78 +34,27 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-        env:
-          PYTHON_VERSION: ${{ matrix.python-version }}
+          cache: pip
 
       - name: Lint
         run: |
-
           python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade pkgmt nox pyyaml
+          python3 -m pip install --upgrade pkgmt nox
           pkgmt lint
 
-
-      - name: Install dependencies
-        run: |
-
-          nox --install-only
-
-      - name: Test
-        run: |
-
-          nox --session test --no-install --reuse-existing-virtualenvs
-
-  create-image-artifacts-if-test-failed:
-    needs: test
-    if: ${{ failure() }}
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 16
+          cache: yarn
 
-      - name: Configure git to use https
-        run: git config --global hub.protocol https
-
-      - name: Install Conda environment with Micromamba
-        uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: jupysql-plugin
-          environment-file: environment.yml
-
-      - name: Set up environment variables
-        env:
-          REUSE_EXISTING_SERVER: true
+      - name: Install and test
         run: |
-          echo "REUSE_EXISTING_SERVER=$REUSE_EXISTING_SERVER" >> $GITHUB_ENV
-
-      - name: Install JupySQL-Plugin
-        run: |
-          pip install -e "."
-
-      - name: Install Galata
-        run: |
-          yarn playwright install chromium
-        working-directory: ui-tests
-
-      - name: Launch JupyterLab
-        run: yarn run start:detached
-        working-directory: ui-tests
-
-      - name: Wait for JupyterLab
-        uses: ifaxity/wait-on-action@v1
-        with:
-          resource: http-get://localhost:8888/api
-          timeout: 20000
-
-      - name: Generate updated Galata References
-        run: yarn run test:update
-        working-directory: ui-tests
+          nox --session test --verbose
 
       - name: Upload test snapshots
         uses: actions/upload-artifact@v3
+        if: failure()
         with:
-          name: snapshots
-          path: ui-tests/tests/jupysql_plugin.test.ts-snapshots
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+          path: ui-tests/test-results

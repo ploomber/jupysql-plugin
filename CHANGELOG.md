@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.1.10
+
+* Updates "Deploy Notebook" endpoint
+* jupysql-plugin now requires `jupysql>=0.10`
+
 ## 0.1.9
 
 * Added support for `jupysql>=0.9`

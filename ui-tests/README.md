@@ -21,6 +21,9 @@ To run the tests, you need to:
 1. Compile the extension:
 
 ```sh
+# disable the floating cell toolbar since our tests assume it's hidden
+jupyter labextension disable @jupyterlab/cell-toolbar-extension
+
 jlpm install
 jlpm build:prod
 ```
@@ -47,6 +50,12 @@ Test results will be shown in the terminal. In case of any test failures, the te
 will be opened in your browser at the end of the tests execution; see
 [Playwright documentation](https://playwright.dev/docs/test-reporters#html-reporter)
 for configuring that behavior.
+
+### Noes for writing UI tests
+
+- If the UI tests fail, check the recording. If the video shows that no notebook is opened, it might be that the tests are trying to open a notebook that doesn't exist, this might happen with notebooks in hidden folders
+- If a cell doesn't produce an output and a screenshot is taken, an error is raised
+
 
 ## Update the tests snapshots
 

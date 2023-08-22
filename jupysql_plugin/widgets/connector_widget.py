@@ -1,137 +1,28 @@
 from jupysql_plugin import __version__, _module_name
+from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES
+from jupysql_plugin.widgets.connections import (
+    _create_new_connection,
+    _get_config_file,
+    get_path_to_config_file,
+)
 
 from ipywidgets import DOMWidget
 from traitlets import Unicode
 import json
-from sqlalchemy import create_engine
-from sql.parse import connection_from_dsn_section
-from configparser import ConfigParser
 from pathlib import Path
 
+
 try:
-    from sql.connection import SQLAlchemyConnection
-except ImportError:
-    # if using jupysql<0.9
-    from sql.connection import Connection as SQLAlchemyConnection
+    # renamed in jupysql 0.9.0
+    from sql.connection import ConnectionManager
 
-CONNECTIONS_TEMPLATES = dict(
-    {
-        "sqlite": {
-            "driver": "sqlite",
-            "fields": [
-                {
-                    "id": "connectionName",
-                    "label": "Connection alias",
-                    "type": "text",
-                },
-            ],
-            "connection_string": "sqlite://",
-        },
-        "duckdb": {
-            "driver": "duckdb",
-            "fields": [
-                {
-                    "id": "connectionName",
-                    "label": "Connection alias",
-                    "type": "text",
-                },
-            ],
-            "connection_string": "duckdb://",
-        },
-        "postgresql": {
-            "driver": "postgresql",
-            "fields": [
-                {
-                    "id": "connectionName",
-                    "label": "Connection alias",
-                    "type": "text",
-                },
-                {
-                    "id": "username",
-                    "label": "User name",
-                    "type": "text",
-                },
-                {
-                    "id": "password",
-                    "label": "Password",
-                    "type": "password",
-                },
-                {"id": "host", "label": "Host", "type": "text"},
-                {"id": "database", "label": "Database", "type": "text"},
-            ],
-        },
-        "mysql": {
-            "driver": "mysql+pymysql",
-            "fields": [
-                {
-                    "id": "connectionName",
-                    "label": "Connection alias",
-                    "type": "text",
-                },
-                {
-                    "id": "username",
-                    "label": "User name",
-                    "type": "text",
-                },
-                {
-                    "id": "password",
-                    "label": "Password",
-                    "type": "password",
-                },
-                {"id": "host", "label": "Host", "type": "text"},
-                {"id": "port", "label": "Port", "type": "number"},
-                {"id": "database", "label": "Database", "type": "text"},
-            ],
-        },
-        "mariaDB": {
-            "driver": "mysql+pymysql",
-            "fields": [
-                {
-                    "id": "connectionName",
-                    "label": "Connection alias",
-                    "type": "text",
-                },
-                {
-                    "id": "username",
-                    "label": "User name",
-                    "type": "text",
-                },
-                {
-                    "id": "password",
-                    "label": "Password",
-                    "type": "password",
-                },
-                {"id": "host", "label": "Host", "type": "text"},
-                {"id": "port", "label": "Port", "type": "number"},
-                {"id": "database", "label": "Database", "type": "text"},
-            ],
-        },
-        "snowflake": {
-            "driver": "snowflake",
-            "fields": [
-                {
-                    "id": "connectionName",
-                    "label": "Connection alias",
-                    "type": "text",
-                },
-                {
-                    "id": "username",
-                    "label": "User name",
-                    "type": "text",
-                },
-                {
-                    "id": "password",
-                    "label": "Password",
-                    "type": "password",
-                },
-                {"id": "host", "label": "Host", "type": "text"},
-                {"id": "database", "label": "Database", "type": "text"},
-            ],
-        },
-    }
-)
-
-CONFIG_FILE = "connections.ini"
+    # this was renamed in jupysql 0.10.0
+    from sql.parse import connection_str_from_dsn_section
+except (ModuleNotFoundError, ImportError) as e:
+    raise ModuleNotFoundError(
+        "Your jupysql version isn't compatible with this version of jupysql-plugin. "
+        "Please update: pip install jupysql --upgrade"
+    ) from e
 
 
 def _serialize_connections(connections):
@@ -147,9 +38,9 @@ def _get_connection_string(connection_name) -> str:
     """
 
     class Config:
-        dsn_filename = Path(CONFIG_FILE)
+        dsn_filename = Path(get_path_to_config_file())
 
-    connection_string = connection_from_dsn_section(
+    connection_string = connection_str_from_dsn_section(
         section=connection_name, config=Config()
     )
 
@@ -163,6 +54,7 @@ def _get_stored_connections() -> list:
     connections = []
     config = _get_config_file()
     sections = config.sections()
+
     if len(sections) > 0:
         connections = [{"name": s, "driver": config[s]["drivername"]} for s in sections]
 
@@ -170,56 +62,7 @@ def _get_stored_connections() -> list:
 
 
 def is_config_exist() -> bool:
-    return Path(CONFIG_FILE).is_file()
-
-
-def _store_connection_details(connection_name, fields):
-    """
-    Stores connection in the config file
-    """
-    # add section test
-    config = _get_config_file()
-    config.add_section(connection_name)
-
-    for field in fields:
-        if fields[field]:
-            config.set(connection_name, field, fields[field])
-
-    with open(CONFIG_FILE, "w") as config_file:
-        config.write(config_file)
-
-
-def _create_new_connection(new_connection_data):
-    """
-    Creates new connection and stores it in the configuration file
-
-    Returns connection object
-    """
-    connection_name = new_connection_data.get("connectionName")
-    driver_name = new_connection_data.get("driver")
-
-    database = new_connection_data.get("database")
-    password = new_connection_data.get("password")
-    host = new_connection_data.get("host")
-    user_name = new_connection_data.get("username")
-    port = new_connection_data.get("port")
-
-    fields_config = {
-        "username": user_name,
-        "password": password,
-        "host": host,
-        "database": database,
-        "drivername": driver_name,
-        "port": port,
-    }
-
-    _store_connection_details(connection_name, fields_config)
-
-    connection = {
-        "name": connection_name,
-        "driver": database,
-    }
-    return connection
+    return Path(get_path_to_config_file()).is_file()
 
 
 def _is_unique_connection_name(connection_name) -> bool:
@@ -227,15 +70,6 @@ def _is_unique_connection_name(connection_name) -> bool:
     is_exists = connection_name in config.sections()
 
     return not is_exists
-
-
-def _get_config_file() -> ConfigParser:
-    """
-    Returns current config file
-    """
-    config = ConfigParser()
-    config.read(CONFIG_FILE)
-    return config
 
 
 class ConnectorWidget(DOMWidget):
@@ -250,13 +84,16 @@ class ConnectorWidget(DOMWidget):
     _view_module = Unicode(_module_name).tag(sync=True)
     _view_module_version = Unicode(__version__).tag(sync=True)
 
-    stored_connections = _get_stored_connections()
-
-    connections = Unicode(_serialize_connections(stored_connections)).tag(sync=True)
-    connections_templates = Unicode(json.dumps(CONNECTIONS_TEMPLATES)).tag(sync=True)
+    connections = Unicode().tag(sync=True)
+    connections_templates = Unicode().tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.stored_connections = _get_stored_connections()
+        self.connections = _serialize_connections(self.stored_connections)
+        self.connections_templates = json.dumps(CONNECTIONS_TEMPLATES)
+
         self.on_msg(self._handle_message)
 
     def _handle_message(self, widget, content, buffers):
@@ -270,7 +107,8 @@ class ConnectorWidget(DOMWidget):
                 is_exist = is_config_exist()
                 self.send({"method": "check_config_file", "message": is_exist})
 
-            if method == "delete_connection":
+            # user wants to delete connection
+            elif method == "delete_connection":
                 connection = content["data"]
                 self._delete_connection(connection)
                 self.send({"method": "deleted", "message": connection["name"]})
@@ -279,15 +117,19 @@ class ConnectorWidget(DOMWidget):
                 connections = _serialize_connections(self.stored_connections)
                 self.send({"method": "update_connections", "message": connections})
 
-            if method == "connect":
+            # user wants to connect to a database that's been stored in the config file
+            elif method == "connect":
+                connection = content["data"]
+
                 try:
-                    connection = content["data"]
                     self._connect(connection)
-                    self.send({"method": "connected", "message": connection["name"]})
                 except Exception as e:
                     self.send_error_message_to_front(e)
+                else:
+                    self.send({"method": "connected", "message": connection["name"]})
 
-            if method == "submit_new_connection":
+            # store a new connection in the config file and connect to it
+            elif method == "submit_new_connection":
                 new_connection_data = content["data"]
                 connection_name = new_connection_data.get("connectionName")
                 is_unique_name = _is_unique_connection_name(connection_name)
@@ -306,11 +148,17 @@ class ConnectorWidget(DOMWidget):
                     self.send({"method": "update_connections", "message": connections})
                     try:
                         self._connect(connection)
+                    except Exception as e:
+                        self.send_error_message_to_front(e)
+                    else:
                         self.send(
                             {"method": "connected", "message": connection["name"]}
                         )
-                    except Exception as e:
-                        self.send_error_message_to_front(e)
+
+            else:
+                raise ValueError(f"Method {method} is not supported")
+        else:
+            raise ValueError("Method is not specified")
 
     def send_error_message_to_front(self, error):
         error_prefix = error.__class__.__name__
@@ -324,8 +172,10 @@ class ConnectorWidget(DOMWidget):
         name = connection["name"]
         connection_string = _get_connection_string(name)
 
-        engine = create_engine(connection_string)
-        SQLAlchemyConnection(engine=engine, alias=name)
+        # this method contains the error handling logic that helps the user diagnose
+        # connection errors so we use this instead of the SQLAlchemy/DBAPIConnection
+        # constructor
+        ConnectionManager.set(connection_string, alias=name, displaycon=False)
 
     def _delete_connection(self, connection):
         """
@@ -335,10 +185,10 @@ class ConnectorWidget(DOMWidget):
 
         config = _get_config_file()
 
-        with open(CONFIG_FILE, "r") as f:
+        with open(get_path_to_config_file(), "r") as f:
             config.readfp(f)
 
         config.remove_section(connection_name)
 
-        with open(CONFIG_FILE, "w") as f:
+        with open(get_path_to_config_file(), "w") as f:
             config.write(f)

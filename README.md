@@ -10,14 +10,17 @@ pip install jupysql-plugin
 ### Development install
 
 ```sh
-conda env create -f environment.yml --force
+ conda create --name jupysql-plugin python=3.11 --channel conda-forge --yes
 conda activate jupysql-plugin
+conda install nodejs=16 --channel conda-forge --yes
+pip install -r requirements.txt
+
 jlpm install
 ```
 
 ```bash
-# Note: this command will take some time the first time as it has to compile the
-# frontend code
+# Note: this command will take some time the first time as it has to install
+# and compile the frontend code
 pip install -e "."
 
 jupyter labextension develop . --overwrite
@@ -80,8 +83,11 @@ To run the tests:
 ```sh
 pip install nox pyyaml
 
-# note that this will also create a conda env
+# note that this will also create a venv
 nox --session test
+
+# to only run the python unit tests
+pytest tests
 ```
 
 ### Packaging the extension
