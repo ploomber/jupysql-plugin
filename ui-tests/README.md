@@ -53,7 +53,7 @@ for configuring that behavior.
 
 ### Noes for writing UI tests
 
-- If the UI tests fail, check the recording. If the video shows that no notebook is opened, it might  be that the tests are trying to open a notebook that doesn't exist, this might happen with notebooks in hidden folders
+- If the UI tests fail, check the recording. If the video shows that no notebook is opened, it might be that the tests are trying to open a notebook that doesn't exist, this might happen with notebooks in hidden folders
 - If a cell doesn't produce an output and a screenshot is taken, an error is raised
 
 
