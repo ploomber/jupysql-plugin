@@ -32,7 +32,6 @@ def _store_connection_details(connection_name, fields):
     """
     Stores connection in the config file
     """
-    # add section test
     config = _get_config_file()
     config.add_section(connection_name)
 
