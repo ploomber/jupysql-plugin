@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.2.1
+
+* Connector widget creates parent directories if needed
+* Connector widget sets the default alias as "default" if the `.ini` file has no connections
+
 ## 0.2.0
 
 * Updates "Deploy Notebook" endpoint
