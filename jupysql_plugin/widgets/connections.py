@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+from pathlib import Path
 
 
 try:
@@ -39,7 +40,12 @@ def _store_connection_details(connection_name, fields):
         if fields[field]:
             config.set(connection_name, field, fields[field])
 
-    with open(get_path_to_config_file(), "w") as config_file:
+    path_to_config_file = Path(get_path_to_config_file())
+
+    if not path_to_config_file.parent.exists():
+        path_to_config_file.parent.mkdir(parents=True)
+
+    with open(path_to_config_file, "w") as config_file:
         config.write(config_file)
 
 
