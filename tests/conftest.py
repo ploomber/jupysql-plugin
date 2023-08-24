@@ -14,7 +14,7 @@ def _init_sql_magic():
     shell = InteractiveShell()
     sql_magic = SqlMagic(shell)
 
-    # set the default dsn filename to odbc.ini so we don't read from the home directory
+    # change the default dsn filename so we don't read from the home directory
     sql_magic.dsn_filename = "jupysql-plugin.ini"
     _set_sql_magic(sql_magic)
 
