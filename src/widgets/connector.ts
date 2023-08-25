@@ -330,7 +330,6 @@ export class ConnectorView extends DOMWidgetView {
             input.name = field.id;
             input.className = "field";
 
-            console.log("field", field, this.connections.length)
 
             // when creating the connection alias field, set the default value
             // to "default" if there are no connections, this will ensure that
@@ -426,7 +425,7 @@ export class ConnectorView extends DOMWidgetView {
         };
 
 
-        // Send the message to the Python backend
+        // NOTE: responses are handled in the `handleMessage` method
         this.send(message);
     }
 
