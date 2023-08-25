@@ -24,7 +24,10 @@ from jupysql_plugin import exceptions
 
 
 class ConnectorWidgetManager:
-    """Used by the ConnectorWidget to manage database connections and configuration file"""
+    """
+    Used by the ConnectorWidget to manage database connections and
+    configuration file
+    """
 
     def get_path_to_config_file(self) -> str:
         """

@@ -83,7 +83,7 @@ class ConnectorWidget(DOMWidget):
                             new_connection_data
                         )
                     )
-                except exceptions.ConnectionWithNameAlreadyExists as e:
+                except exceptions.ConnectionWithNameAlreadyExists:
                     self.send(
                         {
                             "method": "connection_name_exists_error",
