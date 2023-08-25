@@ -7,14 +7,18 @@ from IPython import InteractiveShell
 from sql.magic import SqlMagic, _set_sql_magic
 from sql import connection
 
-# currently the connection widget loads the config when importing the module
-# so we need to ensure the magic is initialized before importing the widget
-shell = InteractiveShell()
-sql_magic = SqlMagic(shell)
 
-# set the default dsn filename to odbc.ini so we don't read from the home directory
-sql_magic.dsn_filename = "jupysql-plugin.ini"
-_set_sql_magic(sql_magic)
+def _init_sql_magic():
+    # currently the connection widget loads the config when importing the module
+    # so we need to ensure the magic is initialized before importing the widget
+    shell = InteractiveShell()
+    sql_magic = SqlMagic(shell)
+
+    # change the default dsn filename so we don't read from the home directory
+    sql_magic.dsn_filename = "jupysql-plugin.ini"
+    _set_sql_magic(sql_magic)
+
+    return sql_magic
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -25,6 +29,8 @@ def isolate_tests(monkeypatch):
 
     Also clear up any stored snippets.
     """
+    _init_sql_magic()
+
     # reset connections
     connections = {}
     monkeypatch.setattr(connection.ConnectionManager, "connections", connections)
@@ -47,3 +53,8 @@ def tmp_empty(tmp_path):
     os.chdir(str(tmp_path))
     yield str(Path(tmp_path).resolve())
     os.chdir(old)
+
+
+@pytest.fixture
+def override_sql_magic():
+    yield _init_sql_magic()

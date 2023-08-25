@@ -317,19 +317,33 @@ export class ConnectorView extends DOMWidgetView {
         connectionFormContainer.appendChild(connectionForm)
 
         fields.forEach(field => {
+            // text description
             const fieldContainer = document.createElement("DIV");
             fieldContainer.className = "field-container";
             const label = <HTMLLabelElement>document.createElement("LABEL");
             label.setAttribute("for", field.id);
             label.innerHTML = field.label;
+
+            // form value
             const input = <HTMLInputElement>document.createElement("INPUT");
             input.id = field.id;
             input.name = field.id;
             input.className = "field";
 
-            if (field.default !== undefined) {
+            console.log("field", field, this.connections.length)
+
+            // when creating the connection alias field, set the default value
+            // to "default" if there are no connections, this will ensure that
+            // the notebook automatically reconnects to the database if the
+            // kernel is restarted
+            if (field.id == "connectionName" && this.connections.length === 0) {
+                input.value = "default"
+
+                // otherwise, set the default value if there's one
+            } else if (field.default !== undefined) {
                 input.value = field.default;
             }
+
 
             input.setAttribute("type", field.type);
 
