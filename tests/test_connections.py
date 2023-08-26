@@ -15,11 +15,24 @@ from sql.connection import ConnectionManager
         ),
         (
             """
-[duck]
-drivername = duckdb
+[postgresql]
+username = user
+password = pass
+host = localhost
+database = db
+drivername = postgresql
+port = 5432
 """,
             [
-                {"driver": "duckdb", "name": "duck"},
+                {
+                    "name": "postgresql",
+                    "username": "user",
+                    "password": "pass",
+                    "host": "localhost",
+                    "database": "db",
+                    "driver": "postgresql",
+                    "port": "5432",
+                },
             ],
         ),
         (
@@ -88,7 +101,7 @@ port = 5432
         ),
     ],
 )
-def test_create_new_connection(tmp_empty, data, expected):
+def test_save_connection_to_config_file_and_connect(tmp_empty, data, expected):
     manager = connections.ConnectorWidgetManager()
     # do not connect because the db details are invalid
     manager.save_connection_to_config_file_and_connect(data, connect=False)
@@ -99,7 +112,7 @@ def test_create_new_connection(tmp_empty, data, expected):
 @pytest.mark.parametrize(
     "dsn_filename",
     [
-        "jupysql-plugin.ini",
+        "path-to/jupysql-plugin.ini",
         "path/to/jupysql-plugin.ini",
     ],
     ids=[
@@ -107,7 +120,9 @@ def test_create_new_connection(tmp_empty, data, expected):
         "nested",
     ],
 )
-def test_save_connection_to_config_file(tmp_empty, override_sql_magic, dsn_filename):
+def test_save_connection_to_config_file_and_connect_in_nested_dir(
+    tmp_empty, override_sql_magic, dsn_filename
+):
     override_sql_magic.dsn_filename = dsn_filename
 
     manager = connections.ConnectorWidgetManager()
@@ -121,6 +136,38 @@ def test_save_connection_to_config_file(tmp_empty, override_sql_magic, dsn_filen
 
     assert ConnectionManager.connections == {"somedb": ANY}
     assert "[somedb]" in Path(dsn_filename).read_text()
+
+
+def test_save_connection_to_config_file_and_connect_overwrite(
+    tmp_empty, override_sql_magic
+):
+    path = Path("jupysql-plugin.ini")
+    path.write_text(
+        """
+[mydb]
+drivername = sqlite
+database = my.db
+"""
+    )
+
+    manager = connections.ConnectorWidgetManager()
+    manager.save_connection_to_config_file_and_connect(
+        {
+            "driver": "sqlite",
+            "connectionName": "mydb",
+            "database": ":memory:",
+        },
+        allow_overwrite=True,
+    )
+
+    assert (
+        path.read_text().strip()
+        == """
+[mydb]
+database = :memory:
+drivername = sqlite
+""".strip()
+    )
 
 
 def test_delete_section_with_name(tmp_empty):

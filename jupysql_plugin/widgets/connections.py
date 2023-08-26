@@ -74,17 +74,28 @@ class ConnectorWidgetManager:
         """
         connections = []
         config = self._get_config()
-        sections = config.sections()
 
-        if len(sections) > 0:
-            connections = [
-                {"name": s, "driver": config[s]["drivername"]} for s in sections
-            ]
+        def _config_section_to_dict(config, section):
+            d = dict(config.items(section))
+            d["name"] = section
+
+            if "drivername" in d:
+                d["driver"] = d.pop("drivername")
+
+            return d
+
+        connections = [
+            _config_section_to_dict(config, section) for section in config.sections()
+        ]
 
         return connections
 
     def save_connection_to_config_file_and_connect(
-        self, connection_data, *, connect=True
+        self,
+        connection_data,
+        *,
+        connect=True,
+        allow_overwrite=False,
     ):
         """
         Connects to the database specified in the connection_data. If connection
@@ -102,7 +113,9 @@ class ConnectorWidgetManager:
         """
         connection_name = connection_data["connectionName"]
 
-        if self.section_name_already_exists(connection_name):
+        # TODO: allow overwite doesnt work when changing the db alias -
+        # it creates a new section
+        if not allow_overwrite and self.section_name_already_exists(connection_name):
             raise exceptions.ConnectionWithNameAlreadyExists(connection_name)
 
         driver_name = connection_data["driver"]
@@ -142,11 +155,7 @@ class ConnectorWidgetManager:
         Stores connection in the config file
         """
         config = ConnectorWidgetManager()._get_config()
-        config.add_section(connection_name)
-
-        for field in fields:
-            if fields[field]:
-                config.set(connection_name, field, fields[field])
+        config[connection_name] = {k: v for k, v in fields.items() if v}
 
         path_to_config_file = Path(ConnectorWidgetManager().get_path_to_config_file())
 
