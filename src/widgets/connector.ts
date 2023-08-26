@@ -366,7 +366,6 @@ export class ConnectorView extends DOMWidgetView {
         // show newConnectionContainer
         (<HTMLElement>this.el.querySelector("#newConnectionContainer")).style.display = "block";
 
-        // display the corm corresponding to the current database template form
         this.handleCreateNewConnectionChange()
     }
 
