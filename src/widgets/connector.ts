@@ -133,7 +133,7 @@ export class ConnectorView extends DOMWidgetView {
 
 
             <div id="newConnectionContainer" class="block" style = "display: none">
-                <h3>Create new connection</h3>
+                <h3 id="connectionFormHeader"></h3>
                 <div class="block">
                     <select id="selectConnection"></select>
 
@@ -246,6 +246,8 @@ export class ConnectorView extends DOMWidgetView {
 
 
     handleEditConnectionClick(connection: Connection) {
+        this.el.querySelector("#connectionFormHeader").innerHTML = "Edit connection";
+
         // hide connectionsContainer
         (<HTMLElement>this.el.querySelector("#connectionsContainer")).style.display = "none";
 
@@ -349,6 +351,8 @@ export class ConnectorView extends DOMWidgetView {
      * Handle create new connection click
      */
     handleCreateNewConnectionClick() {
+        this.el.querySelector("#connectionFormHeader").innerHTML = "Create new connection";
+
         // hide connectionsContainer
         (<HTMLElement>this.el.querySelector("#connectionsContainer")).style.display = "none";
 
@@ -576,7 +580,7 @@ export class ConnectorView extends DOMWidgetView {
      * @param connectionName - Active connection name
      */
     markConnectedButton(connectionName: string) {
-        this.el.querySelectorAll(`.connection-button-actions .connectionStatusButton`)
+        this.el.querySelectorAll('.connection-button-actions .connectionStatusButton')
             .forEach((button: Element) => {
                 const buttonEl = (<HTMLButtonElement>button);
                 buttonEl.innerHTML = "Connect";
