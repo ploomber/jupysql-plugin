@@ -7,7 +7,7 @@ from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES
     "key,expected",
     [
         (
-            "duckdb",
+            "DuckDB",
             {
                 "driver": "duckdb",
                 "fields": [
@@ -27,7 +27,7 @@ from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES
             },
         ),
         (
-            "sqlite",
+            "SQLite",
             {
                 "driver": "sqlite",
                 "fields": [
@@ -47,7 +47,7 @@ from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES
             },
         ),
         (
-            "postgresql",
+            "PostgreSQL",
             {
                 "driver": "postgresql",
                 "fields": [
