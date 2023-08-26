@@ -3,7 +3,7 @@
     --white: #ffffff;
     --margin: 10px;
     --primary: #206eef;
-  }
+}
 
 .connector-widget .connection-button-container .connection-button-actions {
     display: inline-flex;
@@ -25,6 +25,17 @@
     width: 24px;
 }
 
+.connector-widget .connection-button-container .edit-connection-button {
+    margin-left: 10px;
+    background-repeat: no-repeat;
+    background-size: 24px;
+    background-position: center;
+    background-image: url('icons/edit_outline_black.svg');
+    background-color: transparent;
+    border: none;
+    width: 24px;
+}
+
 .create-new-connection {
     display: inline-flex;
     color: var(--primary)
@@ -34,7 +45,7 @@
     cursor: pointer;
 }
 
-.create-new-connection .icon{
+.create-new-connection .icon {
     background-image: url('icons/add_primary.svg');
     min-width: 30px;
     height: 30px;
@@ -42,7 +53,7 @@
     background-size: 15px;
     background-position: center;
     background-color: transparent;
-    margin: 0;    
+    margin: 0;
 }
 
 .create-new-connection div {
@@ -60,7 +71,7 @@
 
 .connector-widget hr.divider {
     margin: 0;
-    margin-top:20px;
+    margin-top: 20px;
 }
 
 .connector-widget button {

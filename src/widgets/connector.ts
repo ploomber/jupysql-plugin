@@ -13,7 +13,12 @@ import '../../style/connector.css';
 
 interface Connection {
     name: string,
-    drivername: string
+    driver: string,
+    username: string,
+    password: string,
+    host: string,
+    port: string,
+    database: string,
 }
 
 interface ConnectionTemplate {
@@ -112,7 +117,7 @@ export class ConnectorView extends DOMWidgetView {
                 <div class="block">
                     <div class="create-new-connection" id="createNewConnectionButton">
                         <div class="icon"></div>
-                        <div>
+                        <div id="createNewConnection">
                             Create new connection
                         </div>
                     </div>
@@ -162,14 +167,23 @@ export class ConnectorView extends DOMWidgetView {
             connectButton.innerHTML = "Connect";
             connectButton.onclick = this.handleConnectionClick.bind(this, connection);
 
+            // trash can button to delete a connection
             const deleteConnection = document.createElement("BUTTON");
             deleteConnection.className = `delete-connection-button`;
             deleteConnection.id = `deleteConnBtn_${name_without_spaces}`;
             deleteConnection.onclick = this.handleDeleteConnectionClick.bind(this, connection);
 
+            // button to edit a connection
+            const editConnection = document.createElement("BUTTON");
+            editConnection.className = `edit-connection-button`;
+            editConnection.id = `editConnBtn_${name_without_spaces}`;
+            editConnection.onclick = this.handleEditConnectionClick.bind(this, connection);
+
+            // add buttons to the actions container
             let connectionsButtonsContainer = this.el.querySelector('#connectionsButtonsContainer');
             actionsContainer.appendChild(connectButton);
             actionsContainer.appendChild(deleteConnection);
+            actionsContainer.appendChild(editConnection);
 
             buttonContainer.appendChild(actionsContainer);
             connectionsButtonsContainer.appendChild(buttonContainer);
@@ -230,6 +244,64 @@ export class ConnectorView extends DOMWidgetView {
         this.send(message);
     }
 
+
+    handleEditConnectionClick(connection: Connection) {
+        // hide connectionsContainer
+        (<HTMLElement>this.el.querySelector("#connectionsContainer")).style.display = "none";
+
+        // show newConnectionContainer
+        (<HTMLElement>this.el.querySelector("#newConnectionContainer")).style.display = "block";
+
+
+        const dropdown = <HTMLSelectElement>this.el.querySelector("#selectConnection");
+        const valueToSelect = connection.driver;
+
+        console.log("editing")
+
+
+        for (let i = 0; i < dropdown.options.length; i++) {
+            if (dropdown.options[i].value === valueToSelect) {
+                dropdown.selectedIndex = i;
+                break;
+            }
+        }
+
+        const select = (<HTMLSelectElement>this.el.querySelector("#selectConnection"));
+        const key = select.value;
+        const connectionTemplate = this.connectionsTemplates[key];
+        this.drawConnectionForm(connectionTemplate, false);
+
+        const name = (<HTMLSelectElement>this.el.querySelector("#connectionName"));
+        if (name) {
+            name.value = connection.name;
+        }
+
+        const username = (<HTMLSelectElement>this.el.querySelector("#username"));
+        if (username) {
+            username.value = connection.username;
+        }
+
+        const password = (<HTMLSelectElement>this.el.querySelector("#password"));
+        if (password) {
+            password.value = connection.password;
+        }
+
+        const host = (<HTMLSelectElement>this.el.querySelector("#host"));
+        if (host) {
+            host.value = connection.host;
+        }
+
+        const db = (<HTMLSelectElement>this.el.querySelector("#database"));
+        if (db) {
+            db.value = connection.database;
+        }
+
+        const port = (<HTMLSelectElement>this.el.querySelector("#port"));
+        if (port) {
+            port.value = connection.port;
+        }
+    }
+
     handleDeleteConnectionClick(connection: Connection) {
         this.hideDeleteMessageApproval()
 
@@ -253,11 +325,12 @@ export class ConnectorView extends DOMWidgetView {
         cancelButton.addEventListener("click", this.hideDeleteMessageApproval.bind(this))
         deleteConnectionMessage.querySelector(".actions").appendChild(cancelButton);
 
-        const approveButton = document.createElement("BUTTON");
-        approveButton.innerHTML = "Delete";
-        approveButton.className = "danger";
-        approveButton.addEventListener("click", this.deleteConnection.bind(this, connection))
-        deleteConnectionMessage.querySelector(".actions").appendChild(approveButton);
+        const deleteButton = document.createElement("BUTTON");
+        deleteButton.innerHTML = "Delete";
+        deleteButton.className = "danger";
+        deleteButton.id = "deleteConnectionButton";
+        deleteButton.addEventListener("click", this.deleteConnection.bind(this, connection))
+        deleteConnectionMessage.querySelector(".actions").appendChild(deleteButton);
 
         // hide controllers
         const deleteConnBtn = this.el.querySelector(`#deleteConnBtn_${connection["name"].replace(/ /g, "_")}`);
@@ -285,7 +358,7 @@ export class ConnectorView extends DOMWidgetView {
         // show newConnectionContainer
         (<HTMLElement>this.el.querySelector("#newConnectionContainer")).style.display = "block";
 
-        // select first value
+        // display the corm corresponding to the current database template form
         this.handleCreateNewConnectionChange()
     }
 
@@ -298,7 +371,7 @@ export class ConnectorView extends DOMWidgetView {
 
         const connectionTemplate = this.connectionsTemplates[key];
 
-        this.drawNewConnectionForm(connectionTemplate);
+        this.drawConnectionForm(connectionTemplate, true);
     }
 
     /**
@@ -306,7 +379,7 @@ export class ConnectorView extends DOMWidgetView {
      * 
      * @param connectionTemplate - new connection template
      */
-    drawNewConnectionForm(connectionTemplate: ConnectionTemplate) {
+    drawConnectionForm(connectionTemplate: ConnectionTemplate, newConnection: boolean) {
         const { fields } = connectionTemplate;
 
         const connectionFormContainer = this.el.querySelector("#connectionFormContainer");
@@ -365,10 +438,19 @@ export class ConnectorView extends DOMWidgetView {
         // submit form button
         const submitButton = document.createElement("BUTTON");
         submitButton.className = "primary";
-        submitButton.innerHTML = "Create";
-        connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
         buttonsContainer.appendChild(submitButton);
 
+        if (newConnection) {
+            submitButton.innerHTML = "Create";
+            submitButton.id = "createConnectionFormButton";
+            connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
+        } else {
+            submitButton.innerHTML = "Update";
+            submitButton.id = "updateConnectionFormButton";
+            connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
+        }
+
+        // add buttons to the form
         connectionForm.appendChild(buttonsContainer);
 
 
@@ -379,13 +461,15 @@ export class ConnectorView extends DOMWidgetView {
      * 
      * @param event - Submit event
      */
-    handleSubmitNewConnection(event: Event) {
+    handleSubmitNewConnection(event: SubmitEvent) {
         event.preventDefault();
+
         let allFieldsFilled = true;
 
         // Extract form data
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
+
 
         // Convert form data to a plain object
         const formValues: { [key: string]: string } = {};
@@ -406,21 +490,27 @@ export class ConnectorView extends DOMWidgetView {
 
         // todo: validate all inputs are filled
         if (allFieldsFilled) {
-            this.sendFormData(formValues);
+            let allowOverwrite = event.submitter.innerHTML == "Update" ? true : false
+            this.sendFormData(formValues, allowOverwrite);
         } else {
             this.showErrorMessage("Error: Please fill in all fields.")
         }
     }
+
+
+
 
     /**
      * Sends form data to the backend
      * 
      * @param formData - FormData object
      */
-    sendFormData(formData: { [key: string]: string }) {
+    sendFormData(formData: { [key: string]: string }, allowOverwrite: boolean) {
         // Create a message to send to the Python backend
+        const method = allowOverwrite ? "update_connection" : "submit_new_connection";
+
         const message = {
-            method: 'submit_new_connection',
+            method: method,
             data: formData
         };
 
