@@ -69,7 +69,7 @@ ConnectorWidget()`)
 
 
 test('test create new connection', async ({ page }) => {
-    createDefaultConnection(page);
+    await createDefaultConnection(page);
 
     // check that connection is created
     let connectionButton = page.locator('#connBtn_default')
@@ -80,7 +80,7 @@ test('test create new connection', async ({ page }) => {
 });
 
 test('test delete connection', async ({ page }) => {
-    createDefaultConnection(page);
+    await createDefaultConnection(page);
 
     // click on delete connection button and confirm
     await page.locator('#deleteConnBtn_default').click();
@@ -92,7 +92,7 @@ test('test delete connection', async ({ page }) => {
 
 
 test('test edit connection', async ({ page }) => {
-    createDefaultConnection(page);
+    await createDefaultConnection(page);
 
     // click on edit connection button, edit, and confirm
     await page.locator('#editConnBtn_default').click();
@@ -116,7 +116,7 @@ test('test edit connection', async ({ page }) => {
 
 
 test('test edit connection alias', async ({ page }) => {
-    createDefaultConnection(page);
+    await createDefaultConnection(page);
 
     // click on edit connection button, edit, and confirm
     await page.locator('#editConnBtn_default').click();
@@ -135,10 +135,9 @@ test('test edit connection alias', async ({ page }) => {
 
 
 test('test error if creates connection with existing name', async ({ page }) => {
-    createDefaultConnection(page);
+    await createDefaultConnection(page);
 
     await page.locator('#createNewConnection').click();
-    await page.waitForSelector('#connectionName');
     await page.locator('#connectionName').fill('default');
     await page.locator('#createConnectionFormButton').click();
 
@@ -148,7 +147,7 @@ test('test error if creates connection with existing name', async ({ page }) => 
 
 test('test error if edit connection with existing name', async ({ page }) => {
     // create default connection
-    createDefaultConnection(page);
+    await createDefaultConnection(page);
 
     // create a new connection
     await page.locator('#createNewConnection').click();
@@ -156,7 +155,6 @@ test('test error if edit connection with existing name', async ({ page }) => {
     await page.locator('#createConnectionFormButton').click();
 
     // try to rename it to default, this should fail
-    await page.waitForSelector('#editConnBtn_duckdb');
     await page.locator('#editConnBtn_duckdb').click();
     await page.locator('#connectionName').fill('default');
     await page.locator('#updateConnectionFormButton').click();
