@@ -1,11 +1,16 @@
 import { test } from '@jupyterlab/galata';
 import { expect } from '@playwright/test';
 
-async function displayWidget(page) {
-    // create notebook
+async function createNewNotebook(page) {
     await page.notebook.createNew("notebok.ipynb");
     await page.notebook.openByPath("notebok.ipynb");
     await page.notebook.activate("notebok.ipynb");
+}
+
+
+async function displayWidget(page) {
+    // create notebook
+    await createNewNotebook(page);
 
     // render widget
     await page.notebook.enterCellEditingMode(0);
@@ -25,6 +30,43 @@ async function createDefaultConnection(page) {
     await page.locator('#createNewConnection').click();
     await page.locator('#createConnectionFormButton').click();
 }
+
+test('test displays existing connections', async ({ page }) => {
+    await createNewNotebook(page)
+
+    await page.notebook.enterCellEditingMode(0);
+    const cell = await page.notebook.getCell(0)
+    await cell?.type(`
+from pathlib import Path
+Path('connections.ini').write_text("""
+[first]
+drivername = sqlite
+database = :memory:
+
+[second]
+drivername = sqlite
+database = :memory:
+""")
+%load_ext sql
+%config SqlMagic.dsn_filename = 'connections.ini'
+from jupysql_plugin.widgets import ConnectorWidget
+ConnectorWidget()`)
+    await page.notebook.run()
+
+    const connectionsDiv = page.locator('#connectionsButtonsContainer');
+    await connectionsDiv.waitFor();
+
+    const childDivs = connectionsDiv.locator('.connection-name');
+    expect(await childDivs.count()).toBe(2);
+
+    const firstChildText = await childDivs.nth(0).textContent();
+    expect(firstChildText).toBe('first');
+
+    const secondChildText = await childDivs.nth(1).textContent();
+    expect(secondChildText).toBe('second');
+});
+
+
 
 test('test create new connection', async ({ page }) => {
     createDefaultConnection(page);
@@ -96,6 +138,7 @@ test('test error if creates connection with existing name', async ({ page }) => 
     createDefaultConnection(page);
 
     await page.locator('#createNewConnection').click();
+    await page.waitForSelector('#connectionName');
     await page.locator('#connectionName').fill('default');
     await page.locator('#createConnectionFormButton').click();
 
@@ -113,6 +156,7 @@ test('test error if edit connection with existing name', async ({ page }) => {
     await page.locator('#createConnectionFormButton').click();
 
     // try to rename it to default, this should fail
+    await page.waitForSelector('#editConnBtn_duckdb');
     await page.locator('#editConnBtn_duckdb').click();
     await page.locator('#connectionName').fill('default');
     await page.locator('#updateConnectionFormButton').click();
