@@ -167,23 +167,23 @@ export class ConnectorView extends DOMWidgetView {
             connectButton.innerHTML = "Connect";
             connectButton.onclick = this.handleConnectionClick.bind(this, connection);
 
-            // trash can button to delete a connection
-            const deleteConnection = document.createElement("BUTTON");
-            deleteConnection.className = `delete-connection-button`;
-            deleteConnection.id = `deleteConnBtn_${name_without_spaces}`;
-            deleteConnection.onclick = this.handleDeleteConnectionClick.bind(this, connection);
-
             // button to edit a connection
             const editConnection = document.createElement("BUTTON");
             editConnection.className = `edit-connection-button`;
             editConnection.id = `editConnBtn_${name_without_spaces}`;
             editConnection.onclick = this.handleEditConnectionClick.bind(this, connection);
 
+            // trash can button to delete a connection
+            const deleteConnection = document.createElement("BUTTON");
+            deleteConnection.className = `delete-connection-button`;
+            deleteConnection.id = `deleteConnBtn_${name_without_spaces}`;
+            deleteConnection.onclick = this.handleDeleteConnectionClick.bind(this, connection);
+
             // add buttons to the actions container
             let connectionsButtonsContainer = this.el.querySelector('#connectionsButtonsContainer');
             actionsContainer.appendChild(connectButton);
-            actionsContainer.appendChild(deleteConnection);
             actionsContainer.appendChild(editConnection);
+            actionsContainer.appendChild(deleteConnection);
 
             buttonContainer.appendChild(actionsContainer);
             connectionsButtonsContainer.appendChild(buttonContainer);
@@ -576,7 +576,7 @@ export class ConnectorView extends DOMWidgetView {
      * @param connectionName - Active connection name
      */
     markConnectedButton(connectionName: string) {
-        this.el.querySelectorAll(`.connection-button-actions button:not(.delete-connection-button)`)
+        this.el.querySelectorAll(`.connection-button-actions button:not(.delete-connection-button) button:not(.edit-connection-button)`)
             .forEach((button: Element) => {
                 const buttonEl = (<HTMLButtonElement>button);
                 buttonEl.innerHTML = "Connect";
