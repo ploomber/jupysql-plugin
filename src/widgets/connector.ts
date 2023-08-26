@@ -77,18 +77,18 @@ export class ConnectorView extends DOMWidgetView {
     render() {
         this.el.classList.add('connector-widget');
 
-        this.drawConnectorUI(this.connections);
+        this.drawConnectionsList(this.connections);
 
         // Listen for messages from the Python backend
         this.model.on('msg:custom', this.handleMessage.bind(this));
     }
 
     /**
-     * Draws the connection UI
+     * Draws the connection list
      * 
      * @param connection : The availble connections
      */
-    drawConnectorUI(connections: Array<Connection>) {
+    drawConnectionsList(connections: Array<Connection>) {
         this.el.innerHTML = ""
         const template = `
         <div id="connectionsManager">
@@ -163,7 +163,7 @@ export class ConnectorView extends DOMWidgetView {
 
             const connectButton = document.createElement("BUTTON");
             connectButton.id = `connBtn_${name_without_spaces}`;
-            connectButton.className = "secondary";
+            connectButton.className = "secondary connectionStatusButton";
             connectButton.innerHTML = "Connect";
             connectButton.onclick = this.handleConnectionClick.bind(this, connection);
 
@@ -436,7 +436,7 @@ export class ConnectorView extends DOMWidgetView {
         const cancelButton = document.createElement("BUTTON");
         cancelButton.innerHTML = "Cancel";
         cancelButton.className = "secondary";
-        cancelButton.addEventListener("click", this.drawConnectorUI.bind(this, this.connections))
+        cancelButton.addEventListener("click", this.drawConnectionsList.bind(this, this.connections))
         buttonsContainer.appendChild(cancelButton);
 
         // submit form button
@@ -533,7 +533,7 @@ export class ConnectorView extends DOMWidgetView {
         if (content.method === "update_connections") {
             this.connections = JSON.parse(content.message);
 
-            this.drawConnectorUI(this.connections);
+            this.drawConnectionsList(this.connections);
         }
 
         if (content.method === "connected") {
@@ -576,7 +576,7 @@ export class ConnectorView extends DOMWidgetView {
      * @param connectionName - Active connection name
      */
     markConnectedButton(connectionName: string) {
-        this.el.querySelectorAll(`.connection-button-actions button:not(.delete-connection-button) button:not(.edit-connection-button)`)
+        this.el.querySelectorAll(`.connection-button-actions .connectionStatusButton`)
             .forEach((button: Element) => {
                 const buttonEl = (<HTMLButtonElement>button);
                 buttonEl.innerHTML = "Connect";
