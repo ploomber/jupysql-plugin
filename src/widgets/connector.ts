@@ -44,7 +44,8 @@ export class ConnectorModel extends DOMWidgetModel {
             _view_module: ConnectorModel.view_module,
             _view_module_version: ConnectorModel.view_module_version,
             connections: ConnectorModel.connections,
-            connections_templates: ConnectorModel.connections_templates
+            connections_templates: ConnectorModel.connections_templates,
+            driver_to_dbname: ConnectorModel.driver_to_dbname,
         };
     }
 
@@ -61,15 +62,19 @@ export class ConnectorModel extends DOMWidgetModel {
     static view_module_version = MODULE_VERSION;
     static connections: any[] = [];
     static connections_templates: any[] = [];
+    static driver_to_dbname: any[] = [];
 }
 
 export class ConnectorView extends DOMWidgetView {
 
-    // availble connections
+    // available connections
     connections = JSON.parse(this.model.get('connections'));
 
     // connections templates for creating a new connection
     connectionsTemplates = JSON.parse(this.model.get('connections_templates'));
+
+
+    driver_to_dbname = this.model.get('driver_to_dbname');
 
     activeConnection = ""
 
@@ -89,6 +94,8 @@ export class ConnectorView extends DOMWidgetView {
      * @param connection : The availble connections
      */
     drawConnectionsList(connections: Array<Connection>) {
+        console.log('driver to db name', this.driver_to_dbname)
+
         this.el.innerHTML = ""
         const template = `
         <div id="connectionsManager">
@@ -256,7 +263,7 @@ export class ConnectorView extends DOMWidgetView {
 
 
         const dropdown = <HTMLSelectElement>this.el.querySelector("#selectConnection");
-        const valueToSelect = connection.driver;
+        const valueToSelect = this.driver_to_dbname[connection.driver];
 
         for (let i = 0; i < dropdown.options.length; i++) {
             if (dropdown.options[i].value === valueToSelect) {

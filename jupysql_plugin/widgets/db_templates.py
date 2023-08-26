@@ -1,6 +1,15 @@
+DRIVER_TO_DBNAME = {
+    "duckdb": "DuckDB",
+    "sqlite": "SQLite",
+    "postgresql": "PostgreSQL",
+    "mysql+pymysql": "MySQL",
+    "snowflake": "Snowflake",
+    "mariadb": "MariaDB",
+}
+
 CONNECTIONS_TEMPLATES = dict(
     {
-        "duckdb": {
+        "DuckDB": {
             "driver": "duckdb",
             "fields": [
                 {
@@ -17,7 +26,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
             ],
         },
-        "sqlite": {
+        "SQLite": {
             "driver": "sqlite",
             "fields": [
                 {
@@ -34,7 +43,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
             ],
         },
-        "postgresql": {
+        "PostgreSQL": {
             "driver": "postgresql",
             "fields": [
                 {
@@ -71,7 +80,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
             ],
         },
-        "mysql": {
+        "MySQL": {
             "driver": "mysql+pymysql",
             "fields": [
                 {
@@ -108,7 +117,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
             ],
         },
-        "mariaDB": {
+        "MariaDB": {
             "driver": "mysql+pymysql",
             "fields": [
                 {
@@ -145,7 +154,7 @@ CONNECTIONS_TEMPLATES = dict(
                 },
             ],
         },
-        "snowflake": {
+        "Snowflake": {
             "driver": "snowflake",
             "fields": [
                 {

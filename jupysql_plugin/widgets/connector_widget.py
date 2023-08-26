@@ -1,5 +1,5 @@
 from jupysql_plugin import __version__, _module_name
-from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES
+from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES, DRIVER_TO_DBNAME
 from jupysql_plugin.widgets.connections import (
     _serialize_connections,
     ConnectorWidgetManager,
@@ -7,7 +7,7 @@ from jupysql_plugin.widgets.connections import (
 from jupysql_plugin import exceptions
 
 from ipywidgets import DOMWidget
-from traitlets import Unicode
+from traitlets import Unicode, Dict
 import json
 
 
@@ -25,6 +25,7 @@ class ConnectorWidget(DOMWidget):
 
     connections = Unicode().tag(sync=True)
     connections_templates = Unicode().tag(sync=True)
+    driver_to_dbname = Dict().tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,6 +34,7 @@ class ConnectorWidget(DOMWidget):
         self.stored_connections = self.widget_manager.get_connections_from_config_file()
         self.connections = _serialize_connections(self.stored_connections)
         self.connections_templates = json.dumps(CONNECTIONS_TEMPLATES)
+        self.driver_to_dbname = DRIVER_TO_DBNAME
 
         self.on_msg(self._handle_message)
 
