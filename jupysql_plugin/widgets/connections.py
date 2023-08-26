@@ -95,7 +95,6 @@ class ConnectorWidgetManager:
         connection_data,
         *,
         connect=True,
-        allow_overwrite=False,
     ):
         """
         Connects to the database specified in the connection_data. If connection
@@ -109,13 +108,6 @@ class ConnectorWidgetManager:
         connect: bool
             If True, will attempt to connect to the database
 
-        allow_overwrite: bool
-            If False, will raise an exception if a connection with the same name
-            already exists.  If True, will overwrite an existing connection with the
-            same name. If you're changing the connection alias, connection_data must
-            contain the name of the connection to overwrite in the
-            existingConnectionAlias key.
-
         Returns
         -------
         connection_name: str
@@ -127,8 +119,10 @@ class ConnectorWidgetManager:
             If the connection fails to establish
         """
         connection_name = connection_data["connectionName"]
+        existing_alias = connection_data.get("existingConnectionAlias")
+        changed_alias = existing_alias != connection_name
 
-        if not allow_overwrite and self.section_name_already_exists(connection_name):
+        if changed_alias and self.section_name_already_exists(connection_name):
             raise exceptions.ConnectionWithNameAlreadyExists(connection_name)
 
         driver_name = connection_data["driver"]
@@ -159,7 +153,6 @@ class ConnectorWidgetManager:
                 connection_str, alias=connection_name, displaycon=False
             )
 
-        existing_alias = connection_data.get("existingConnectionAlias")
         self._save_new_section_to_config_file(connection_name, url_data, existing_alias)
 
         return connection_name

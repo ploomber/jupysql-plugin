@@ -146,6 +146,7 @@ def test_save_connection_to_config_file_and_connect_in_nested_dir(
                 "driver": "sqlite",
                 "connectionName": "mydb",
                 "database": ":memory:",
+                "existingConnectionAlias": "mydb",
             },
             """
 [mydb]
@@ -188,10 +189,7 @@ database = my.db
     )
 
     manager = connections.ConnectorWidgetManager()
-    manager.save_connection_to_config_file_and_connect(
-        data,
-        allow_overwrite=True,
-    )
+    manager.save_connection_to_config_file_and_connect(data)
 
     assert path.read_text().strip() == expected.strip()
 

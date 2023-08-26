@@ -498,10 +498,8 @@ export class ConnectorView extends DOMWidgetView {
 
         formValues["driver"] = driver;
 
-        // todo: validate all inputs are filled
         if (allFieldsFilled) {
-            let allowOverwrite = event.submitter.innerHTML == "Update" ? true : false
-            this.sendFormData(formValues, allowOverwrite);
+            this.sendFormData(formValues);
         } else {
             this.showErrorMessage("Error: Please fill in all fields.")
         }
@@ -515,12 +513,9 @@ export class ConnectorView extends DOMWidgetView {
      * 
      * @param formData - FormData object
      */
-    sendFormData(formData: { [key: string]: string }, allowOverwrite: boolean) {
-        // Create a message to send to the Python backend
-        const method = allowOverwrite ? "update_connection" : "submit_new_connection";
-
+    sendFormData(formData: { [key: string]: string }) {
         const message = {
-            method: method,
+            method: "submit_new_connection",
             data: formData
         };
 

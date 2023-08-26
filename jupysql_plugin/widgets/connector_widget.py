@@ -73,15 +73,14 @@ class ConnectorWidget(DOMWidget):
                     self.send({"method": "connected", "message": connection["name"]})
 
             # store a new connection in the config file and connect to it
-            elif method in {"submit_new_connection", "update_connection"}:
+            elif method == "submit_new_connection":
                 new_connection_data = content["data"]
                 connection_name = new_connection_data.get("connectionName")
 
                 try:
                     connection_name = (
                         self.widget_manager.save_connection_to_config_file_and_connect(
-                            new_connection_data,
-                            allow_overwrite=method == "update_connection",
+                            new_connection_data
                         )
                     )
                 except exceptions.ConnectionWithNameAlreadyExists:
