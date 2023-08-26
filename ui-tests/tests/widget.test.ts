@@ -1,6 +1,5 @@
 import { test } from '@jupyterlab/galata';
 import { expect } from '@playwright/test';
-// import * as fs from 'fs';
 
 async function createNewConnection(page) {
     // create notebook

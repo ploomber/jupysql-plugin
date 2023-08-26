@@ -256,9 +256,6 @@ export class ConnectorView extends DOMWidgetView {
         const dropdown = <HTMLSelectElement>this.el.querySelector("#selectConnection");
         const valueToSelect = connection.driver;
 
-        console.log("editing")
-
-
         for (let i = 0; i < dropdown.options.length; i++) {
             if (dropdown.options[i].value === valueToSelect) {
                 dropdown.selectedIndex = i;
@@ -269,7 +266,7 @@ export class ConnectorView extends DOMWidgetView {
         const select = (<HTMLSelectElement>this.el.querySelector("#selectConnection"));
         const key = select.value;
         const connectionTemplate = this.connectionsTemplates[key];
-        this.drawConnectionForm(connectionTemplate, false);
+        this.drawConnectionDetailsForm(connectionTemplate, connection.name);
 
         const name = (<HTMLSelectElement>this.el.querySelector("#connectionName"));
         if (name) {
@@ -371,15 +368,15 @@ export class ConnectorView extends DOMWidgetView {
 
         const connectionTemplate = this.connectionsTemplates[key];
 
-        this.drawConnectionForm(connectionTemplate, true);
+        this.drawConnectionDetailsForm(connectionTemplate, "");
     }
 
     /**
-     * Draws a form to create a new connection
+     * Draws a form to create or edit connections
      * 
      * @param connectionTemplate - new connection template
      */
-    drawConnectionForm(connectionTemplate: ConnectionTemplate, newConnection: boolean) {
+    drawConnectionDetailsForm(connectionTemplate: ConnectionTemplate, connectionAlias: string) {
         const { fields } = connectionTemplate;
 
         const connectionFormContainer = this.el.querySelector("#connectionFormContainer");
@@ -388,6 +385,13 @@ export class ConnectorView extends DOMWidgetView {
         const connectionForm = document.createElement("FORM");
         connectionForm.id = "connectionForm";
         connectionFormContainer.appendChild(connectionForm)
+
+        // add a hidden value to hold the alias, this is used when editing a connection
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "existingConnectionAlias";
+        hiddenInput.value = connectionAlias ? connectionAlias : "";
+        connectionForm.appendChild(hiddenInput);
 
         fields.forEach(field => {
             // text description
@@ -440,13 +444,15 @@ export class ConnectorView extends DOMWidgetView {
         submitButton.className = "primary";
         buttonsContainer.appendChild(submitButton);
 
-        if (newConnection) {
-            submitButton.innerHTML = "Create";
-            submitButton.id = "createConnectionFormButton";
-            connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
-        } else {
+        if (connectionAlias) {
+            // editing an existing connection
             submitButton.innerHTML = "Update";
             submitButton.id = "updateConnectionFormButton";
+            connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
+        } else {
+            // creating a new connection
+            submitButton.innerHTML = "Create";
+            submitButton.id = "createConnectionFormButton";
             connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
         }
 
@@ -473,12 +479,16 @@ export class ConnectorView extends DOMWidgetView {
 
         // Convert form data to a plain object
         const formValues: { [key: string]: string } = {};
+
         for (const [key, value] of formData.entries()) {
             const _value = value.toString();
 
             formValues[key] = _value;
-            if (_value.length === 0) {
-                allFieldsFilled = false
+
+            // Skip validation for existingConnectionAlias field since it's hidden
+            // and only used when editing a connection
+            if (key !== "existingConnectionAlias" && _value.length === 0) {
+                allFieldsFilled = false;
             }
         }
 

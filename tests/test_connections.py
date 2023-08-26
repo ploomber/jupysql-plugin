@@ -138,8 +138,45 @@ def test_save_connection_to_config_file_and_connect_in_nested_dir(
     assert "[somedb]" in Path(dsn_filename).read_text()
 
 
+@pytest.mark.parametrize(
+    "data, expected",
+    [
+        (
+            {
+                "driver": "sqlite",
+                "connectionName": "mydb",
+                "database": ":memory:",
+            },
+            """
+[mydb]
+database = :memory:
+drivername = sqlite
+""",
+        ),
+        (
+            {
+                "driver": "sqlite",
+                "connectionName": "newdb",
+                "database": ":memory:",
+                "existingConnectionAlias": "mydb",
+            },
+            """
+[newdb]
+database = :memory:
+drivername = sqlite
+""",
+        ),
+    ],
+    ids=[
+        "change-database",
+        "change-alias",
+    ],
+)
 def test_save_connection_to_config_file_and_connect_overwrite(
-    tmp_empty, override_sql_magic
+    tmp_empty,
+    override_sql_magic,
+    data,
+    expected,
 ):
     path = Path("jupysql-plugin.ini")
     path.write_text(
@@ -152,22 +189,11 @@ database = my.db
 
     manager = connections.ConnectorWidgetManager()
     manager.save_connection_to_config_file_and_connect(
-        {
-            "driver": "sqlite",
-            "connectionName": "mydb",
-            "database": ":memory:",
-        },
+        data,
         allow_overwrite=True,
     )
 
-    assert (
-        path.read_text().strip()
-        == """
-[mydb]
-database = :memory:
-drivername = sqlite
-""".strip()
-    )
+    assert path.read_text().strip() == expected.strip()
 
 
 def test_delete_section_with_name(tmp_empty):

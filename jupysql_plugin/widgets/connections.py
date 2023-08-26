@@ -101,6 +101,21 @@ class ConnectorWidgetManager:
         Connects to the database specified in the connection_data. If connection
         succeeds, saves the connection to the config file.
 
+        Parameters
+        ----------
+        connection_data: dict
+            Dictionary with connection details
+
+        connect: bool
+            If True, will attempt to connect to the database
+
+        allow_overwrite: bool
+            If False, will raise an exception if a connection with the same name
+            already exists.  If True, will overwrite an existing connection with the
+            same name. If you're changing the connection alias, connection_data must
+            contain the name of the connection to overwrite in the
+            existingConnectionAlias key.
+
         Returns
         -------
         connection_name: str
@@ -113,8 +128,6 @@ class ConnectorWidgetManager:
         """
         connection_name = connection_data["connectionName"]
 
-        # TODO: allow overwite doesnt work when changing the db alias -
-        # it creates a new section
         if not allow_overwrite and self.section_name_already_exists(connection_name):
             raise exceptions.ConnectionWithNameAlreadyExists(connection_name)
 
@@ -126,7 +139,7 @@ class ConnectorWidgetManager:
         user_name = connection_data.get("username")
         port = connection_data.get("port")
 
-        url_mapping = {
+        url_data = {
             "username": user_name,
             "password": password,
             "host": host,
@@ -139,23 +152,30 @@ class ConnectorWidgetManager:
         # details are valid
         if connect:
             connection_str = str(
-                URL.create(**url_mapping).render_as_string(hide_password=False)
+                URL.create(**url_data).render_as_string(hide_password=False)
             )
 
             ConnectionManager.set(
                 connection_str, alias=connection_name, displaycon=False
             )
 
-        self._save_new_section_to_config_file(connection_name, url_mapping)
+        existing_alias = connection_data.get("existingConnectionAlias")
+        self._save_new_section_to_config_file(connection_name, url_data, existing_alias)
 
         return connection_name
 
-    def _save_new_section_to_config_file(self, connection_name, fields):
+    def _save_new_section_to_config_file(
+        self, connection_name, connection_data, existing_alias
+    ):
         """
         Stores connection in the config file
         """
         config = ConnectorWidgetManager()._get_config()
-        config[connection_name] = {k: v for k, v in fields.items() if v}
+
+        if existing_alias:
+            del config[existing_alias]
+
+        config[connection_name] = {k: v for k, v in connection_data.items() if v}
 
         path_to_config_file = Path(ConnectorWidgetManager().get_path_to_config_file())
 
