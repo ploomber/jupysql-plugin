@@ -1,7 +1,7 @@
 import { test } from '@jupyterlab/galata';
 import { expect } from '@playwright/test';
 
-async function createNewConnection(page) {
+async function displayWidget(page) {
     // create notebook
     await page.notebook.createNew("notebok.ipynb");
     await page.notebook.openByPath("notebok.ipynb");
@@ -16,7 +16,10 @@ async function createNewConnection(page) {
 from jupysql_plugin.widgets import ConnectorWidget
 ConnectorWidget()`)
     await page.notebook.run()
+}
 
+async function createDefaultConnection(page) {
+    await displayWidget(page);
 
     // click on create new connection button and create a new connection
     await page.locator('#createNewConnection').click();
@@ -24,7 +27,7 @@ ConnectorWidget()`)
 }
 
 test('test create new connection', async ({ page }) => {
-    createNewConnection(page);
+    createDefaultConnection(page);
 
     // check that connection is created
     let connectionButton = page.locator('#connBtn_default')
@@ -35,7 +38,7 @@ test('test create new connection', async ({ page }) => {
 });
 
 test('test delete connection', async ({ page }) => {
-    createNewConnection(page);
+    createDefaultConnection(page);
 
     // click on delete connection button and confirm
     await page.locator('#deleteConnBtn_default').click();
@@ -47,7 +50,7 @@ test('test delete connection', async ({ page }) => {
 
 
 test('test edit connection', async ({ page }) => {
-    createNewConnection(page);
+    createDefaultConnection(page);
 
     // click on edit connection button, edit, and confirm
     await page.locator('#editConnBtn_default').click();
@@ -71,7 +74,7 @@ test('test edit connection', async ({ page }) => {
 
 
 test('test edit connection alias', async ({ page }) => {
-    createNewConnection(page);
+    createDefaultConnection(page);
 
     // click on edit connection button, edit, and confirm
     await page.locator('#editConnBtn_default').click();
@@ -88,3 +91,32 @@ test('test edit connection alias', async ({ page }) => {
     expect(innerDivCount).toBe(1);
 });
 
+
+test('test error if creates connection with existing name', async ({ page }) => {
+    createDefaultConnection(page);
+
+    await page.locator('#createNewConnection').click();
+    await page.locator('#connectionName').fill('default');
+    await page.locator('#createConnectionFormButton').click();
+
+    await expect(page.locator('.user-error-message')).toContainText('A connection named default already exists in your connections file');
+});
+
+
+test('test error if edit connection with existing name', async ({ page }) => {
+    // create default connection
+    createDefaultConnection(page);
+
+    // create a new connection
+    await page.locator('#createNewConnection').click();
+    await page.locator('#connectionName').fill('duckdb');
+    await page.locator('#createConnectionFormButton').click();
+
+    // try to rename it to default, this should fail
+    await page.locator('#editConnBtn_duckdb').click();
+    await page.locator('#connectionName').fill('default');
+    await page.locator('#updateConnectionFormButton').click();
+
+
+    await expect(page.locator('.user-error-message')).toContainText('A connection named default already exists in your connections file');
+});
