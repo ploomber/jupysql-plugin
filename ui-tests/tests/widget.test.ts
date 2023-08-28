@@ -94,7 +94,7 @@ test('test create new connection shows error if unable to connect', async ({ pag
 
 
     // check error message
-    await expect(page.locator('.user-error-message')).toContainText('could not connect to server');
+    await expect(page.locator('.user-error-message')).toContainText('UsageError');
 
     // ensure connection file isn't created
     await page.notebook.addCell("code", "%%sh\ncat connections.ini")
