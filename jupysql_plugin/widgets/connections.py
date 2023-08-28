@@ -187,7 +187,7 @@ class ConnectorWidgetManager:
 
         self.connect_to_database(connection_string, connection_name)
 
-    def connect_to_database(connection_str, connection_name):
+    def connect_to_database(self, connection_str, connection_name):
         """Connect to a database using a connection string and alias"""
         # this method contains the error handling logic that helps the user diagnose
         # connection errors so we use this instead of the SQLAlchemy/DBAPIConnection

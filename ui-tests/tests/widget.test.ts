@@ -79,6 +79,33 @@ test('test create new connection', async ({ page }) => {
 
 });
 
+test('test create new connection shows error if unable to connect', async ({ page }) => {
+    await displayWidget(page);
+
+    // create a new connection with invalid credentials (db isn't running in localhost)
+    await page.locator('#createNewConnection').click();
+    await page.locator('#selectConnection').selectOption({ label: 'PostgreSQL' });
+    await page.locator('#username').fill('someuser');
+    await page.locator('#password').fill('somepassword');
+    await page.locator('#host').fill('localhost');
+    await page.locator('#port').fill('5432');
+    await page.locator('#database').fill('somedb');
+    await page.locator('#createConnectionFormButton').click();
+
+
+    // check error message
+    await expect(page.locator('.user-error-message')).toContainText('could not connect to server');
+
+    // ensure connection file isn't created
+    await page.notebook.addCell("code", "%%sh\ncat connections.ini")
+    await page.notebook.runCell(1);
+
+    let output
+    output = await page.notebook.getCellTextOutput(1);
+    await expect(output[0]).toContain('connections.ini: No such file or directory');
+
+});
+
 test('test delete connection', async ({ page }) => {
     await createDefaultConnection(page);
 
@@ -113,6 +140,30 @@ test('test edit connection', async ({ page }) => {
     output = await page.notebook.getCellTextOutput(1);
     await expect(output[0]).toContain('database = duck.db');
 });
+
+
+test('test edit connection shows error if unable to connect', async ({ page }) => {
+    await createDefaultConnection(page);
+
+    // click on edit connection button, edit, and confirm (with invalid credentials)
+    await page.locator('#editConnBtn_default').click();
+    await page.locator('#database').fill('path/to/missing/duck.db');
+    await page.locator('#updateConnectionFormButton').click();
+
+
+    // check error message
+    await expect(page.locator('.user-error-message')).toContainText('duckdb.IOException');
+
+    // ensure connection file isn't modified
+    await page.notebook.addCell("code", "%%sh\ncat connections.ini")
+    await page.notebook.runCell(1);
+
+    let output
+    output = await page.notebook.getCellTextOutput(1);
+    // should still be :memory:
+    await expect(output[0]).toContain('database = :memory:');
+});
+
 
 
 test('test edit connection alias', async ({ page }) => {
