@@ -150,9 +150,7 @@ class ConnectorWidgetManager:
                 URL.create(**url_data).render_as_string(hide_password=False)
             )
 
-            ConnectionManager.set(
-                connection_str, alias=connection_name, displaycon=False
-            )
+            self.connect_to_database(connection_str, connection_name)
 
         self._save_new_section_to_config_file(connection_name, url_data, existing_alias)
 
@@ -187,12 +185,14 @@ class ConnectorWidgetManager:
             connection_name
         )
 
+        self.connect_to_database(connection_string, connection_name)
+
+    def connect_to_database(connection_str, connection_name):
+        """Connect to a database using a connection string and alias"""
         # this method contains the error handling logic that helps the user diagnose
         # connection errors so we use this instead of the SQLAlchemy/DBAPIConnection
         # constructor
-        ConnectionManager.set(
-            connection_string, alias=connection_name, displaycon=False
-        )
+        ConnectionManager.set(connection_str, alias=connection_name, displaycon=False)
 
     def delete_section_with_name(self, section_name):
         """
