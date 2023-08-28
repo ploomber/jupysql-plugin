@@ -11,12 +11,12 @@ test('test options displayed on tab', async ({ page }) => {
     await page.keyboard.press('Tab');
 
     // delay to ensure the autocompletion options are displayed
-    await page.waitForTimeout(2000);
+    await page.waitForSelector(".jp-Completer-list")
 
-    await expect(page.locator('body')).toContainText('SELECT');
-    await expect(page.locator('body')).toContainText('SELECT DISTINCT');
-    await expect(page.locator('body')).toContainText('SELECT INTO');
-    await expect(page.locator('body')).toContainText('SELECT TOP');
+    await expect(page.locator('.jp-Completer-list')).toContainText('SELECT');
+    await expect(page.locator('.jp-Completer-list')).toContainText('SELECT DISTINCT');
+    await expect(page.locator('.jp-Completer-list')).toContainText('SELECT INTO');
+    await expect(page.locator('.jp-Completer-list')).toContainText('SELECT TOP');
 });
 
 
@@ -31,8 +31,7 @@ test('test complete updates cell', async ({ page }) => {
     await page.keyboard.press('Tab')
 
     // delay to ensure the autocompletion options are displayed
-    await page.waitForTimeout(2000);
-
+    await page.waitForSelector(".jp-Completer-list")
     await page.keyboard.press('Enter');
 
     const cell_updated = await page.notebook.getCell(0)
