@@ -36,6 +36,7 @@ class ConnectorWidgetManager:
         return _get_sql_magic().dsn_filename
 
     def is_config_exist(self) -> bool:
+        """Returns True if the config file exists, False otherwise"""
         return Path(self.get_path_to_config_file()).is_file()
 
     def _get_config(self) -> ConfigParser:
