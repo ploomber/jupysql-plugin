@@ -378,7 +378,7 @@ export class ConnectorView extends DOMWidgetView {
 
         const connectionTemplate = this.connectionsTemplates[key];
 
-        this.drawConnectionDetailsForm(connectionTemplate, "");
+        this.drawConnectionDetailsForm(connectionTemplate);
     }
 
     /**
@@ -386,7 +386,7 @@ export class ConnectorView extends DOMWidgetView {
      * 
      * @param connectionTemplate - new connection template
      */
-    drawConnectionDetailsForm(connectionTemplate: ConnectionTemplate, connectionAlias: string) {
+    drawConnectionDetailsForm(connectionTemplate: ConnectionTemplate, connectionAlias: string = "") {
         const { fields } = connectionTemplate;
 
         const connectionFormContainer = this.el.querySelector("#connectionFormContainer");
@@ -400,7 +400,7 @@ export class ConnectorView extends DOMWidgetView {
         const hiddenInput = document.createElement("input");
         hiddenInput.type = "hidden";
         hiddenInput.name = "existingConnectionAlias";
-        hiddenInput.value = connectionAlias ? connectionAlias : "";
+        hiddenInput.value = connectionAlias || "";
         connectionForm.appendChild(hiddenInput);
 
         fields.forEach(field => {
