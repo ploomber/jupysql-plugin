@@ -70,7 +70,9 @@ class ConnectorWidget(DOMWidget):
                         connection_name=connection["name"]
                     )
                 except Exception as e:
-                    self.send_error_message_to_front(e)
+                    self.send_error_message_to_frontend(
+                        method="connection_error", error=e
+                    )
                 else:
                     self.send({"method": "connected", "message": connection["name"]})
 
@@ -85,15 +87,14 @@ class ConnectorWidget(DOMWidget):
                             new_connection_data
                         )
                     )
-                except exceptions.ConnectionWithNameAlreadyExists:
-                    self.send(
-                        {
-                            "method": "connection_name_exists_error",
-                            "message": connection_name,
-                        }
+                except exceptions.ConnectionWithNameAlreadyExists as e:
+                    self.send_error_message_to_frontend(
+                        method="connection_name_exists_error", error=e
                     )
                 except Exception as e:
-                    self.send_error_message_to_front(e)
+                    self.send_error_message_to_frontend(
+                        method="connection_error", error=e
+                    )
                 else:
                     self.send({"method": "connected", "message": connection_name})
                     self.stored_connections = (
@@ -107,7 +108,19 @@ class ConnectorWidget(DOMWidget):
         else:
             raise ValueError("Method is not specified")
 
-    def send_error_message_to_front(self, error):
-        error_prefix = error.__class__.__name__
-        error_message = f"{error_prefix} : {str(error)}"
-        self.send({"method": "connection_error", "message": error_message})
+    def send_error_message_to_frontend(self, *, method, error):
+        """Display an error message in the frontend
+
+        Parameters
+        ----------
+        method : str
+            The method to send to the frontend, this is used to determine how the
+            frontend should react to the error.
+
+        error : Exception
+            The error to send to the frontend, the error type and message will be
+            sent to the frontend.
+        """
+        error_type = error.__class__.__name__
+        error_message = f"{error_type}: {str(error)}"
+        self.send({"method": method, "message": error_message})

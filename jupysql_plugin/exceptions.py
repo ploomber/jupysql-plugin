@@ -6,5 +6,7 @@ class ConnectionWithNameAlreadyExists(Exception):
 
     def __init__(self, name):
         self.name = name
-        self.message = f"Connection with name {name} already exists"
+        self.message = (
+            f"A connection named {name!r} already exists in your connections file"
+        )
         super().__init__(self.message)

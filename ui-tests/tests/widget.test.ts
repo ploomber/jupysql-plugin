@@ -192,7 +192,7 @@ test('test error if creates connection with existing name', async ({ page }) => 
     await page.locator('#connectionName').fill('default');
     await page.locator('#createConnectionFormButton').click();
 
-    await expect(page.locator('.user-error-message')).toContainText('A connection named default already exists in your connections file');
+    await expect(page.locator('.user-error-message')).toContainText("A connection named 'default' already exists in your connections file");
 });
 
 
@@ -211,5 +211,5 @@ test('test error if edit connection with existing name', async ({ page }) => {
     await page.locator('#updateConnectionFormButton').click();
 
 
-    await expect(page.locator('.user-error-message')).toContainText('A connection named default already exists in your connections file');
+    await expect(page.locator('.user-error-message')).toContainText("A connection named 'default' already exists in your connections file");
 });

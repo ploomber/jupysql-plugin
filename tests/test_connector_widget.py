@@ -10,7 +10,7 @@ from jupysql_plugin.widgets.connector_widget import ConnectorWidget
 class ConnectorWidgetTesting(ConnectorWidget):
     """A class to test ConnectorWidget methods"""
 
-    def send_error_message_to_front(self, error):
+    def send_error_message_to_frontend(self, *, method, error):
         """The original implementation sends a message to the frontend, here,
         we raise an error instead
         """

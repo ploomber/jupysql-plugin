@@ -540,6 +540,12 @@ export class ConnectorView extends DOMWidgetView {
      * @param content - The method to invoke with data
      */
     handleMessage(content: any) {
+        const errors = ["connection_error", "connection_name_exists_error"]
+
+        if (errors.includes(content.method)) {
+            this.showErrorMessage(content.message);
+        }
+
         if (content.method === "update_connections") {
             this.connections = JSON.parse(content.message);
 
@@ -552,18 +558,6 @@ export class ConnectorView extends DOMWidgetView {
             this.markConnectedButton(connectionName);
         }
 
-
-
-        if (content.method === "connection_name_exists_error") {
-            const connectionName = content.message;
-            const error = `A connection named ${connectionName} already exists in your connections file`;
-            this.showErrorMessage(error);
-        }
-
-        if (content.method === "connection_error") {
-            const error = content.message;
-            this.showErrorMessage(error);
-        }
 
         if (content.method === "check_config_file") {
             const isExist = content.message;
