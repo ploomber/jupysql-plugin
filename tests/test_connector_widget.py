@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 from sql.connection import ConnectionManager
+from IPython.core.error import UsageError
 
 from jupysql_plugin.widgets.connector_widget import ConnectorWidget
 
@@ -9,7 +10,7 @@ from jupysql_plugin.widgets.connector_widget import ConnectorWidget
 class ConnectorWidgetTesting(ConnectorWidget):
     """A class to test ConnectorWidget methods"""
 
-    def send_error_message_to_front(self, error):
+    def send_error_message_to_frontend(self, *, method, error):
         """The original implementation sends a message to the frontend, here,
         we raise an error instead
         """
@@ -75,6 +76,26 @@ def test_method_submit_new_connection_path(tmp_empty, data, expected):
 
     assert config == expected
     assert set(ConnectionManager.connections) == {"duck"}
+
+
+def test_submit_new_connection_doesnt_modify_ini_file_if_fails_to_connect(tmp_empty):
+    widget = ConnectorWidgetTesting()
+
+    with pytest.raises(UsageError):
+        widget._handle_message(
+            None,
+            {
+                "method": "submit_new_connection",
+                "data": {
+                    "connectionName": "pg",
+                    "driver": "postgresql",
+                    "database": "mypgdb",
+                },
+            },
+            None,
+        )
+
+    assert not Path("jupysql-plugin.ini").exists()
 
 
 def test_method_connect(tmp_empty):

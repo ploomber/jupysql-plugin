@@ -1,7 +1,67 @@
+from unittest.mock import ANY
 from pathlib import Path
 
 import pytest
 from jupysql_plugin.widgets import connections
+from sql.connection import ConnectionManager
+
+
+@pytest.mark.parametrize(
+    "config_file, expected",
+    [
+        (
+            "",
+            [],
+        ),
+        (
+            """
+[postgresql]
+username = user
+password = pass
+host = localhost
+database = db
+drivername = postgresql
+port = 5432
+""",
+            [
+                {
+                    "name": "postgresql",
+                    "username": "user",
+                    "password": "pass",
+                    "host": "localhost",
+                    "database": "db",
+                    "driver": "postgresql",
+                    "port": "5432",
+                },
+            ],
+        ),
+        (
+            """
+[duck]
+drivername = duckdb
+
+[sqlite]
+drivername = sqlite
+""",
+            [
+                {"driver": "duckdb", "name": "duck"},
+                {"driver": "sqlite", "name": "sqlite"},
+            ],
+        ),
+    ],
+    ids=[
+        "empty",
+        "one",
+        "two",
+    ],
+)
+def test_get_connections_from_config_file(tmp_empty, config_file, expected):
+    Path("jupysql-plugin.ini").write_text(config_file)
+
+    assert (
+        connections.ConnectorWidgetManager().get_connections_from_config_file()
+        == expected
+    )
 
 
 @pytest.mark.parametrize(
@@ -41,8 +101,10 @@ port = 5432
         ),
     ],
 )
-def test_create_new_connection(tmp_empty, data, expected):
-    connections._create_new_connection(data)
+def test_save_connection_to_config_file_and_connect(tmp_empty, data, expected):
+    manager = connections.ConnectorWidgetManager()
+    # do not connect because the db details are invalid
+    manager.save_connection_to_config_file_and_connect(data, connect=False)
     content = Path("jupysql-plugin.ini").read_text()
     assert content == expected
 
@@ -50,7 +112,7 @@ def test_create_new_connection(tmp_empty, data, expected):
 @pytest.mark.parametrize(
     "dsn_filename",
     [
-        "jupysql-plugin.ini",
+        "path-to/jupysql-plugin.ini",
         "path/to/jupysql-plugin.ini",
     ],
     ids=[
@@ -58,16 +120,98 @@ def test_create_new_connection(tmp_empty, data, expected):
         "nested",
     ],
 )
-def test_store_connection_details(tmp_empty, override_sql_magic, dsn_filename):
+def test_save_connection_to_config_file_and_connect_in_nested_dir(
+    tmp_empty, override_sql_magic, dsn_filename
+):
     override_sql_magic.dsn_filename = dsn_filename
 
-    connections._store_connection_details("some_connection", {"drivername": "duckdb"})
+    manager = connections.ConnectorWidgetManager()
+    manager.save_connection_to_config_file_and_connect(
+        {
+            "driver": "duckdb",
+            "connectionName": "somedb",
+            "database": ":memory:",
+        }
+    )
 
-    assert (
-        Path(dsn_filename).read_text()
-        == """\
-[some_connection]
-drivername = duckdb
+    assert ConnectionManager.connections == {"somedb": ANY}
+    assert "[somedb]" in Path(dsn_filename).read_text()
 
+
+@pytest.mark.parametrize(
+    "data, expected",
+    [
+        (
+            {
+                "driver": "sqlite",
+                "connectionName": "mydb",
+                "database": ":memory:",
+                "existingConnectionAlias": "mydb",
+            },
+            """
+[mydb]
+database = :memory:
+drivername = sqlite
+""",
+        ),
+        (
+            {
+                "driver": "sqlite",
+                "connectionName": "newdb",
+                "database": ":memory:",
+                "existingConnectionAlias": "mydb",
+            },
+            """
+[newdb]
+database = :memory:
+drivername = sqlite
+""",
+        ),
+    ],
+    ids=[
+        "change-database",
+        "change-alias",
+    ],
+)
+def test_save_connection_to_config_file_and_connect_overwrite(
+    tmp_empty,
+    override_sql_magic,
+    data,
+    expected,
+):
+    path = Path("jupysql-plugin.ini")
+    path.write_text(
+        """
+[mydb]
+drivername = sqlite
+database = my.db
 """
     )
+
+    manager = connections.ConnectorWidgetManager()
+    manager.save_connection_to_config_file_and_connect(data)
+
+    assert path.read_text().strip() == expected.strip()
+
+
+def test_delete_section_with_name(tmp_empty):
+    Path("jupysql-plugin.ini").write_text(
+        """
+[duck]
+drivername = duckdb
+
+[sqlite]
+drivername = sqlite
+"""
+    )
+
+    manager = connections.ConnectorWidgetManager()
+
+    manager.delete_section_with_name("duck")
+
+    expected = """
+[sqlite]
+drivername = sqlite
+""".strip()
+
+    assert Path("jupysql-plugin.ini").read_text().strip() == expected

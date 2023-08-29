@@ -13,7 +13,12 @@ import '../../style/connector.css';
 
 interface Connection {
     name: string,
-    drivername: string
+    driver: string,
+    username: string,
+    password: string,
+    host: string,
+    port: string,
+    database: string,
 }
 
 interface ConnectionTemplate {
@@ -39,7 +44,8 @@ export class ConnectorModel extends DOMWidgetModel {
             _view_module: ConnectorModel.view_module,
             _view_module_version: ConnectorModel.view_module_version,
             connections: ConnectorModel.connections,
-            connections_templates: ConnectorModel.connections_templates
+            connections_templates: ConnectorModel.connections_templates,
+            driver_to_dbname: ConnectorModel.driver_to_dbname,
         };
     }
 
@@ -56,15 +62,19 @@ export class ConnectorModel extends DOMWidgetModel {
     static view_module_version = MODULE_VERSION;
     static connections: any[] = [];
     static connections_templates: any[] = [];
+    static driver_to_dbname: any[] = [];
 }
 
 export class ConnectorView extends DOMWidgetView {
 
-    // availble connections
+    // available connections
     connections = JSON.parse(this.model.get('connections'));
 
     // connections templates for creating a new connection
     connectionsTemplates = JSON.parse(this.model.get('connections_templates'));
+
+
+    driver_to_dbname = this.model.get('driver_to_dbname');
 
     activeConnection = ""
 
@@ -72,18 +82,20 @@ export class ConnectorView extends DOMWidgetView {
     render() {
         this.el.classList.add('connector-widget');
 
-        this.drawConnectorUI(this.connections);
+        this.drawConnectionsList(this.connections);
 
         // Listen for messages from the Python backend
         this.model.on('msg:custom', this.handleMessage.bind(this));
     }
 
     /**
-     * Draws the connection UI
+     * Draws the connection list
      * 
      * @param connection : The availble connections
      */
-    drawConnectorUI(connections: Array<Connection>) {
+    drawConnectionsList(connections: Array<Connection>) {
+        console.log('driver to db name', this.driver_to_dbname)
+
         this.el.innerHTML = ""
         const template = `
         <div id="connectionsManager">
@@ -112,7 +124,7 @@ export class ConnectorView extends DOMWidgetView {
                 <div class="block">
                     <div class="create-new-connection" id="createNewConnectionButton">
                         <div class="icon"></div>
-                        <div>
+                        <div id="createNewConnection">
                             Create new connection
                         </div>
                     </div>
@@ -128,7 +140,7 @@ export class ConnectorView extends DOMWidgetView {
 
 
             <div id="newConnectionContainer" class="block" style = "display: none">
-                <h3>Create new connection</h3>
+                <h3 id="connectionFormHeader"></h3>
                 <div class="block">
                     <select id="selectConnection"></select>
 
@@ -158,17 +170,26 @@ export class ConnectorView extends DOMWidgetView {
 
             const connectButton = document.createElement("BUTTON");
             connectButton.id = `connBtn_${name_without_spaces}`;
-            connectButton.className = "secondary";
+            connectButton.className = "secondary connectionStatusButton";
             connectButton.innerHTML = "Connect";
             connectButton.onclick = this.handleConnectionClick.bind(this, connection);
 
+            // button to edit a connection
+            const editConnection = document.createElement("BUTTON");
+            editConnection.className = `edit-connection-button`;
+            editConnection.id = `editConnBtn_${name_without_spaces}`;
+            editConnection.onclick = this.handleEditConnectionClick.bind(this, connection);
+
+            // trash can button to delete a connection
             const deleteConnection = document.createElement("BUTTON");
             deleteConnection.className = `delete-connection-button`;
             deleteConnection.id = `deleteConnBtn_${name_without_spaces}`;
             deleteConnection.onclick = this.handleDeleteConnectionClick.bind(this, connection);
 
+            // add buttons to the actions container
             let connectionsButtonsContainer = this.el.querySelector('#connectionsButtonsContainer');
             actionsContainer.appendChild(connectButton);
+            actionsContainer.appendChild(editConnection);
             actionsContainer.appendChild(deleteConnection);
 
             buttonContainer.appendChild(actionsContainer);
@@ -230,6 +251,63 @@ export class ConnectorView extends DOMWidgetView {
         this.send(message);
     }
 
+
+    handleEditConnectionClick(connection: Connection) {
+        this.el.querySelector("#connectionFormHeader").innerHTML = "Edit connection";
+
+        // hide connectionsContainer
+        (<HTMLElement>this.el.querySelector("#connectionsContainer")).style.display = "none";
+
+        // show newConnectionContainer
+        (<HTMLElement>this.el.querySelector("#newConnectionContainer")).style.display = "block";
+
+
+        const dropdown = <HTMLSelectElement>this.el.querySelector("#selectConnection");
+        const valueToSelect = this.driver_to_dbname[connection.driver];
+
+        for (let i = 0; i < dropdown.options.length; i++) {
+            if (dropdown.options[i].value === valueToSelect) {
+                dropdown.selectedIndex = i;
+                break;
+            }
+        }
+
+        const select = (<HTMLSelectElement>this.el.querySelector("#selectConnection"));
+        const key = select.value;
+        const connectionTemplate = this.connectionsTemplates[key];
+        this.drawConnectionDetailsForm(connectionTemplate, connection.name);
+
+        const name = (<HTMLSelectElement>this.el.querySelector("#connectionName"));
+        if (name) {
+            name.value = connection.name;
+        }
+
+        const username = (<HTMLSelectElement>this.el.querySelector("#username"));
+        if (username) {
+            username.value = connection.username;
+        }
+
+        const password = (<HTMLSelectElement>this.el.querySelector("#password"));
+        if (password) {
+            password.value = connection.password;
+        }
+
+        const host = (<HTMLSelectElement>this.el.querySelector("#host"));
+        if (host) {
+            host.value = connection.host;
+        }
+
+        const db = (<HTMLSelectElement>this.el.querySelector("#database"));
+        if (db) {
+            db.value = connection.database;
+        }
+
+        const port = (<HTMLSelectElement>this.el.querySelector("#port"));
+        if (port) {
+            port.value = connection.port;
+        }
+    }
+
     handleDeleteConnectionClick(connection: Connection) {
         this.hideDeleteMessageApproval()
 
@@ -253,11 +331,12 @@ export class ConnectorView extends DOMWidgetView {
         cancelButton.addEventListener("click", this.hideDeleteMessageApproval.bind(this))
         deleteConnectionMessage.querySelector(".actions").appendChild(cancelButton);
 
-        const approveButton = document.createElement("BUTTON");
-        approveButton.innerHTML = "Delete";
-        approveButton.className = "danger";
-        approveButton.addEventListener("click", this.deleteConnection.bind(this, connection))
-        deleteConnectionMessage.querySelector(".actions").appendChild(approveButton);
+        const deleteButton = document.createElement("BUTTON");
+        deleteButton.innerHTML = "Delete";
+        deleteButton.className = "danger";
+        deleteButton.id = "deleteConnectionButton";
+        deleteButton.addEventListener("click", this.deleteConnection.bind(this, connection))
+        deleteConnectionMessage.querySelector(".actions").appendChild(deleteButton);
 
         // hide controllers
         const deleteConnBtn = this.el.querySelector(`#deleteConnBtn_${connection["name"].replace(/ /g, "_")}`);
@@ -279,13 +358,14 @@ export class ConnectorView extends DOMWidgetView {
      * Handle create new connection click
      */
     handleCreateNewConnectionClick() {
+        this.el.querySelector("#connectionFormHeader").innerHTML = "Create new connection";
+
         // hide connectionsContainer
         (<HTMLElement>this.el.querySelector("#connectionsContainer")).style.display = "none";
 
         // show newConnectionContainer
         (<HTMLElement>this.el.querySelector("#newConnectionContainer")).style.display = "block";
 
-        // select first value
         this.handleCreateNewConnectionChange()
     }
 
@@ -298,15 +378,15 @@ export class ConnectorView extends DOMWidgetView {
 
         const connectionTemplate = this.connectionsTemplates[key];
 
-        this.drawNewConnectionForm(connectionTemplate);
+        this.drawConnectionDetailsForm(connectionTemplate);
     }
 
     /**
-     * Draws a form to create a new connection
+     * Draws a form to create or edit connections
      * 
      * @param connectionTemplate - new connection template
      */
-    drawNewConnectionForm(connectionTemplate: ConnectionTemplate) {
+    drawConnectionDetailsForm(connectionTemplate: ConnectionTemplate, connectionAlias: string = "") {
         const { fields } = connectionTemplate;
 
         const connectionFormContainer = this.el.querySelector("#connectionFormContainer");
@@ -315,6 +395,13 @@ export class ConnectorView extends DOMWidgetView {
         const connectionForm = document.createElement("FORM");
         connectionForm.id = "connectionForm";
         connectionFormContainer.appendChild(connectionForm)
+
+        // add a hidden value to hold the alias, this is used when editing a connection
+        const hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "existingConnectionAlias";
+        hiddenInput.value = connectionAlias || "";
+        connectionForm.appendChild(hiddenInput);
 
         fields.forEach(field => {
             // text description
@@ -330,7 +417,6 @@ export class ConnectorView extends DOMWidgetView {
             input.name = field.id;
             input.className = "field";
 
-            console.log("field", field, this.connections.length)
 
             // when creating the connection alias field, set the default value
             // to "default" if there are no connections, this will ensure that
@@ -360,16 +446,27 @@ export class ConnectorView extends DOMWidgetView {
         const cancelButton = document.createElement("BUTTON");
         cancelButton.innerHTML = "Cancel";
         cancelButton.className = "secondary";
-        cancelButton.addEventListener("click", this.drawConnectorUI.bind(this, this.connections))
+        cancelButton.addEventListener("click", this.drawConnectionsList.bind(this, this.connections))
         buttonsContainer.appendChild(cancelButton);
 
         // submit form button
         const submitButton = document.createElement("BUTTON");
         submitButton.className = "primary";
-        submitButton.innerHTML = "Create";
-        connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
         buttonsContainer.appendChild(submitButton);
 
+        if (connectionAlias) {
+            // editing an existing connection
+            submitButton.innerHTML = "Update";
+            submitButton.id = "updateConnectionFormButton";
+            connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
+        } else {
+            // creating a new connection
+            submitButton.innerHTML = "Create";
+            submitButton.id = "createConnectionFormButton";
+            connectionForm.addEventListener("submit", this.handleSubmitNewConnection.bind(this))
+        }
+
+        // add buttons to the form
         connectionForm.appendChild(buttonsContainer);
 
 
@@ -380,22 +477,28 @@ export class ConnectorView extends DOMWidgetView {
      * 
      * @param event - Submit event
      */
-    handleSubmitNewConnection(event: Event) {
+    handleSubmitNewConnection(event: SubmitEvent) {
         event.preventDefault();
+
         let allFieldsFilled = true;
 
         // Extract form data
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
 
+
         // Convert form data to a plain object
         const formValues: { [key: string]: string } = {};
+
         for (const [key, value] of formData.entries()) {
             const _value = value.toString();
 
             formValues[key] = _value;
-            if (_value.length === 0) {
-                allFieldsFilled = false
+
+            // Skip validation for existingConnectionAlias field since it's hidden
+            // and only used when editing a connection
+            if (key !== "existingConnectionAlias" && _value.length === 0) {
+                allFieldsFilled = false;
             }
         }
 
@@ -405,7 +508,6 @@ export class ConnectorView extends DOMWidgetView {
 
         formValues["driver"] = driver;
 
-        // todo: validate all inputs are filled
         if (allFieldsFilled) {
             this.sendFormData(formValues);
         } else {
@@ -413,20 +515,22 @@ export class ConnectorView extends DOMWidgetView {
         }
     }
 
+
+
+
     /**
      * Sends form data to the backend
      * 
      * @param formData - FormData object
      */
     sendFormData(formData: { [key: string]: string }) {
-        // Create a message to send to the Python backend
         const message = {
-            method: 'submit_new_connection',
+            method: "submit_new_connection",
             data: formData
         };
 
 
-        // Send the message to the Python backend
+        // NOTE: responses are handled in the `handleMessage` method
         this.send(message);
     }
 
@@ -436,10 +540,16 @@ export class ConnectorView extends DOMWidgetView {
      * @param content - The method to invoke with data
      */
     handleMessage(content: any) {
+        const errors = ["connection_error", "connection_name_exists_error"]
+
+        if (errors.includes(content.method)) {
+            this.showErrorMessage(content.message);
+        }
+
         if (content.method === "update_connections") {
             this.connections = JSON.parse(content.message);
 
-            this.drawConnectorUI(this.connections);
+            this.drawConnectionsList(this.connections);
         }
 
         if (content.method === "connected") {
@@ -448,18 +558,6 @@ export class ConnectorView extends DOMWidgetView {
             this.markConnectedButton(connectionName);
         }
 
-
-
-        if (content.method === "connection_name_exists_error") {
-            const connectionName = content.message;
-            const error = `A connection named ${connectionName} already exists in your connections file`;
-            this.showErrorMessage(error);
-        }
-
-        if (content.method === "connection_error") {
-            const error = content.message;
-            this.showErrorMessage(error);
-        }
 
         if (content.method === "check_config_file") {
             const isExist = content.message;
@@ -482,7 +580,7 @@ export class ConnectorView extends DOMWidgetView {
      * @param connectionName - Active connection name
      */
     markConnectedButton(connectionName: string) {
-        this.el.querySelectorAll(`.connection-button-actions button:not(.delete-connection-button)`)
+        this.el.querySelectorAll('.connection-button-actions .connectionStatusButton')
             .forEach((button: Element) => {
                 const buttonEl = (<HTMLButtonElement>button);
                 buttonEl.innerHTML = "Connect";

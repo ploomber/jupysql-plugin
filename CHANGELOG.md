@@ -4,6 +4,8 @@
 
 * Connector widget creates parent directories if needed
 * Connector widget sets the default alias as "default" if the `.ini` file has no connections
+* Connector widget does not modify `.ini` file if the connection fails (#68)
+* Connector widget allows editing connections (#61)
 
 ## 0.2.0
 

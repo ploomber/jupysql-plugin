@@ -44,6 +44,9 @@ cd ..
 ```sh
 cd ./ui-tests
 jlpm test
+
+# to add a timeout (in ms) and execute specific tests
+jlpm playwright test --timeout 5000 --grep 'somename'
 ```
 
 Test results will be shown in the terminal. In case of any test failures, the test report

@@ -1,75 +1,14 @@
 from jupysql_plugin import __version__, _module_name
-from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES
+from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES, DRIVER_TO_DBNAME
 from jupysql_plugin.widgets.connections import (
-    _create_new_connection,
-    _get_config_file,
-    get_path_to_config_file,
+    _serialize_connections,
+    ConnectorWidgetManager,
 )
+from jupysql_plugin import exceptions
 
 from ipywidgets import DOMWidget
-from traitlets import Unicode
+from traitlets import Unicode, Dict
 import json
-from pathlib import Path
-
-
-try:
-    # renamed in jupysql 0.9.0
-    from sql.connection import ConnectionManager
-
-    # this was renamed in jupysql 0.10.0
-    from sql.parse import connection_str_from_dsn_section
-except (ModuleNotFoundError, ImportError) as e:
-    raise ModuleNotFoundError(
-        "Your jupysql version isn't compatible with this version of jupysql-plugin. "
-        "Please update: pip install jupysql --upgrade"
-    ) from e
-
-
-def _serialize_connections(connections):
-    """
-    Returns connections object as JSON
-    """
-    return json.dumps(connections)
-
-
-def _get_connection_string(connection_name) -> str:
-    """
-    Returns connection string
-    """
-
-    class Config:
-        dsn_filename = Path(get_path_to_config_file())
-
-    connection_string = connection_str_from_dsn_section(
-        section=connection_name, config=Config()
-    )
-
-    return connection_string
-
-
-def _get_stored_connections() -> list:
-    """
-    Returns a list of stored connections
-    """
-    connections = []
-    config = _get_config_file()
-    sections = config.sections()
-
-    if len(sections) > 0:
-        connections = [{"name": s, "driver": config[s]["drivername"]} for s in sections]
-
-    return connections
-
-
-def is_config_exist() -> bool:
-    return Path(get_path_to_config_file()).is_file()
-
-
-def _is_unique_connection_name(connection_name) -> bool:
-    config = _get_config_file()
-    is_exists = connection_name in config.sections()
-
-    return not is_exists
 
 
 class ConnectorWidget(DOMWidget):
@@ -86,13 +25,16 @@ class ConnectorWidget(DOMWidget):
 
     connections = Unicode().tag(sync=True)
     connections_templates = Unicode().tag(sync=True)
+    driver_to_dbname = Dict().tag(sync=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stored_connections = _get_stored_connections()
+        self.widget_manager = ConnectorWidgetManager()
+        self.stored_connections = self.widget_manager.get_connections_from_config_file()
         self.connections = _serialize_connections(self.stored_connections)
         self.connections_templates = json.dumps(CONNECTIONS_TEMPLATES)
+        self.driver_to_dbname = DRIVER_TO_DBNAME
 
         self.on_msg(self._handle_message)
 
@@ -104,16 +46,18 @@ class ConnectorWidget(DOMWidget):
             method = content["method"]
 
             if method == "check_config_file":
-                is_exist = is_config_exist()
+                is_exist = self.widget_manager.is_config_exist()
                 self.send({"method": "check_config_file", "message": is_exist})
 
             # user wants to delete connection
             elif method == "delete_connection":
                 connection = content["data"]
-                self._delete_connection(connection)
+                self.widget_manager.delete_section_with_name(connection["name"])
                 self.send({"method": "deleted", "message": connection["name"]})
 
-                self.stored_connections = _get_stored_connections()
+                self.stored_connections = (
+                    self.widget_manager.get_connections_from_config_file()
+                )
                 connections = _serialize_connections(self.stored_connections)
                 self.send({"method": "update_connections", "message": connections})
 
@@ -122,9 +66,13 @@ class ConnectorWidget(DOMWidget):
                 connection = content["data"]
 
                 try:
-                    self._connect(connection)
+                    self.widget_manager.connect_to_database_in_section(
+                        connection_name=connection["name"]
+                    )
                 except Exception as e:
-                    self.send_error_message_to_front(e)
+                    self.send_error_message_to_frontend(
+                        method="connection_error", error=e
+                    )
                 else:
                     self.send({"method": "connected", "message": connection["name"]})
 
@@ -132,63 +80,47 @@ class ConnectorWidget(DOMWidget):
             elif method == "submit_new_connection":
                 new_connection_data = content["data"]
                 connection_name = new_connection_data.get("connectionName")
-                is_unique_name = _is_unique_connection_name(connection_name)
 
-                if not is_unique_name:
-                    self.send(
-                        {
-                            "method": "connection_name_exists_error",
-                            "message": connection_name,
-                        }
+                try:
+                    connection_name = (
+                        self.widget_manager.save_connection_to_config_file_and_connect(
+                            new_connection_data
+                        )
+                    )
+                except exceptions.ConnectionWithNameAlreadyExists as e:
+                    self.send_error_message_to_frontend(
+                        method="connection_name_exists_error", error=e
+                    )
+                except Exception as e:
+                    self.send_error_message_to_frontend(
+                        method="connection_error", error=e
                     )
                 else:
-                    connection = _create_new_connection(new_connection_data)
-                    self.stored_connections = _get_stored_connections()
+                    self.send({"method": "connected", "message": connection_name})
+                    self.stored_connections = (
+                        self.widget_manager.get_connections_from_config_file()
+                    )
                     connections = _serialize_connections(self.stored_connections)
                     self.send({"method": "update_connections", "message": connections})
-                    try:
-                        self._connect(connection)
-                    except Exception as e:
-                        self.send_error_message_to_front(e)
-                    else:
-                        self.send(
-                            {"method": "connected", "message": connection["name"]}
-                        )
 
             else:
                 raise ValueError(f"Method {method} is not supported")
         else:
             raise ValueError("Method is not specified")
 
-    def send_error_message_to_front(self, error):
-        error_prefix = error.__class__.__name__
-        error_message = f"{error_prefix} : {str(error)}"
-        self.send({"method": "connection_error", "message": error_message})
+    def send_error_message_to_frontend(self, *, method, error):
+        """Display an error message in the frontend
 
-    def _connect(self, connection):
+        Parameters
+        ----------
+        method : str
+            The method to send to the frontend, this is used to determine how the
+            frontend should react to the error.
+
+        error : Exception
+            The error to send to the frontend, the error type and message will be
+            sent to the frontend.
         """
-        Connects to database
-        """
-        name = connection["name"]
-        connection_string = _get_connection_string(name)
-
-        # this method contains the error handling logic that helps the user diagnose
-        # connection errors so we use this instead of the SQLAlchemy/DBAPIConnection
-        # constructor
-        ConnectionManager.set(connection_string, alias=name, displaycon=False)
-
-    def _delete_connection(self, connection):
-        """
-        Delets connection from ini file
-        """
-        connection_name = connection["name"]
-
-        config = _get_config_file()
-
-        with open(get_path_to_config_file(), "r") as f:
-            config.readfp(f)
-
-        config.remove_section(connection_name)
-
-        with open(get_path_to_config_file(), "w") as f:
-            config.write(f)
+        error_type = error.__class__.__name__
+        error_message = f"{error_type}: {str(error)}"
+        self.send({"method": method, "message": error_message})
