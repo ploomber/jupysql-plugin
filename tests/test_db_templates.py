@@ -65,7 +65,128 @@ from jupysql_plugin.widgets.db_templates import CONNECTIONS_TEMPLATES
                 ],
             },
         ),
+        (
+            "Oracle",
+            {
+                "driver": "oracle+oracledb",
+                "fields": [
+                    {
+                        "id": "connectionName",
+                        "label": "Connection alias",
+                        "type": "text",
+                        "default": "oracle",
+                    },
+                    {
+                        "id": "username",
+                        "label": "Username",
+                        "type": "text",
+                    },
+                    {
+                        "id": "password",
+                        "label": "Password",
+                        "type": "password",
+                    },
+                    {
+                        "id": "host",
+                        "label": "Host",
+                        "type": "text",
+                    },
+                    {
+                        "id": "database",
+                        "label": "Database",
+                        "type": "text",
+                    },
+                    {
+                        "id": "port",
+                        "label": "Port",
+                        "type": "number",
+                        "default": 1521,
+                    },
+                ],
+            },
+        ),
+        (
+            "MSSQL",
+            {
+                "driver": "mssql+pyodbc",
+                "fields": [
+                    {
+                        "id": "connectionName",
+                        "label": "Connection alias",
+                        "type": "text",
+                        "default": "mssql",
+                    },
+                    {
+                        "id": "username",
+                        "label": "Username",
+                        "type": "text",
+                    },
+                    {
+                        "id": "password",
+                        "label": "Password",
+                        "type": "password",
+                    },
+                    {
+                        "id": "host",
+                        "label": "Host",
+                        "type": "text",
+                    },
+                    {
+                        "id": "database",
+                        "label": "Database",
+                        "type": "text",
+                    },
+                    {
+                        "id": "port",
+                        "label": "Port",
+                        "type": "number",
+                        "default": 1433,
+                    },
+                ],
+            },
+        ),
+        (
+            "Redshift",
+            {
+                "driver": "redshift+redshift_connector",
+                "fields": [
+                    {
+                        "id": "connectionName",
+                        "label": "Connection alias",
+                        "type": "text",
+                        "default": "redshift",
+                    },
+                    {
+                        "id": "username",
+                        "label": "Username",
+                        "type": "text",
+                    },
+                    {
+                        "id": "password",
+                        "label": "Password",
+                        "type": "password",
+                    },
+                    {
+                        "id": "host",
+                        "label": "Host",
+                        "type": "text",
+                    },
+                    {
+                        "id": "database",
+                        "label": "Database",
+                        "type": "text",
+                    },
+                    {
+                        "id": "port",
+                        "label": "Port",
+                        "type": "number",
+                        "default": 5439,
+                    },
+                ],
+            },
+        ),
     ],
+    ids=["duckdb", "sqlite", "postgresql", "oracle", "mssql", "redshift"],
 )
 def test_templates(key, expected):
     assert CONNECTIONS_TEMPLATES[key] == expected
