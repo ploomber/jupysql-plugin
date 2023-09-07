@@ -23,7 +23,6 @@ ConnectorWidget()`)
     await page.notebook.run()
 }
 
-
 async function createDefaultConnection(page) {
     await displayWidget(page);
 
@@ -80,6 +79,25 @@ test('test create new connection', async ({ page }) => {
 
 });
 
+
+const labels_in_memory = ['DuckDB', 'SQLite']
+
+
+test('test irrelevant fields in memory db', async ({ page }) => {
+    await displayWidget(page);
+    await page.locator('#createNewConnection').click();
+    for (const label of labels_in_memory) {
+    await page.locator('#selectConnection').selectOption({ label: label });
+    const username = page.locator('#username');
+    expect(await username.count()).toBe(0);
+    const password = page.locator('#password');
+    expect(await password.count()).toBe(0);
+    const host = page.locator('#host');
+    expect(await host.count()).toBe(0);
+    }
+
+});
+
 const field_defaults = [
   { label: 'DuckDB', connectionName: 'default', database: ':memory:'},
   { label: 'SQLite', connectionName: 'default', database: ':memory:'},
@@ -110,14 +128,14 @@ test('test field defaults no existing connection', async ({ page }) => {
 
 const field_defaults_existing_connection = [
   { label: 'DuckDB', connectionName: 'duckdb'},
-   { label: 'SQLite', connectionName: 'sqlite'},
+  { label: 'SQLite', connectionName: 'sqlite'},
   { label: 'PostgreSQL', connectionName: 'postgresql'},
   { label: 'MySQL', connectionName: 'mysql'},
   { label: 'MariaDB', connectionName: 'mariadb'},
   { label: 'Snowflake', connectionName: 'snowflake'},
   { label: 'Oracle', connectionName: 'oracle'},
   { label: 'MSSQL',connectionName: 'mssql'},
-  { label: 'Redshift', connectionName: 'redshift'},
+  { label: 'Redshift', connectionName: 'redshift'}
  ]
 
 test('test connection alias defaults with existing connection', async ({ page }) => {
