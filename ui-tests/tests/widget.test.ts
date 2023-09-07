@@ -23,6 +23,7 @@ ConnectorWidget()`)
     await page.notebook.run()
 }
 
+
 async function createDefaultConnection(page) {
     await displayWidget(page);
 
@@ -79,6 +80,80 @@ test('test create new connection', async ({ page }) => {
 
 });
 
+const field_defaults = [
+  { label: 'DuckDB', connectionName: 'default', database: ':memory:'},
+  { label: 'SQLite', connectionName: 'default', database: ':memory:'},
+  { label: 'PostgreSQL', connectionName: 'default', port: '5432', username: "", password: "", host: "", database: ""},
+  { label: 'MySQL', connectionName: 'default', port: '3306', username: "", password: "", host: "", database: ""},
+  { label: 'MariaDB', connectionName: 'default', port: '3306', username: "", password: "", host: "", database: ""},
+  { label: 'Snowflake', connectionName: 'default', port: '443', username: "", password: "", host: "", database: ""},
+  { label: 'Oracle', connectionName: 'default', port: '1521', username: "", password: "", host: "", database: ""},
+  { label: 'MSSQL',connectionName: 'default',  port: '1433', username: "", password: "", host: "", database: ""},
+  { label: 'Redshift', connectionName: 'default', port: '5439', username: "", password: "", host: "", database: ""},
+
+];
+
+test('test field defaults no existing connection', async ({ page }) => {
+    await displayWidget(page);
+    await page.locator('#createNewConnection').click();
+    for (const data of field_defaults) {
+    const entries = Object.entries(data);
+    await page.locator('#selectConnection').selectOption({ label: data.label });
+    for (const [key, value] of entries) {
+    if (key !== "label") {
+    expect(await page.locator(`#${key}`).evaluate(select => select.value)).toBe(value);
+      }
+    }
+  }
+});
+
+
+const field_defaults_existing_connection = [
+  { label: 'DuckDB', connectionName: 'duckdb'},
+   { label: 'SQLite', connectionName: 'sqlite'},
+  { label: 'PostgreSQL', connectionName: 'postgresql'},
+  { label: 'MySQL', connectionName: 'mysql'},
+  { label: 'MariaDB', connectionName: 'mariadb'},
+  { label: 'Snowflake', connectionName: 'snowflake'},
+  { label: 'Oracle', connectionName: 'oracle'},
+  { label: 'MSSQL',connectionName: 'mssql'},
+  { label: 'Redshift', connectionName: 'redshift'},
+ ]
+
+test('test connection alias defaults with existing connection', async ({ page }) => {
+    await createNewNotebook(page)
+
+    await page.notebook.enterCellEditingMode(0);
+    const cell = await page.notebook.getCell(0)
+    await cell?.type(`
+from pathlib import Path
+Path('connections.ini').write_text("""
+[first]
+drivername = sqlite
+database = :memory:
+
+[second]
+drivername = sqlite
+database = :memory:
+""")
+%load_ext sql
+%config SqlMagic.dsn_filename = 'connections.ini'
+from jupysql_plugin.widgets import ConnectorWidget
+ConnectorWidget()`)
+    await page.notebook.run()
+    await page.locator('#createNewConnection').click();
+    for (const data of field_defaults_existing_connection) {
+    const entries = Object.entries(data);
+    await page.locator('#selectConnection').selectOption({ label: data.label });
+    for (const [key, value] of entries) {
+    if (key !== "label") {
+    expect(await page.locator(`#${key}`).evaluate(select => select.value)).toBe(value);
+      }
+    }
+  }
+});
+
+
 test('test create new connection shows error if unable to connect', async ({ page }) => {
     await displayWidget(page);
 
@@ -104,14 +179,6 @@ test('test create new connection shows error if unable to connect', async ({ pag
     output = await page.notebook.getCellTextOutput(1);
     await expect(output[0]).toContain('connections.ini: No such file or directory');
 
-});
-
-test('test create new connection check fields', async ({ page }) => {
-    await displayWidget(page);
-
-    await page.locator('#createNewConnection').click();
-    await page.locator('#selectConnection').selectOption({ label: 'PostgreSQL' });
-    await expect(page.locator('#port')).toContainText('5432');
 });
 
 
