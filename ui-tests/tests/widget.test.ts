@@ -106,6 +106,17 @@ test('test create new connection shows error if unable to connect', async ({ pag
 
 });
 
+test('test create new connection check fields', async ({ page }) => {
+    await displayWidget(page);
+
+    await page.locator('#createNewConnection').click();
+    await page.locator('#selectConnection').selectOption({ label: 'PostgreSQL' });
+    const port = await expect(page.locator('#port'));
+    const portValue = await port.evaluate((el) => el.value);
+    expect(passwordValue).toContain('5432');
+});
+
+
 test('test delete connection', async ({ page }) => {
     await createDefaultConnection(page);
 
