@@ -111,9 +111,7 @@ test('test create new connection check fields', async ({ page }) => {
 
     await page.locator('#createNewConnection').click();
     await page.locator('#selectConnection').selectOption({ label: 'PostgreSQL' });
-    const port = await expect(page.locator('#port'));
-    const portValue = await port.evaluate((el) => el.value);
-    expect(passwordValue).toContain('5432');
+    await expect(page.locator('#port')).toContainText('5432');
 });
 
 
