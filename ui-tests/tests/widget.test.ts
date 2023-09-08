@@ -80,20 +80,21 @@ test('test create new connection', async ({ page }) => {
 });
 
 
-const embeddedDatabases = ['DuckDB', 'SQLite']
+const relevantFieldsEmbeddedDatabases = [
+  { label: 'DuckDB', connectionName: 'default', database: ':memory:'},
+  { label: 'SQLite', connectionName: 'default', database: ':memory:'}
+  ]
 
-for (const database of embeddedDatabases) {
-    test(`test only relevant fields appear in embedded database ${database}`, async ({ page }) => {
+for (const { label, connectionName, database } of relevantFieldsEmbeddedDatabases) {
+    test(`test only relevant fields appear in embedded database ${label}`, async ({ page }) => {
         await displayWidget(page);
 
         await page.locator('#createNewConnection').click();
-        await page.locator('#selectConnection').selectOption({ label: database });
+        await page.locator('#selectConnection').selectOption({ label: label });
 
-        const connectionName = page.locator('#connectionName');
-        expect(await connectionName.count()).toBe(1);
+        expect(await page.locator('#connectionName').evaluate(select => select.value)).toBe(connectionName);
 
-        const db = page.locator('#database');
-        expect(await db.count()).toBe(1);
+        expect(await page.locator('#database').evaluate(select => select.value)).toBe(database);
 
         const username = page.locator('#username');
         expect(await username.count()).toBe(0);
@@ -107,9 +108,7 @@ for (const database of embeddedDatabases) {
     });
 }
 
-const field_defaults = [
-  { label: 'DuckDB', connectionName: 'default', database: ':memory:'},
-  { label: 'SQLite', connectionName: 'default', database: ':memory:'},
+const fieldDefaultsWhenNoExistingConnection = [
   { label: 'PostgreSQL', connectionName: 'default', port: '5432', username: "", password: "", host: "", database: ""},
   { label: 'MySQL', connectionName: 'default', port: '3306', username: "", password: "", host: "", database: ""},
   { label: 'MariaDB', connectionName: 'default', port: '3306', username: "", password: "", host: "", database: ""},
@@ -120,22 +119,24 @@ const field_defaults = [
 
 ];
 
-test('test field defaults no existing connection', async ({ page }) => {
-    await displayWidget(page);
-    await page.locator('#createNewConnection').click();
-    for (const data of field_defaults) {
-    const entries = Object.entries(data);
-    await page.locator('#selectConnection').selectOption({ label: data.label });
-    for (const [key, value] of entries) {
-    if (key !== "label") {
-    expect(await page.locator(`#${key}`).evaluate(select => select.value)).toBe(value);
-      }
-    }
-  }
-});
+for (const { label, connectionName, database, port, username, password, host } of fieldDefaultsWhenNoExistingConnection) {
+    test(`test field defaults appear if there is no existing connection : ${label}`, async ({ page }) => {
+        await displayWidget(page);
+
+        await page.locator('#createNewConnection').click();
+        await page.locator('#selectConnection').selectOption({ label: label });
+
+        expect(await page.locator(`#connectionName`).evaluate(select => select.value)).toBe(connectionName);
+        expect(await page.locator(`#port`).evaluate(select => select.value)).toBe(port);
+        expect(await page.locator(`#username`).evaluate(select => select.value)).toBe(username);
+        expect(await page.locator(`#password`).evaluate(select => select.value)).toBe(password);
+        expect(await page.locator(`#host`).evaluate(select => select.value)).toBe(host);
+        expect(await page.locator(`#database`).evaluate(select => select.value)).toBe(database);
+    });
+}
 
 
-const field_defaults_existing_connection = [
+const aliasDefaultsWithExistingConnection = [
   { label: 'DuckDB', connectionName: 'duckdb'},
   { label: 'SQLite', connectionName: 'sqlite'},
   { label: 'PostgreSQL', connectionName: 'postgresql'},
@@ -147,12 +148,13 @@ const field_defaults_existing_connection = [
   { label: 'Redshift', connectionName: 'redshift'}
  ]
 
-test('test connection alias defaults with existing connection', async ({ page }) => {
-    await createNewNotebook(page)
+for (const { label, connectionName } of aliasDefaultsWithExistingConnection) {
+    test(`test default connection alias appears if there is an existing connection : ${label}`, async ({ page }) => {
+            await createNewNotebook(page)
 
-    await page.notebook.enterCellEditingMode(0);
-    const cell = await page.notebook.getCell(0)
-    await cell?.type(`
+            await page.notebook.enterCellEditingMode(0);
+            const cell = await page.notebook.getCell(0)
+            await cell?.type(`
 from pathlib import Path
 Path('connections.ini').write_text("""
 [first]
@@ -167,18 +169,14 @@ database = :memory:
 %config SqlMagic.dsn_filename = 'connections.ini'
 from jupysql_plugin.widgets import ConnectorWidget
 ConnectorWidget()`)
-    await page.notebook.run()
-    await page.locator('#createNewConnection').click();
-    for (const data of field_defaults_existing_connection) {
-    const entries = Object.entries(data);
-    await page.locator('#selectConnection').selectOption({ label: data.label });
-    for (const [key, value] of entries) {
-    if (key !== "label") {
-    expect(await page.locator(`#${key}`).evaluate(select => select.value)).toBe(value);
-      }
-    }
-  }
-});
+            await page.notebook.run()
+
+            await page.locator('#createNewConnection').click();
+            await page.locator('#selectConnection').selectOption({ label: label });
+
+            expect(await page.locator(`#connectionName`).evaluate(select => select.value)).toBe(connectionName);
+        });
+}
 
 
 test('test create new connection shows error if unable to connect', async ({ page }) => {
