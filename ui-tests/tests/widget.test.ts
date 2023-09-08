@@ -79,6 +79,106 @@ test('test create new connection', async ({ page }) => {
 
 });
 
+
+const relevantFieldsEmbeddedDatabases = [
+  { label: 'DuckDB', connectionName: 'default', database: ':memory:'},
+  { label: 'SQLite', connectionName: 'default', database: ':memory:'}
+  ]
+
+for (const { label, connectionName, database } of relevantFieldsEmbeddedDatabases) {
+    test(`test only relevant fields appear in embedded database ${label}`, async ({ page }) => {
+        await displayWidget(page);
+
+        await page.locator('#createNewConnection').click();
+        await page.locator('#selectConnection').selectOption({ label: label });
+
+        expect(await page.locator('#connectionName').evaluate(select => select.value)).toBe(connectionName);
+
+        expect(await page.locator('#database').evaluate(select => select.value)).toBe(database);
+
+        const username = page.locator('#username');
+        expect(await username.count()).toBe(0);
+
+        const password = page.locator('#password');
+        expect(await password.count()).toBe(0);
+
+        const host = page.locator('#host');
+        expect(await host.count()).toBe(0);
+
+    });
+}
+
+const fieldDefaultsWhenNoExistingConnection = [
+  { label: 'PostgreSQL', connectionName: 'default', port: '5432', username: "", password: "", host: "", database: ""},
+  { label: 'MySQL', connectionName: 'default', port: '3306', username: "", password: "", host: "", database: ""},
+  { label: 'MariaDB', connectionName: 'default', port: '3306', username: "", password: "", host: "", database: ""},
+  { label: 'Snowflake', connectionName: 'default', port: '443', username: "", password: "", host: "", database: ""},
+  { label: 'Oracle', connectionName: 'default', port: '1521', username: "", password: "", host: "", database: ""},
+  { label: 'MSSQL',connectionName: 'default',  port: '1433', username: "", password: "", host: "", database: ""},
+  { label: 'Redshift', connectionName: 'default', port: '5439', username: "", password: "", host: "", database: ""},
+
+];
+
+for (const { label, connectionName, database, port, username, password, host } of fieldDefaultsWhenNoExistingConnection) {
+    test(`test field defaults appear if there is no existing connection : ${label}`, async ({ page }) => {
+        await displayWidget(page);
+
+        await page.locator('#createNewConnection').click();
+        await page.locator('#selectConnection').selectOption({ label: label });
+
+        expect(await page.locator(`#connectionName`).evaluate(select => select.value)).toBe(connectionName);
+        expect(await page.locator(`#port`).evaluate(select => select.value)).toBe(port);
+        expect(await page.locator(`#username`).evaluate(select => select.value)).toBe(username);
+        expect(await page.locator(`#password`).evaluate(select => select.value)).toBe(password);
+        expect(await page.locator(`#host`).evaluate(select => select.value)).toBe(host);
+        expect(await page.locator(`#database`).evaluate(select => select.value)).toBe(database);
+    });
+}
+
+
+const aliasDefaultsWithExistingConnection = [
+  { label: 'DuckDB', connectionName: 'duckdb'},
+  { label: 'SQLite', connectionName: 'sqlite'},
+  { label: 'PostgreSQL', connectionName: 'postgresql'},
+  { label: 'MySQL', connectionName: 'mysql'},
+  { label: 'MariaDB', connectionName: 'mariadb'},
+  { label: 'Snowflake', connectionName: 'snowflake'},
+  { label: 'Oracle', connectionName: 'oracle'},
+  { label: 'MSSQL',connectionName: 'mssql'},
+  { label: 'Redshift', connectionName: 'redshift'}
+ ]
+
+for (const { label, connectionName } of aliasDefaultsWithExistingConnection) {
+    test(`test default connection alias appears if there is an existing connection : ${label}`, async ({ page }) => {
+            await createNewNotebook(page)
+
+            await page.notebook.enterCellEditingMode(0);
+            const cell = await page.notebook.getCell(0)
+            await cell?.type(`
+from pathlib import Path
+Path('connections.ini').write_text("""
+[first]
+drivername = sqlite
+database = :memory:
+
+[second]
+drivername = sqlite
+database = :memory:
+""")
+%load_ext sql
+%config SqlMagic.dsn_filename = 'connections.ini'
+from jupysql_plugin.widgets import ConnectorWidget
+ConnectorWidget()`)
+            await page.notebook.run()
+
+            await page.locator('#createNewConnection').click();
+            await page.locator('#selectConnection').selectOption({ label: label });
+
+            expect(await page.locator(`#connectionName`).evaluate(select => select.value)).toBe(connectionName);
+        });
+}
+
+
 test('test create new connection shows error if unable to connect', async ({ page }) => {
     await displayWidget(page);
 
@@ -105,6 +205,7 @@ test('test create new connection shows error if unable to connect', async ({ pag
     await expect(output[0]).toContain('connections.ini: No such file or directory');
 
 });
+
 
 test('test delete connection', async ({ page }) => {
     await createDefaultConnection(page);

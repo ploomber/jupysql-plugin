@@ -5,6 +5,9 @@ DRIVER_TO_DBNAME = {
     "mysql+pymysql": "MySQL",
     "snowflake": "Snowflake",
     "mariadb": "MariaDB",
+    "oracle+oracledb": "Oracle",
+    "mssql+pyodbc": "MSSQL",
+    "redshift+redshift_connector": "Redshift",
 }
 
 CONNECTIONS_TEMPLATES = dict(
@@ -188,6 +191,117 @@ CONNECTIONS_TEMPLATES = dict(
                     "id": "database",
                     "label": "Database",
                     "type": "text",
+                },
+            ],
+        },
+        "Oracle": {
+            "driver": "oracle+oracledb",
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "Connection alias",
+                    "type": "text",
+                    "default": "oracle",
+                },
+                {
+                    "id": "username",
+                    "label": "Username",
+                    "type": "text",
+                },
+                {
+                    "id": "password",
+                    "label": "Password",
+                    "type": "password",
+                },
+                {
+                    "id": "host",
+                    "label": "Host",
+                    "type": "text",
+                },
+                {
+                    "id": "database",
+                    "label": "Database",
+                    "type": "text",
+                },
+                {
+                    "id": "port",
+                    "label": "Port",
+                    "type": "number",
+                    "default": 1521,
+                },
+            ],
+        },
+        "MSSQL": {
+            "driver": "mssql+pyodbc",
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "Connection alias",
+                    "type": "text",
+                    "default": "mssql",
+                },
+                {
+                    "id": "username",
+                    "label": "Username",
+                    "type": "text",
+                },
+                {
+                    "id": "password",
+                    "label": "Password",
+                    "type": "password",
+                },
+                {
+                    "id": "host",
+                    "label": "Host",
+                    "type": "text",
+                },
+                {
+                    "id": "database",
+                    "label": "Database",
+                    "type": "text",
+                },
+                {
+                    "id": "port",
+                    "label": "Port",
+                    "type": "number",
+                    "default": 1433,
+                },
+            ],
+        },
+        "Redshift": {
+            "driver": "redshift+redshift_connector",
+            "fields": [
+                {
+                    "id": "connectionName",
+                    "label": "Connection alias",
+                    "type": "text",
+                    "default": "redshift",
+                },
+                {
+                    "id": "username",
+                    "label": "Username",
+                    "type": "text",
+                },
+                {
+                    "id": "password",
+                    "label": "Password",
+                    "type": "password",
+                },
+                {
+                    "id": "host",
+                    "label": "Host",
+                    "type": "text",
+                },
+                {
+                    "id": "database",
+                    "label": "Database",
+                    "type": "text",
+                },
+                {
+                    "id": "port",
+                    "label": "Port",
+                    "type": "number",
+                    "default": 5439,
                 },
             ],
         },
