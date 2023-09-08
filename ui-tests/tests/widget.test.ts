@@ -80,23 +80,32 @@ test('test create new connection', async ({ page }) => {
 });
 
 
-const labels_in_memory = ['DuckDB', 'SQLite']
+const embeddedDatabases = ['DuckDB', 'SQLite']
 
+for (const database of embeddedDatabases) {
+    test(`test only relevant fields appear in embedded database ${database}`, async ({ page }) => {
+        await displayWidget(page);
 
-test('test irrelevant fields in memory db', async ({ page }) => {
-    await displayWidget(page);
-    await page.locator('#createNewConnection').click();
-    for (const label of labels_in_memory) {
-    await page.locator('#selectConnection').selectOption({ label: label });
-    const username = page.locator('#username');
-    expect(await username.count()).toBe(0);
-    const password = page.locator('#password');
-    expect(await password.count()).toBe(0);
-    const host = page.locator('#host');
-    expect(await host.count()).toBe(0);
-    }
+        await page.locator('#createNewConnection').click();
+        await page.locator('#selectConnection').selectOption({ label: database });
 
-});
+        const connectionName = page.locator('#connectionName');
+        expect(await connectionName.count()).toBe(1);
+
+        const db = page.locator('#database');
+        expect(await db.count()).toBe(1);
+
+        const username = page.locator('#username');
+        expect(await username.count()).toBe(0);
+
+        const password = page.locator('#password');
+        expect(await password.count()).toBe(0);
+
+        const host = page.locator('#host');
+        expect(await host.count()).toBe(0);
+
+    });
+}
 
 const field_defaults = [
   { label: 'DuckDB', connectionName: 'default', database: ':memory:'},
