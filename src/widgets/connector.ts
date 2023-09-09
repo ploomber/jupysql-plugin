@@ -358,6 +358,7 @@ export class ConnectorView extends DOMWidgetView {
      * Handle create new connection click
      */
     handleCreateNewConnectionClick() {
+        console.log("Create new connection click")
         this.el.querySelector("#connectionFormHeader").innerHTML = "Create new connection";
 
         // hide connectionsContainer
@@ -373,10 +374,46 @@ export class ConnectorView extends DOMWidgetView {
      * Handle select new connection
      */
     handleCreateNewConnectionChange() {
-        const select = (<HTMLSelectElement>this.el.querySelector("#selectConnection"));
+
+        const select = <HTMLSelectElement>this.el.querySelector("#selectConnection");
         const key = select.value;
 
         const connectionTemplate = this.connectionsTemplates[key];
+
+        const form: { [key: string]: any } = {};
+
+        // get previous selected connection
+        const previousSelect = sessionStorage.getItem("selectConnection")
+
+        if (previousSelect) {
+        console.log(`Found previous select : ${previousSelect}`)
+        const prevConnectionTemplate = this.connectionsTemplates[previousSelect];
+        const { fields } = prevConnectionTemplate;
+        console.log(`template : ${prevConnectionTemplate}`)
+
+        fields.forEach((field: { id: string, default?: string }) => {
+            const id = field.id
+            const defaultValue = field.hasOwnProperty("default") ? field["default"] : "";
+            const formField = (<HTMLSelectElement>this.el.querySelector(`#${id}`));
+            console.log(`id : ${id}`)
+            console.log(`defaultValue: ${defaultValue}`)
+            console.log(`formfield : ${formField.value}`)
+            if (formField && formField.value != defaultValue) {
+                console.log(`setting value of ${id}: ${formField.value}`)
+
+                form[id] = formField.value
+             }
+        }
+        )
+        }
+
+        sessionStorage.setItem("fieldInputs", JSON.stringify(form));
+
+        // save new selection
+        sessionStorage.setItem("selectConnection", key)
+
+        console.log(`Saved form details for ${previousSelect}`)
+        console.log(JSON.parse(sessionStorage.getItem("fieldInputs")))
 
         this.drawConnectionDetailsForm(connectionTemplate);
     }
@@ -389,6 +426,7 @@ export class ConnectorView extends DOMWidgetView {
     drawConnectionDetailsForm(connectionTemplate: ConnectionTemplate, connectionAlias: string = "") {
         const { fields } = connectionTemplate;
 
+        const savedFields = JSON.parse(sessionStorage.getItem("fieldInputs"))
         const connectionFormContainer = this.el.querySelector("#connectionFormContainer");
         connectionFormContainer.innerHTML = "";
 
@@ -417,6 +455,8 @@ export class ConnectorView extends DOMWidgetView {
             input.name = field.id;
             input.className = "field";
 
+            // check for saved values
+            const savedInput = savedFields ? savedFields[field.id] || "" : "";
 
             // when creating the connection alias field, set the default value
             // to "default" if there are no connections, this will ensure that
@@ -424,9 +464,14 @@ export class ConnectorView extends DOMWidgetView {
             // kernel is restarted
             if (field.id == "connectionName" && this.connections.length === 0) {
                 input.value = "default"
+            }
 
-                // otherwise, set the default value if there's one
-            } else if (field.default !== undefined) {
+           else if (savedInput) {
+               input.value = savedInput;
+           }
+
+            // otherwise, set the default value if there's one
+            else if (field.default !== undefined) {
                 input.value = field.default;
             }
 
