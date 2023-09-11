@@ -9,10 +9,12 @@ import tornado
 import requests
 import os
 
-PLOOMBER_CLOUD_HOST = os.environ.get( "PLOOMBER_CLOUD_HOST",
-                                      "https://cloudapi.ploomber.io" )
+PLOOMBER_CLOUD_HOST = os.environ.get(
+    "PLOOMBER_CLOUD_HOST", "https://cloudapi.ploomber.io"
+)
 logger = logging.getLogger(__name__)
 logger.info(f"Using this cloud host: {PLOOMBER_CLOUD_HOST}")
+
 
 class RouteHandler(APIHandler):
     """
