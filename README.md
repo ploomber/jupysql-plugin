@@ -14,6 +14,7 @@ conda create --name jupysql-plugin python=3.11 --channel conda-forge --yes
 conda activate jupysql-plugin
 conda install nodejs=16 --channel conda-forge --yes
 pip install -r requirements.txt
+pip install -r requirements.dev.txt
 
 jlpm install
 ```
