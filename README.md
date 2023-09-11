@@ -10,7 +10,7 @@ pip install jupysql-plugin
 ### Development install
 
 ```sh
- conda create --name jupysql-plugin python=3.11 --channel conda-forge --yes
+conda create --name jupysql-plugin python=3.11 --channel conda-forge --yes
 conda activate jupysql-plugin
 conda install nodejs=16 --channel conda-forge --yes
 pip install -r requirements.txt
@@ -93,3 +93,18 @@ pytest tests
 ### Packaging the extension
 
 See [RELEASE](RELEASE.md)
+
+### Ploomber Cloud API Endpoint
+
+You can set the `PLOOMBER_CLOUD_HOST` variable to reference the API Endpoint (by default it's set to our production API end point).
+
+```sh
+echo $PLOOMBER_CLOUD_HOST
+https://cloudapi.ploomber.io #default
+```
+
+You can export to modify the value (for instance, set it to the dev end point):
+
+```sh
+export PLOOMBER_CLOUD_HOST=https://cloudapi-dev.ploomber.io
+```
