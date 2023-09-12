@@ -100,12 +100,5 @@ See [RELEASE](RELEASE.md)
 You can set the `PLOOMBER_CLOUD_HOST` variable to switch the API endpoint (by default, it's set to our production API endpoint).
 
 ```sh
-echo $PLOOMBER_CLOUD_HOST
-https://cloudapi.ploomber.io #default
-```
-
-You can export to modify the value (for instance, set it to the dev end point):
-
-```sh
 export PLOOMBER_CLOUD_HOST=https://cloudapi-dev.ploomber.io
 ```
