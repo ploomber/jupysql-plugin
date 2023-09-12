@@ -97,7 +97,7 @@ See [RELEASE](RELEASE.md)
 
 ### Ploomber Cloud API Endpoint
 
-You can set the `PLOOMBER_CLOUD_HOST` variable to reference the API Endpoint (by default it's set to our production API end point).
+You can set the `PLOOMBER_CLOUD_HOST` variable to switch the API endpoint (by default, it's set to our production API endpoint).
 
 ```sh
 echo $PLOOMBER_CLOUD_HOST
