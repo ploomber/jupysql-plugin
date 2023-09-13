@@ -1,5 +1,4 @@
 import json
-import logging
 
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
@@ -12,8 +11,6 @@ import os
 PLOOMBER_CLOUD_HOST = os.environ.get(
     "PLOOMBER_CLOUD_HOST", "https://cloudapi.ploomber.io"
 )
-logger = logging.getLogger(__name__)
-logger.info(f"Using this cloud host: {PLOOMBER_CLOUD_HOST}")
 
 
 class RouteHandler(APIHandler):
