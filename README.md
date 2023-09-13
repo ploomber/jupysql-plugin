@@ -18,6 +18,7 @@ pip install -r requirements.dev.txt
 
 jlpm install
 ```
+Note: `pkgmt format` can be used to format and lint before committing code. 
 
 ```bash
 # Note: this command will take some time the first time as it has to install
