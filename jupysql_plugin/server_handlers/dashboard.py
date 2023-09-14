@@ -8,7 +8,9 @@ import tornado
 import requests
 import os
 
-BACKEND_ENDPOINT = "https://cloudapi.ploomber.io"
+PLOOMBER_CLOUD_HOST = os.environ.get(
+    "PLOOMBER_CLOUD_HOST", "https://cloudapi.ploomber.io"
+)
 
 
 class RouteHandler(APIHandler):
@@ -29,7 +31,7 @@ class RouteHandler(APIHandler):
         user_key = input_data["api_key"]
 
         # Valid API Key by /users/me API
-        VALIDATION_API_URL = f"{BACKEND_ENDPOINT}/users/me/"
+        VALIDATION_API_URL = f"{PLOOMBER_CLOUD_HOST}/users/me/"
         headers = {"access_token": user_key}
         res = requests.get(VALIDATION_API_URL, headers=headers)
         if res.status_code == 200:
@@ -56,7 +58,7 @@ class JobHandler(APIHandler):
         2. project_id (optional)
         3. notebook file path
         """
-        API_URL = f"{BACKEND_ENDPOINT}/jobs/webservice/"
+        API_URL = f"{PLOOMBER_CLOUD_HOST}/jobs/webservice/"
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
@@ -64,11 +66,11 @@ class JobHandler(APIHandler):
         project_id = input_data["project_id"]
         notebook_path_relative = input_data["notebook_path"]
 
-        # New project deployment: {domain}/jobs/webapp/new
+        # New project deployment: {domain}/jobs/webservice/new
         if project_id:
             API_URL = API_URL + project_id
         else:
-            # Existing project deployment: {domain}/jobs/webapp/{project_id}
+            # Existing project deployment: {domain}/jobs/webservice/{project_id}
             API_URL = API_URL + "new"
 
         # Get the requirement file paths

@@ -9,6 +9,7 @@ from os import environ
 def test(session):
     session.run("python", "--version")
     session.install("-r", "requirements.txt")
+    session.install("-r", "requirements.dev.txt")
 
     # our tests assume that the cell toolbar is hidden
     session.run(
