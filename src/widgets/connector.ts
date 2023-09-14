@@ -91,6 +91,7 @@ export class ConnectorView extends DOMWidgetView {
     /**
      * Draws the connection list
      *
+     *
      * @param connection : The availble connections
      */
     drawConnectionsList(connections: Array<Connection>) {
@@ -129,7 +130,6 @@ export class ConnectorView extends DOMWidgetView {
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="user-error-message lm-Widget p-Widget lm-Panel p-Panel jp-OutputArea-child" style = "display: none">
@@ -373,7 +373,7 @@ export class ConnectorView extends DOMWidgetView {
      * Handle select new connection
      */
     handleCreateNewConnectionChange() {
-        const select = <HTMLSelectElement>(this.el.querySelector("#selectConnection"));
+        const select = (<HTMLSelectElement>this.el.querySelector("#selectConnection"));
         const key = select.value;
 
         const connectionTemplate = this.connectionsTemplates[key];
@@ -384,7 +384,6 @@ export class ConnectorView extends DOMWidgetView {
         const previousSelect = sessionStorage.getItem("selectConnection");
 
         if (previousSelect) {
-          console.log(`Found previous select : ${previousSelect}`);
           const prevConnectionTemplate = this.connectionsTemplates[previousSelect];
           const { fields } = prevConnectionTemplate;
           fields.forEach((field: { id: string; default?: string }) => {
@@ -403,9 +402,6 @@ export class ConnectorView extends DOMWidgetView {
 
         // save new selection
         sessionStorage.setItem("selectConnection", key);
-
-        console.log(`Saved form details for ${previousSelect}`);
-        console.log(JSON.parse(sessionStorage.getItem("fieldInputs")));
 
         this.drawConnectionDetailsForm(connectionTemplate);
 
@@ -463,7 +459,10 @@ export class ConnectorView extends DOMWidgetView {
                 } else {
                   input.value = "default";
                 }
-            } else if (savedInput) {
+            }
+
+            // check if any user inputs saved
+            else if (savedInput) {
                 input.value = savedInput;
             }
 
