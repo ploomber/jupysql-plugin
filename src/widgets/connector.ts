@@ -389,18 +389,12 @@ export class ConnectorView extends DOMWidgetView {
         console.log(`Found previous select : ${previousSelect}`)
         const prevConnectionTemplate = this.connectionsTemplates[previousSelect];
         const { fields } = prevConnectionTemplate;
-        console.log(`template : ${prevConnectionTemplate}`)
 
         fields.forEach((field: { id: string, default?: string }) => {
             const id = field.id
             const defaultValue = field.hasOwnProperty("default") ? field["default"] : "";
             const formField = (<HTMLSelectElement>this.el.querySelector(`#${id}`));
-            console.log(`id : ${id}`)
-            console.log(`defaultValue: ${defaultValue}`)
-            console.log(`formfield : ${formField.value}`)
             if (formField && formField.value != defaultValue) {
-                console.log(`setting value of ${id}: ${formField.value}`)
-
                 form[id] = formField.value
              }
         }
