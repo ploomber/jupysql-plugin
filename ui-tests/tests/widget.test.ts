@@ -184,7 +184,7 @@ const autoPopulatedFieldsEmbeddedDatabases = [
   { label: "SQLite", connectionName: "somealias", database: "somedb" },
 ];
 
-for (const { label, connectionName, database, port, username, password, host} of autoPopulatedFieldsEmbeddedDatabases) {
+for (const { label, connectionName, database } of autoPopulatedFieldsEmbeddedDatabases) {
     test(`test only relevant fields are auto-populated in embedded dbs
           if dropdown selection changes: ${label}`, async ({ page }) => {
         await displayWidget(page);
@@ -226,27 +226,15 @@ for (const { label, connectionName, database, port, username, password, host} of
 
 
 const autoPopulatedFields = [
-  { label: "MySQL", connectionName: "default", port: "3306", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "MariaDB", connectionName: "default", port: "3306", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "Snowflake", connectionName: "default", port: "443", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "Oracle", connectionName: "default", port: "1521", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "MSSQL", connectionName: "default", port: "1433", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "Redshift", connectionName: "default", port: "5439", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
+  { label: "MySQL", port: "3306" },
+  { label: "MariaDB", port: "3306" },
+  { label: "Snowflake", port: "443" },
+  { label: "Oracle", port: "1521" },
+  { label: "MSSQL", port: "1433" },
+  { label: "Redshift", port: "5439" }
 ];
 
-for (const { label, connectionName, database, port, username, password, host } of autoPopulatedFields) {
+for (const { label, port } of autoPopulatedFields) {
       test(`test fields are auto-populated if dropdown selection changes: ${label}`, async ({
         page,
       }) => {
@@ -263,49 +251,37 @@ for (const { label, connectionName, database, port, username, password, host } o
             await page.locator("#database").fill("somedb");
             await page.locator("#selectConnection").selectOption({ label: label });
 
-            expect(
-              await page.locator(`#connectionName`).evaluate((select) => select.value)
-            ).toBe(connectionName);
             expect(await page.locator(`#port`).evaluate((select) => select.value)).toBe(
               port
             );
             expect(
+              await page.locator(`#connectionName`).evaluate((select) => select.value)
+            ).toBe("default");
+            expect(
               await page.locator(`#username`).evaluate((select) => select.value)
-            ).toBe(username);
+            ).toBe("someuser");
             expect(
               await page.locator(`#password`).evaluate((select) => select.value)
-            ).toBe(password);
+            ).toBe("somepassword");
             expect(await page.locator(`#host`).evaluate((select) => select.value)).toBe(
-              host
+              "localhost"
             );
             expect(
               await page.locator(`#database`).evaluate((select) => select.value)
-            ).toBe(database);
+            ).toBe("somedb");
       });
 }
 
 const autoPopulatedFieldsExistingConnection = [
-  { label: "MySQL", connectionName: "mysql", port: "3306", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "MariaDB", connectionName: "mariadb", port: "3306", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "Snowflake", connectionName: "snowflake", port: "443", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "Oracle", connectionName: "oracle", port: "1521", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "MSSQL", connectionName: "mssql", port: "1433", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
-  { label: "Redshift", connectionName: "redshift", port: "5439", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
+  { label: "MySQL", connectionName: "mysql", port: "3306" },
+  { label: "MariaDB", connectionName: "mariadb", port: "3306" },
+  { label: "Snowflake", connectionName: "snowflake", port: "443" },
+  { label: "Oracle", connectionName: "oracle", port: "1521" },
+  { label: "MSSQL", connectionName: "mssql", port: "1433" },
+  { label: "Redshift", connectionName: "redshift", port: "5439" },
 ];
 
-for (const { label, connectionName, database, port, username, password, host } of autoPopulatedFieldsExistingConnection) {
+for (const { label, connectionName, port } of autoPopulatedFieldsExistingConnection) {
    test(`test fields are auto-populated if dropdown selection changes, existing connection
        present, default DB alias displayed: ${label}`, async ({
         page,
@@ -346,45 +322,30 @@ ConnectorWidget()`);
           await page.locator(`#connectionName`).evaluate((select) => select.value)
         ).toBe(connectionName);
         expect(await page.locator(`#port`).evaluate((select) => select.value)).toBe(
-          port
-        );
+          port);
         expect(
           await page.locator(`#username`).evaluate((select) => select.value)
-        ).toBe(username);
+        ).toBe("someuser");
         expect(
           await page.locator(`#password`).evaluate((select) => select.value)
-        ).toBe(password);
-        expect(await page.locator(`#host`).evaluate((select) => select.value)).toBe(
-          host
-        );
+        ).toBe("somepassword");
+        expect(await page.locator(`#host`).evaluate((select) => select.value)).toBe("localhost");
         expect(
           await page.locator(`#database`).evaluate((select) => select.value)
-        ).toBe(database);
+        ).toBe("somedb");
       });
 }
 
 const autoPopulatedFieldsAliasModified = [
-  { label: "MySQL", connectionName: "somealias", port: "3306", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "MariaDB", connectionName: "somealias", port: "3306", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Snowflake", connectionName: "somealias", port: "443", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Oracle", connectionName: "somealias", port: "1521", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "MSSQL", connectionName: "somealias", port: "1433", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Redshift", connectionName: "somealias", port: "5439", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb",
-  },
+  { label: "MySQL", port: "3306" },
+  { label: "MariaDB", port: "3306" },
+  { label: "Snowflake", port: "443" },
+  { label: "Oracle", port: "1521" },
+  { label: "MSSQL", port: "1433" },
+  { label: "Redshift", port: "5439" },
 ];
 
-for (const { label, connectionName, database, port, username, password, host } of autoPopulatedFieldsAliasModified) {
+for (const { label, port } of autoPopulatedFieldsAliasModified) {
    test(`test fields are auto-populated if dropdown selection changes and default
       alias modified by user: ${label}`, async ({
         page,
@@ -405,47 +366,35 @@ for (const { label, connectionName, database, port, username, password, host } o
 
         expect(
           await page.locator(`#connectionName`).evaluate((select) => select.value)
-        ).toBe(connectionName);
+        ).toBe("somealias");
         expect(await page.locator(`#port`).evaluate((select) => select.value)).toBe(
           port
         );
         expect(
           await page.locator(`#username`).evaluate((select) => select.value)
-        ).toBe(username);
+        ).toBe("someuser");
         expect(
           await page.locator(`#password`).evaluate((select) => select.value)
-        ).toBe(password);
+        ).toBe("somepassword");
         expect(await page.locator(`#host`).evaluate((select) => select.value)).toBe(
-          host
+          "localhost"
         );
         expect(
           await page.locator(`#database`).evaluate((select) => select.value)
-        ).toBe(database);
+        ).toBe("somedb");
       });
 }
 
 const autoPopulatedFieldsAliasModifiedExistingConnection = [
-  { label: "MySQL", connectionName: "somealias", port: "3306", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "MariaDB", connectionName: "somealias", port: "3306", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Snowflake", connectionName: "somealias", port: "443", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Oracle", connectionName: "somealias", port: "1521", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "MSSQL", connectionName: "somealias", port: "1433", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Redshift", connectionName: "somealias", port: "5439", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
+  { label: "MySQL", port: "3306" },
+  { label: "MariaDB", port: "3306" },
+  { label: "Snowflake", port: "443" },
+  { label: "Oracle", port: "1521" },
+  { label: "MSSQL", port: "1433" },
+  { label: "Redshift", port: "5439" }
 ];
 
-for (const { label, connectionName, database, port, username, password, host }
+for (const { label, port }
   of autoPopulatedFieldsAliasModifiedExistingConnection) {
    test(`test fields are auto-populated if dropdown selection changes, there is an
             existing connection and default alias modified by user: ${label}`, async ({
@@ -486,47 +435,28 @@ ConnectorWidget()`);
 
         expect(
           await page.locator(`#connectionName`).evaluate((select) => select.value)
-        ).toBe(connectionName);
+        ).toBe("somealias");
         expect(await page.locator(`#port`).evaluate((select) => select.value)).toBe(
           port
         );
         expect(
           await page.locator(`#username`).evaluate((select) => select.value)
-        ).toBe(username);
+        ).toBe("someuser");
         expect(
           await page.locator(`#password`).evaluate((select) => select.value)
-        ).toBe(password);
+        ).toBe("somepassword");
         expect(await page.locator(`#host`).evaluate((select) => select.value)).toBe(
-          host
+          "localhost"
         );
         expect(
           await page.locator(`#database`).evaluate((select) => select.value)
-        ).toBe(database);
+        ).toBe("somedb");
       });
 }
 
-const autoPopulatedFieldsPortModified = [
-  { label: "MySQL", connectionName: "default", port: "3308", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "MariaDB", connectionName: "default", port: "3308", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Snowflake", connectionName: "default", port: "3308", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Oracle", connectionName: "default", port: "3308", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "MSSQL", connectionName: "default", port: "3308", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-  { label: "Redshift", connectionName: "default", port: "3308", username: "someuser",
-    password: "somepassword", host: "localhost", database: "somedb"
-  },
-];
+const databaseLabels = ["MySQL", "MariaDB", "Snowflake", "Oracle", "MSSQL", "Redshift"];
 
-for (const { label, connectionName, database, port, username, password, host,} of autoPopulatedFieldsPortModified) {
+for (const label of databaseLabels) {
    test(`test fields are auto-populated if dropdown selection changes and default
       port modified by user: ${label}`, async ({
         page,
@@ -546,22 +476,22 @@ for (const { label, connectionName, database, port, username, password, host,} o
 
         expect(
           await page.locator(`#connectionName`).evaluate((select) => select.value)
-        ).toBe(connectionName);
+        ).toBe("default");
         expect(await page.locator(`#port`).evaluate((select) => select.value)).toBe(
-          port
+          "3308"
         );
         expect(
           await page.locator(`#username`).evaluate((select) => select.value)
-        ).toBe(username);
+        ).toBe("someuser");
         expect(
           await page.locator(`#password`).evaluate((select) => select.value)
-        ).toBe(password);
+        ).toBe("somepassword");
         expect(await page.locator(`#host`).evaluate((select) => select.value)).toBe(
-          host
+          "localhost"
         );
         expect(
           await page.locator(`#database`).evaluate((select) => select.value)
-        ).toBe(database);
+        ).toBe("somedb");
       });
 }
 
