@@ -378,11 +378,16 @@ export class ConnectorView extends DOMWidgetView {
 
         const connectionTemplate = this.connectionsTemplates[key];
 
-        const form: { [key: string]: any } = {};
+        // capture any user inputs before dropdown changed
+        const userInputData: { [key: string]: any } = {};
 
         // get previous selected connection
         const previousSelect = sessionStorage.getItem("selectConnection");
 
+        // when the database selection dropdown changes we need to capture any inputs
+        // entered by the user in the previous form and save them in the session.
+        // Only the fields which have been changed by the user are saved. This saved
+        // data can be used to auto-populate the new form.
         if (previousSelect) {
           const prevConnectionTemplate = this.connectionsTemplates[previousSelect];
           const { fields } = prevConnectionTemplate;
@@ -393,14 +398,15 @@ export class ConnectorView extends DOMWidgetView {
               : "";
             const formField = <HTMLSelectElement>this.el.querySelector(`#${id}`);
             if (formField && formField.value != defaultValue) {
-              form[id] = formField.value;
+              userInputData[id] = formField.value;
             }
           });
         }
 
-        sessionStorage.setItem("fieldInputs", JSON.stringify(form));
+        // save the previous form details
+        sessionStorage.setItem("fieldInputs", JSON.stringify(userInputData));
 
-        // save new selection
+        // save new DB selection
         sessionStorage.setItem("selectConnection", key);
 
         this.drawConnectionDetailsForm(connectionTemplate);
