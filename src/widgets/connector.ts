@@ -90,7 +90,8 @@ export class ConnectorView extends DOMWidgetView {
 
     /**
      * Draws the connection list
-     * 
+     *
+     *
      * @param connection : The availble connections
      */
     drawConnectionsList(connections: Array<Connection>) {
@@ -115,7 +116,7 @@ export class ConnectorView extends DOMWidgetView {
 
                     <i class="restart-kernel" style = "display: none;">
                         * No connections found in connections file. You may need to restart the kernel.
-                    </i>                    
+                    </i>
                 </div>
 
                 <div id="connectionsButtonsContainer" class="block">
@@ -129,7 +130,6 @@ export class ConnectorView extends DOMWidgetView {
                         </div>
                     </div>
                 </div>
-         
             </div>
 
             <div class="user-error-message lm-Widget p-Widget lm-Panel p-Panel jp-OutputArea-child" style = "display: none">
@@ -230,7 +230,7 @@ export class ConnectorView extends DOMWidgetView {
 
     /**
      * Connects to a database
-     * 
+     *
      * @param connection - connection object
      */
     handleConnectionClick(connection: Connection) {
@@ -316,7 +316,7 @@ export class ConnectorView extends DOMWidgetView {
         deleteConnectionMessage.id = "deleteConnectionMessage";
 
         // const warningMessage = `<h4>Delete connection from ini file</h4>
-        // <div>Are you sure you want to delete <strong>${connection["name"]}</strong>?<div> 
+        // <div>Are you sure you want to delete <strong>${connection["name"]}</strong>?<div>
         // <div>Please note that by doing so, you will permanently remove <strong>${connection["name"]}</strong> from the ini file.<div>`
 
         const warningMessage = `<h4>Delete ${connection["name"]} from ini file</h4>
@@ -378,16 +378,50 @@ export class ConnectorView extends DOMWidgetView {
 
         const connectionTemplate = this.connectionsTemplates[key];
 
+        // capture any user inputs before dropdown changed
+        const userInputData: { [key: string]: any } = {};
+
+        // get previous selected connection
+        const previousSelect = sessionStorage.getItem("selectConnection");
+
+        // when the database selection dropdown changes we need to capture any inputs
+        // entered by the user in the previous form and save them in the session.
+        // Only the fields which have been changed by the user are saved. This saved
+        // data can be used to auto-populate the new form.
+        if (previousSelect) {
+          const prevConnectionTemplate = this.connectionsTemplates[previousSelect];
+          const { fields } = prevConnectionTemplate;
+          fields.forEach((field: { id: string; default?: string }) => {
+            const id = field.id;
+            const defaultValue = field.hasOwnProperty("default")
+              ? field["default"]
+              : "";
+            const formField = <HTMLSelectElement>this.el.querySelector(`#${id}`);
+            if (formField && formField.value != defaultValue) {
+              userInputData[id] = formField.value;
+            }
+          });
+        }
+
+        // save the previous form details
+        sessionStorage.setItem("fieldInputs", JSON.stringify(userInputData));
+
+        // save new DB selection
+        sessionStorage.setItem("selectConnection", key);
+
         this.drawConnectionDetailsForm(connectionTemplate);
-    }
+
+        }
 
     /**
      * Draws a form to create or edit connections
-     * 
+     *
      * @param connectionTemplate - new connection template
      */
     drawConnectionDetailsForm(connectionTemplate: ConnectionTemplate, connectionAlias: string = "") {
         const { fields } = connectionTemplate;
+
+        const savedFields = JSON.parse(sessionStorage.getItem("fieldInputs"));
 
         const connectionFormContainer = this.el.querySelector("#connectionFormContainer");
         connectionFormContainer.innerHTML = "";
@@ -417,19 +451,31 @@ export class ConnectorView extends DOMWidgetView {
             input.name = field.id;
             input.className = "field";
 
+            // check for saved values
+            const savedInput = savedFields ? savedFields[field.id] || "" : "";
+
 
             // when creating the connection alias field, set the default value
             // to "default" if there are no connections, this will ensure that
             // the notebook automatically reconnects to the database if the
             // kernel is restarted
             if (field.id == "connectionName" && this.connections.length === 0) {
-                input.value = "default"
-
-                // otherwise, set the default value if there's one
-            } else if (field.default !== undefined) {
-                input.value = field.default;
+                if (savedInput) {
+                  input.value = savedInput;
+                } else {
+                  input.value = "default";
+                }
             }
 
+            // check if any user inputs saved
+            else if (savedInput) {
+                input.value = savedInput;
+            }
+
+           // otherwise, set the default value if there's one
+           else if (field.default !== undefined) {
+                input.value = field.default;
+            }
 
             input.setAttribute("type", field.type);
 
@@ -473,12 +519,13 @@ export class ConnectorView extends DOMWidgetView {
     }
 
     /**
-     * Submits new connection form 
-     * 
+     * Submits new connection form
+     *
      * @param event - Submit event
      */
     handleSubmitNewConnection(event: SubmitEvent) {
         event.preventDefault();
+        sessionStorage.clear()
 
         let allFieldsFilled = true;
 
@@ -520,7 +567,7 @@ export class ConnectorView extends DOMWidgetView {
 
     /**
      * Sends form data to the backend
-     * 
+     *
      * @param formData - FormData object
      */
     sendFormData(formData: { [key: string]: string }) {
@@ -536,7 +583,7 @@ export class ConnectorView extends DOMWidgetView {
 
     /**
      * Handle messages from the backend
-     * 
+     *
      * @param content - The method to invoke with data
      */
     handleMessage(content: any) {
@@ -576,7 +623,7 @@ export class ConnectorView extends DOMWidgetView {
 
     /**
      * Marks active connection button
-     * 
+     *
      * @param connectionName - Active connection name
      */
     markConnectedButton(connectionName: string) {
@@ -601,4 +648,3 @@ export class ConnectorView extends DOMWidgetView {
     }
 
 }
-

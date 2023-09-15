@@ -3,6 +3,7 @@
 ## 0.2.2
 
 * Added Oracle, Microsoft SQLServer, Redshift in DB templates (#72)
+* Auto save form fields when switching connection labels (#71)
 
 ## 0.2.1
 
