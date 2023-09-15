@@ -179,12 +179,9 @@ ConnectorWidget()`)
 }
 
 
-const autoPopulatedFieldsEmbeddedDatabases = [
-  { label: "DuckDB", connectionName: "somealias", database: "somedb" },
-  { label: "SQLite", connectionName: "somealias", database: "somedb" },
-];
+const embeddedDatabaseLabels = [ "DuckDB", "SQLite" ];
 
-for (const { label, connectionName, database } of autoPopulatedFieldsEmbeddedDatabases) {
+for (const label of embeddedDatabaseLabels) {
     test(`test only relevant fields are auto-populated in embedded dbs
           if dropdown selection changes: ${label}`, async ({ page }) => {
         await displayWidget(page);
@@ -204,11 +201,11 @@ for (const { label, connectionName, database } of autoPopulatedFieldsEmbeddedDat
 
         expect(
           await page.locator(`#connectionName`).evaluate((select) => select.value)
-        ).toBe(connectionName);
+        ).toBe("somealias");
 
         expect(
           await page.locator(`#database`).evaluate((select) => select.value)
-        ).toBe(database);
+        ).toBe("somedb");
 
         const username = page.locator("#username");
         expect(await username.count()).toBe(0);
