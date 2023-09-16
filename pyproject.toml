@@ -1,5 +1,9 @@
 [build-system]
-requires = ["hatchling>=1.4.0", "jupyterlab>=3.4.7,<4.0.0", "hatch-nodejs-version"]
+requires = [
+    "hatchling>=1.4.0",
+    "jupyterlab>=3.4.7,<4.0.0",
+    "hatch-nodejs-version",
+]
 build-backend = "hatchling.build"
 
 [project]
@@ -22,7 +26,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-dependencies = ["ipywidgets", "ploomber-core"]
+dependencies = ["ploomber-core"]
 
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
@@ -66,7 +70,11 @@ build_dir = "jupysql_plugin/labextension"
 version_cmd = "hatch version"
 
 [tool.jupyter-releaser.hooks]
-before-build-npm = ["python -m pip install jupyterlab~=3.1", "jlpm", "jlpm build:prod"]
+before-build-npm = [
+    "python -m pip install jupyterlab~=3.1",
+    "jlpm",
+    "jlpm build:prod",
+]
 before-build-python = ["jlpm clean:all"]
 
 [tool.check-wheel-contents]
