@@ -2,11 +2,16 @@ import {
     JupyterFrontEnd,
     JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
-
+import { NotebookPanel } from '@jupyterlab/notebook';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { Signal } from '@lumino/signaling'; // Import the Signal class
 
-const PLUGIN_ID = 'jupysql-plugin:settings';
+
+const PLUGIN_ID = 'jupysql-plugin:settings-example';
 const COMMAND_ID = 'jupysql-plugin:toggle-flag';
+
+export const settingsChanged = new Signal<any, any>({});
+
 
 /**
  * Initialization data for the settings extension.
@@ -15,7 +20,7 @@ const plugin_settings: JupyterFrontEndPlugin<void> = {
     id: PLUGIN_ID,
     autoStart: true,
     requires: [ISettingRegistry],
-    activate: (app: JupyterFrontEnd, settings: ISettingRegistry) => {
+    activate: (app: JupyterFrontEnd, settings: ISettingRegistry, panel: NotebookPanel) => {
         const { commands } = app;
         let limit = 25;
         let flag = false;
@@ -33,6 +38,10 @@ const plugin_settings: JupyterFrontEndPlugin<void> = {
             console.log(
                 `Settings Example extension: Limit is set to '${limit}' and flag to '${flag}'`
             );
+
+
+            settingsChanged.emit({ limit, flag });
+
         }
 
         // Wait for the application to be restored and
