@@ -47,7 +47,7 @@ export class FormattingExtension
         console.log("Settings changed, args:", args);
         console.log("Settings changed, sender:", sender);
 
-        if (!args.flag) {
+        if (!args.showFormatSQL) {
             this.formatSQLButton.parent = null;
         } else {
             this.panel.toolbar.insertItem(10, 'formatSQL', this.formatSQLButton);

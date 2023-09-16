@@ -1,32 +1,18 @@
 {
-    "title": "SOMESETTINGS",
-    "description": "Settings of the settings example.",
-    "jupyter.lab.menus": {
-        "main": [
-            {
-                "id": "jp-mainmenu-example-settings",
-                "label": "Settings Example",
-                "rank": 80,
-                "items": [
-                    {
-                        "command": "@ploomber/jupysql-plugin:toggle-flag"
-                    }
-                ]
-            }
-        ]
-    },
+    "title": "JupySQL",
+    "description": "JupySQL settings.",
     "properties": {
-        "limit": {
-            "type": "integer",
-            "title": "Limit",
-            "description": "This is an example of an integer setting.",
-            "default": 25
-        },
-        "flag": {
+        "showFormatSQL": {
             "type": "boolean",
-            "title": "Simple flag",
-            "description": "This is an example of a boolean setting.",
-            "default": false
+            "title": "Show Format SQL button",
+            "description": "If set, a button will be shown in the toolbar to format the SQL code.",
+            "default": true
+        },
+        "showDeployNotebook": {
+            "type": "boolean",
+            "title": "Show Deploy Notebook button",
+            "description": "If set, a button will be shown in the toolbar to deploy the notebook to Ploomber Cloud.",
+            "default": true
         }
     },
     "additionalProperties": false,
