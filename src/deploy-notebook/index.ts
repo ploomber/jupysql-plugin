@@ -4,7 +4,7 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { IDisposable, DisposableDelegate } from '@lumino/disposable';
 
 import { showDeploymentDialog } from '../dialog';
-import { settingsChanged } from '../settings';
+import { settingsChanged, JupySQLSettings } from '../settings';
 
 /**
  * A notebook widget extension that adds a deployment button to the toolbar.
@@ -27,11 +27,8 @@ export class DeployingExtension
     private deployNotebookButton: ToolbarButton;
     private panel: NotebookPanel;
 
-    private _onSettingsChanged = (sender: any, args: any) => {
-        console.log("Settings changed, args:", args);
-        console.log("Settings changed, sender:", sender);
-
-        if (!args.showDeployNotebook) {
+    private _onSettingsChanged = (sender: any, settings: JupySQLSettings) => {
+        if (!settings.showDeployNotebook) {
             this.deployNotebookButton.parent = null;
         } else {
             this.panel.toolbar.insertItem(10, 'deployNB', this.deployNotebookButton);
@@ -56,9 +53,11 @@ export class DeployingExtension
             onClick: clickDeploy,
             tooltip: 'Deploy Notebook as dashboards',
         });
+
         this.deployNotebookButton.node.setAttribute("data-testid", "deploy-btn");
 
         panel.toolbar.insertItem(10, 'deployNB', this.deployNotebookButton);
+
         return new DisposableDelegate(() => {
             this.deployNotebookButton.dispose();
         });

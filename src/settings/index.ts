@@ -7,9 +7,15 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Signal } from '@lumino/signaling'; // Import the Signal class
 
 
-const PLUGIN_ID = 'jupysql-plugin:settings-example';
+const PLUGIN_ID = 'jupysql-plugin:settings';
 
-export const settingsChanged = new Signal<any, any>({});
+export interface JupySQLSettings {
+    showDeployNotebook: boolean;
+    showFormatSQL: boolean;
+
+}
+
+export const settingsChanged = new Signal<any, JupySQLSettings>({});
 
 
 /**

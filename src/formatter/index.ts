@@ -11,7 +11,7 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { JupyterlabNotebookCodeFormatter } from './formatter';
 import { DeployingExtension } from '../deploy-notebook/index';
 import { RegisterNotebookCommListener } from '../comm';
-import { settingsChanged } from '../settings';
+import { settingsChanged, JupySQLSettings } from '../settings';
 
 /**
  * A notebook widget extension that adds a format button to the toolbar.
@@ -43,11 +43,8 @@ export class FormattingExtension
         settingsChanged.connect(this._onSettingsChanged);
     }
 
-    private _onSettingsChanged = (sender: any, args: any) => {
-        console.log("Settings changed, args:", args);
-        console.log("Settings changed, sender:", sender);
-
-        if (!args.showFormatSQL) {
+    private _onSettingsChanged = (sender: any, settings: JupySQLSettings) => {
+        if (!settings.showFormatSQL) {
             this.formatSQLButton.parent = null;
         } else {
             this.panel.toolbar.insertItem(10, 'formatSQL', this.formatSQLButton);
