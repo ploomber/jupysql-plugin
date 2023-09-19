@@ -4,6 +4,7 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { IDisposable, DisposableDelegate } from '@lumino/disposable';
 
 import { showDeploymentDialog } from '../dialog';
+import { settingsChanged, JupySQLSettings } from '../settings';
 
 /**
  * A notebook widget extension that adds a deployment button to the toolbar.
@@ -20,7 +21,20 @@ export class DeployingExtension
      */
     constructor(
     ) {
+        settingsChanged.connect(this._onSettingsChanged);
     }
+
+    private deployNotebookButton: ToolbarButton;
+    private panel: NotebookPanel;
+
+    private _onSettingsChanged = (sender: any, settings: JupySQLSettings) => {
+        if (!settings.showDeployNotebook) {
+            this.deployNotebookButton.parent = null;
+        } else {
+            this.panel.toolbar.insertItem(10, 'deployNB', this.deployNotebookButton);
+        }
+    }
+
 
     createNew(
         panel: NotebookPanel,
@@ -30,17 +44,22 @@ export class DeployingExtension
         const clickDeploy = () => {
             showDeploymentDialog(panel, context)
         }
-        const button = new ToolbarButton({
+
+        this.panel = panel;
+
+        this.deployNotebookButton = new ToolbarButton({
             className: 'deploy-nb-button',
             label: 'Deploy Notebook',
             onClick: clickDeploy,
             tooltip: 'Deploy Notebook as dashboards',
         });
-        button.node.setAttribute("data-testid", "deploy-btn");
 
-        panel.toolbar.insertItem(10, 'deployNB', button);
+        this.deployNotebookButton.node.setAttribute("data-testid", "deploy-btn");
+
+        panel.toolbar.insertItem(10, 'deployNB', this.deployNotebookButton);
+
         return new DisposableDelegate(() => {
-            button.dispose();
+            this.deployNotebookButton.dispose();
         });
     }
 }

@@ -11,6 +11,7 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { JupyterlabNotebookCodeFormatter } from './formatter';
 import { DeployingExtension } from '../deploy-notebook/index';
 import { RegisterNotebookCommListener } from '../comm';
+import { settingsChanged, JupySQLSettings } from '../settings';
 
 /**
  * A notebook widget extension that adds a format button to the toolbar.
@@ -27,7 +28,8 @@ export class FormattingExtension
      */
 
     private notebookCodeFormatter: JupyterlabNotebookCodeFormatter;
-
+    private formatSQLButton: ToolbarButton;
+    private panel: NotebookPanel;
 
     constructor(
         tracker: INotebookTracker
@@ -35,7 +37,20 @@ export class FormattingExtension
         this.notebookCodeFormatter = new JupyterlabNotebookCodeFormatter(
             tracker
         );
+
+
+
+        settingsChanged.connect(this._onSettingsChanged);
     }
+
+    private _onSettingsChanged = (sender: any, settings: JupySQLSettings) => {
+        if (!settings.showFormatSQL) {
+            this.formatSQLButton.parent = null;
+        } else {
+            this.panel.toolbar.insertItem(10, 'formatSQL', this.formatSQLButton);
+        }
+    }
+
 
 
     createNew(
@@ -45,17 +60,21 @@ export class FormattingExtension
         const clearOutput = () => {
             this.notebookCodeFormatter.formatAllCodeCells(undefined, undefined, panel.content)
         };
-        const button = new ToolbarButton({
+
+        this.panel = panel;
+
+        this.formatSQLButton = new ToolbarButton({
             className: 'format-sql-button',
             label: 'Format SQL',
             onClick: clearOutput,
             tooltip: 'Format all %%sql cells',
         });
-        button.node.setAttribute("data-testid", "format-btn");
+        this.formatSQLButton.node.setAttribute("data-testid", "format-btn");
 
-        panel.toolbar.insertItem(10, 'formatSQL', button);
+        panel.toolbar.insertItem(10, 'formatSQL', this.formatSQLButton);
+
         return new DisposableDelegate(() => {
-            button.dispose();
+            this.formatSQLButton.dispose();
         });
     }
 }

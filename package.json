@@ -19,7 +19,8 @@
     },
     "files": [
         "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-        "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+        "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
+        "settings-schema/**/*.json"
     ],
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -75,6 +76,7 @@
         "@jupyterlab/codemirror": "^3.6.3",
         "@jupyterlab/completer": "^3.6.2",
         "@jupyterlab/notebook": "^3.6.2",
+        "@jupyterlab/settingregistry": "^3.6.5",
         "@jupyterlab/statedb": "^3.6.2",
         "@lumino/widgets": "<2.0.0",
         "@mui/icons-material": "^5.11.16",
@@ -126,6 +128,7 @@
     },
     "jupyterlab": {
         "extension": true,
+        "schemaDir": "settings-schema",
         "outputDir": "jupysql_plugin/labextension",
         "sharedPackages": {
             "@jupyter-widgets/base": {

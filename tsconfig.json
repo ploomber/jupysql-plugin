@@ -36,6 +36,7 @@
     "src/syntax-highlight/index.ts",
     "src/completer/index.ts",
     "src/formatter/index.ts",
+    "src/settings/index.ts",
     "src/completer/connector.ts",
     "src/completer/customconnector.ts",
     "src/deploy-notebook/index.ts",

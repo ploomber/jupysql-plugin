@@ -5,3 +5,6 @@ hatch
 pytest
 duckdb-engine
 jupysql
+
+# optional dependency, only needed for the connector widget
+ipywidgets
