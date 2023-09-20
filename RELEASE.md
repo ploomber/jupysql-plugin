@@ -26,6 +26,7 @@ To create a Python source package (`.tar.gz`) and the binary package (`.whl`) in
 
 ```bash
 # clean files before building
+rm -rf dist
 jlpm clean:all
 
 # build the package
