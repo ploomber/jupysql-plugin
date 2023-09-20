@@ -24,6 +24,7 @@
     ]
   },
   "include": [
+    "ui-tests/tests/*",
     "src/*",
     "src/utils/*",
     "src/const/*",
