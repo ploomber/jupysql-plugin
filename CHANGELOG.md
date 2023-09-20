@@ -5,6 +5,7 @@
 * Added Oracle, Microsoft SQLServer, Redshift in DB templates (#72)
 * Auto save form fields when switching connection labels (#71)
 * Add configuration settings to hide `Format SQL` and `Deploy Notebook` buttons
+* `ipywidgets` no longer a hard requirement
 
 ## 0.2.1
 
