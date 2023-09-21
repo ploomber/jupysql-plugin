@@ -25,7 +25,6 @@
   },
   "include": [
     "src/*",
-    "src/__tests__/*",
     "src/utils/*",
     "src/const/*",
     "src/completer/keywords.json",
