@@ -17,7 +17,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "target": "ES2018",
     "types": [
       "jest"
@@ -25,6 +25,7 @@
   },
   "include": [
     "src/*",
+    "src/__tests__/*",
     "src/utils/*",
     "src/const/*",
     "src/completer/keywords.json",
