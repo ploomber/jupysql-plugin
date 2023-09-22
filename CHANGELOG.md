@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.3
+
+* Fixed error that caused the `Deploy notebook` and `Format SQL` buttons not to appear on new installations
+
 ## 0.2.2
 
 * Added Oracle, Microsoft SQLServer, Redshift in DB templates (#72)
