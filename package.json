@@ -130,11 +130,6 @@
         "extension": true,
         "schemaDir": "settings-schema",
         "outputDir": "jupysql_plugin/labextension",
-        "sharedPackages": {
-            "@jupyter-widgets/base": {
-                "bundled": false,
-                "singleton": true
-            }
-        }
+        "sharedPackages": {}
     }
 }
