@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.4
+
+* Re-release due to error in the release process
+
 ## 0.2.3
 
 * Fixed error that caused the `Deploy notebook` and `Format SQL` buttons not to appear on new installations

@@ -9,13 +9,16 @@ conda env create  -f environment.yml -y
 Bump the version using `hatch`. See the docs on [hatch-nodejs-version](https://github.com/agoose77/hatch-nodejs-version#semver) for details.
 
 ```bash
-hatch version <new-version>
+NEW_VERSION='NEW_VERSION'
+hatch version $NEW_VERSION
+git commit -m "Version $NEW_VERSION"
 ```
 
 The previous command will update the version in the `package.json` file. You have to manually commit and create the tag:
 
 ```bash
-git tag -a VERSION -m MESSAGE
+git tag -a $NEW_VERSION -m "Version $NEW_VERSION"
+git push
 git push --tag
 ```
 
