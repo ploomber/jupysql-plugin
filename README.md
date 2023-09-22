@@ -92,9 +92,14 @@ nox --session test
 pytest tests
 ```
 
-### Packaging the extension
+### Releasing the extension
 
 See [RELEASE](RELEASE.md)
+
+### Configuration
+
+The `package.json` file contains a `jupyterlab` extension. More information about
+this section is [here](https://github.com/jupyterlab/jupyterlab/blob/main/docs/source/extension/extension_dev.rst) (you might need to switch the git branch dependin on which version JupyterLab version you're building for). The schema is [here](https://github.com/jupyterlab/jupyterlab/blob/main/builder/metadata_schema.json).
 
 ### Ploomber Cloud API Endpoint
 
