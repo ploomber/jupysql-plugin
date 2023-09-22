@@ -11,6 +11,7 @@ Bump the version using `hatch`. See the docs on [hatch-nodejs-version](https://g
 ```bash
 NEW_VERSION='NEW_VERSION'
 hatch version $NEW_VERSION
+git add --all
 git commit -m "Version $NEW_VERSION"
 ```
 
