@@ -25,8 +25,21 @@ Note: `pkgmt format` can be used to format and lint before committing code.
 # and compile the frontend code
 pip install -e "."
 
-jupyter labextension develop . --overwrite
+# upon installation, both the frontend and backend extensions must be activated
+# automatically, you can verify it by ensuring jupysql-plugin appears here:
+jupyter labextension list # frontend extension
+jupyter server extension list # backend extension
+
+# if they don't appear, you can activate them manually, but this means that
+# the setup is incorrect! see pyproject.toml, under
+# tool.hatch.build.targets.wheel.shared-data, and fix any issues
+
+# activate manually
 jupyter server extension enable jupysql_plugin
+jupyter labextension enable jupysql_plugin
+
+
+jupyter labextension develop . --overwrite
 
 # NOTE: the two previous commands will fail if there are missing dependencies
 

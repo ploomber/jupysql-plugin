@@ -43,6 +43,7 @@ exclude = [".github", "binder"]
 [tool.hatch.build.targets.wheel.shared-data]
 "jupysql_plugin/labextension" = "share/jupyter/labextensions/jupysql-plugin"
 "install.json" = "share/jupyter/labextensions/jupysql-plugin/install.json"
+"jupyter-config/jupyter_server_config.d" = "etc/jupyter/jupyter_server_config.d"
 
 [tool.hatch.build.hooks.version]
 path = "jupysql_plugin/_version.py"

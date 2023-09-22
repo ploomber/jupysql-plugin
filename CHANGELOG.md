@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.5
+
+* Automatically activate server extension
+
 ## 0.2.4
 
 * Re-release due to error in the release process
