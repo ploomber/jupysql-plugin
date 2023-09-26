@@ -18,7 +18,9 @@ pip install -r requirements.dev.txt
 
 jlpm install
 ```
-Note: `pkgmt format` can be used to format and lint before committing code. 
+Note: `pkgmt format` can be used to format and lint Python files before committing code. 
+To format JavaScript and TypeScript files, use `yarn run eslint`. To lint without formatting,
+use `yarn run eslint:check`
 
 ```bash
 # Note: this command will take some time the first time as it has to install
