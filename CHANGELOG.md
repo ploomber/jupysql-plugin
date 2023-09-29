@@ -3,6 +3,8 @@
 ## 0.2.5
 
 * Automatically activate server extension
+* Fixed error that broke `Delete` and `Connect` buttons on the Connector Widget
+when special characters were included in the connection alias
 
 ## 0.2.4
 
