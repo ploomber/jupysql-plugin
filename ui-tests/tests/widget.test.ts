@@ -661,7 +661,7 @@ const specialAliases = [
 ]
 
 for (const {alias, id} of specialAliases) {
-  test(`test delete button for aliases with special chars`, async ({ page }) => {
+  test(`test delete button for aliases with special chars: ${alias}`, async ({ page }) => {
     // create a new connection
     await page.locator('#createNewConnection').click();
     await page.locator('#connectionName').fill(alias);
@@ -677,7 +677,7 @@ for (const {alias, id} of specialAliases) {
 }
 
 for (const {alias, id} of specialAliases) {
-  test(`test connect button for aliases with special chars`, async ({ page }) => {
+  test(`test connect button for aliases with special chars: ${alias}`, async ({ page }) => {
     // create default connection
     await createDefaultConnection(page);
 

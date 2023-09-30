@@ -5,7 +5,6 @@
  * @returns Input string with special characters replaced with 
  *          their ASCII values.
  */
-
 export const specialToASCII = (str: string): string => {
     let res = '';
     for(let i = 0; i < str.length; i++) {
