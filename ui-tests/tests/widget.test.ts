@@ -692,6 +692,7 @@ for (const {alias, id} of specialAliases) {
     await page.locator('#connBtn_default').click();
     await page.locator(`#connBtn_${id}`).click();
 
-    await expect(page.locator('.connection-name')).toContainText(alias);
+    await page.locator(`#connBtn_${id}`).waitFor();
+    await expect(page.locator(`#connBtn_${id}`)).toContainText('Connected');
   })
 }
