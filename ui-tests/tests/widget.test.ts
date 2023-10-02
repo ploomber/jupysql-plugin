@@ -662,6 +662,8 @@ const specialAliases = [
 
 for (const {alias, id} of specialAliases) {
   test(`test delete button for aliases with special chars: ${alias}`, async ({ page }) => {
+    await displayWidget(page);
+
     // create a new connection
     await page.locator('#createNewConnection').click();
     await page.locator('#connectionName').fill(alias);
@@ -682,7 +684,7 @@ for (const {alias, id} of specialAliases) {
     await createDefaultConnection(page);
 
     // create a new connection
-    await page.locator('#createNewConnectiton').click();
+    await page.locator('#createNewConnection').click();
     await page.locator('#connectionName').fill(alias);
     await page.locator('#createConnectionFormButton').click();
 
