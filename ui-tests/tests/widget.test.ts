@@ -686,7 +686,7 @@ for (const {alias, id} of specialAliases) {
 
     // connect to default, then connect back to new connection
     await page.locator('#connBtn_default').click();
-    await page.locator(`#connBtn_${id}`).click();
+    await page.locator(`#connBtn_${id}`).click(); 
 
     await page.locator(`#connBtn_${id}`).waitFor();
     await expect(page.locator(`#connBtn_${id}`)).toContainText('Connected');
