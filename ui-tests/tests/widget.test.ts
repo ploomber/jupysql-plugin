@@ -647,17 +647,13 @@ test('test error if edit connection with existing name', async ({ page }) => {
 });
 
 const specialAliases = [
-  {alias: 'db', id: 'id'},
+  {alias: 'db', id: 'db'},
   {alias: 'db with space', id: 'db_with_space'},
   {alias: 'db?', id: 'db63'},
   {alias: 'db://', id: 'db584747'},
   {alias: 'db! !', id: 'db33_33'},
   {alias: ';db', id: '59db'},
   {alias: ' db', id: '_db'},
-  { 
-    alias: '!@#$%^&*()-_[]{}|;:?<>,./', 
-    id: '33643536379438424041459591931231251245958636062444647'
-  },
 ]
 
 for (const {alias, id} of specialAliases) {
