@@ -3,7 +3,7 @@ import { ReactWidget } from '@jupyterlab/apputils'
 import { Dialog as jupyterlabDialog } from '@jupyterlab/apputils';
 import { Box, Button, Chip, Grid, Snackbar, TextField, Link, CircularProgress, Typography } from '@mui/material';
 import CloudQueue from '@mui/icons-material/CloudQueue';
-import { DEPLOYMENT_ENDPONTS } from './const/env';
+import { DEPLOYMENT_ENDPOINTS, DOCS } from './const/env';
 import { requestAPI } from './utils/util';
 
 
@@ -40,7 +40,7 @@ const ErrorMessageArea = (props: any): JSX.Element => {
                                                     setSnakebarMessage("Deployment Success")
                                                 }} /> */}
                 {/* A requirements.txt file with dependencies is required to deploy your notebook. Please add it at {PATH}. To learn more, see the docs */}
-                <Typography variant="subtitle1" gutterBottom> A <code>{props?.message?.detail?.fileName}</code> file with dependencies is required to deploy your notebook. Please add it at <code>{props?.message?.detail?.filePath}</code>. To learn more, see the <a target="_blank" rel="noopener noreferrer" href="https://docs.cloud.ploomber.io/en/latest/dashboards/jupyterlab-plugin.html#create-sample-notebook-and-requirements-txt">docs</a>
+                <Typography variant="subtitle1" gutterBottom> A <code>{props?.message?.detail?.fileName}</code> file with dependencies is required to deploy your notebook. Please add it at <code>{props?.message?.detail?.filePath}</code>. To learn more, see the <a target="_blank" rel="noopener noreferrer" href="https://docs.cloud.ploomber.io/en/latest/apps/jupyterlab-plugin.html">docs</a>
                 </Typography>
             </div>
         )
@@ -160,7 +160,7 @@ export const DialogContent = (props: any): JSX.Element => {
                 errorMsg.detail = result.detail || result.message
                 setDeployErrorMessage(errorMsg)
             } else {
-                setDeploymentURL(DEPLOYMENT_ENDPONTS.NEW_JOB + result?.project_id + "/" + result?.id)
+                setDeploymentURL(DEPLOYMENT_ENDPOINTS.NEW_JOB + result?.project_id + "/" + result?.id)
                 props?.metadata?.set("ploomber", { "project_id": result?.project_id })
                 props?.context?.save()
             }
@@ -201,6 +201,9 @@ export const DialogContent = (props: any): JSX.Element => {
                     <Grid container spacing={4} alignItems="center" direction="column">
                         {APIValidStatus !== "success" &&
                             <div>
+                                <Grid item container direction='row' alignItems="center" justifyContent="flex-start" width={"100%"} my={2}>
+                                    Deploy this notebook as a web application with Ploomber Cloud. <Link href={DOCS.VOILA_EXAMPLES} target="_blank" rel="noopener noreferrer"> Click here to learn more.</Link>
+                                </Grid>
                                 <Grid item container direction='row' alignItems="center" width={"100%"}>
                                     <Grid container direction="row" alignItems="center" spacing={1}>
                                         <Grid item xs={10}>
@@ -221,10 +224,9 @@ export const DialogContent = (props: any): JSX.Element => {
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid item container direction='row' alignItems="center" width={"100%"}>
-                                    <Link href={DEPLOYMENT_ENDPONTS.REGISTER_API} target="_blank" rel="noopener noreferrer">Click here to get an API Key</Link>
+                                <Grid item container direction='row' alignItems="center" width={"100%"} my={2}>
+                                    You need an API key to deploy this notebook.&nbsp;<Link href={DOCS.GET_API_KEY} target="_blank" rel="noopener noreferrer">Click here to get an API Key</Link>
                                 </Grid>
-
                             </div>
                         }
                         {APIValidStatus == "success" &&
@@ -254,7 +256,7 @@ export const DialogContent = (props: any): JSX.Element => {
                                 </> : <>
                                     <>
                                         <Typography variant="subtitle1" gutterBottom>
-                                            Clicking on deploy will upload your notebook to Ploomber Cloud servers
+                                            Confirm that you want to deploy this notebook to Ploomber Cloud
                                         </Typography>
                                         <Button onClick={onClickFirstTimeDeploy} variant="contained" size="small" color="primary" disabled={deploymentURL !== ""} endIcon={<CloudQueue />}>CONFIRM </Button>
                                     </>

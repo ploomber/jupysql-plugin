@@ -75,7 +75,7 @@ describe("Test DialogContent ", () => {
             renderDialogContent();
             await waitFor(() => {
                 expect(screen.getByLabelText('API Key')).toBeVisible()
-                expect(screen.getByRole('link')).toHaveTextContent('Click here to get an API Key')
+                expect(screen.getAllByRole('link')[1]).toHaveTextContent('Click here to get an API Key')
                 expect(screen.getByRole('button')).toHaveTextContent('CONFIRM')
             })
         })
@@ -111,7 +111,7 @@ describe("Test DialogContent ", () => {
                 const confirmButton = screen.getByText('CONFIRM', { selector: 'button' })
                 fireEvent.click(confirmButton)
             })
-            expect(await screen.findByText('Clicking on deploy will upload your notebook to Ploomber Cloud servers')).toBeVisible()
+            expect(await screen.findByText('Confirm that you want to deploy this notebook to Ploomber Cloud')).toBeVisible()
         })
     })
 
@@ -131,7 +131,7 @@ describe("Test DialogContent ", () => {
         test("Test First Time Deployment Layout", async () => {
             renderDialogContent();
 
-            expect(await screen.findByText('Clicking on deploy will upload your notebook to Ploomber Cloud servers')).toBeVisible()
+            expect(await screen.findByText('Confirm that you want to deploy this notebook to Ploomber Cloud')).toBeVisible()
             expect(await screen.getByRole('button')).toHaveTextContent('CONFIRM')
 
         })
@@ -141,7 +141,7 @@ describe("Test DialogContent ", () => {
         test("Test First Time Deployment Click Confim", async () => {
             mockJobDeployResult();
             renderDialogContent();
-            expect(await screen.findByText('Clicking on deploy will upload your notebook to Ploomber Cloud servers')).toBeVisible()
+            expect(await screen.findByText('Confirm that you want to deploy this notebook to Ploomber Cloud')).toBeVisible()
             expect(await screen.getByRole('button')).toHaveTextContent('CONFIRM')
 
             const confirmButton = screen.getByText('CONFIRM', { selector: 'button' })

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.6
+
+* Fix `Deploy notebook` functionality
+
 ## 0.2.5
 
 * Automatically activate server extension

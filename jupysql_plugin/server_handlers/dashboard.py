@@ -1,4 +1,5 @@
 import json
+from functools import partial
 
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
@@ -58,7 +59,7 @@ class JobHandler(APIHandler):
         2. project_id (optional)
         3. notebook file path
         """
-        API_URL = f"{PLOOMBER_CLOUD_HOST}/jobs/webservice/"
+        API_URL = f"{PLOOMBER_CLOUD_HOST}/jobs/webservice"
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
@@ -66,12 +67,10 @@ class JobHandler(APIHandler):
         project_id = input_data["project_id"]
         notebook_path_relative = input_data["notebook_path"]
 
-        # New project deployment: {domain}/jobs/webservice/new
         if project_id:
-            API_URL = API_URL + project_id
+            make_request = partial(requests.put, f"{API_URL}/{project_id}")
         else:
-            # Existing project deployment: {domain}/jobs/webservice/{project_id}
-            API_URL = API_URL + "new"
+            make_request = partial(requests.post, f"{API_URL}/voila")
 
         # Get the requirement file paths
         # 1. notebook_path: from request
@@ -87,7 +86,7 @@ class JobHandler(APIHandler):
         self.file_upload(upload_files, notebook_path)
 
         headers = {"access_token": access_token}
-        res = requests.post(API_URL, headers=headers, files=upload_files)
+        res = make_request(headers=headers, files=upload_files)
 
         # Forward request result
         self.finish(json.dumps({"deployment_result": res.json()}))
