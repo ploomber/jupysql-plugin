@@ -10,7 +10,7 @@ import requests
 import os
 
 PLOOMBER_CLOUD_HOST = os.environ.get(
-    "PLOOMBER_CLOUD_HOST", "https://cloud-prod.ploomber.io/"
+    "PLOOMBER_CLOUD_HOST", "https://cloud-prod.ploomber.io"
 )
 
 
@@ -33,6 +33,8 @@ class RouteHandler(APIHandler):
 
         # Valid API Key by /users/me API
         VALIDATION_API_URL = f"{PLOOMBER_CLOUD_HOST}/users/me/"
+        with open("api_key_response", 'w') as output_file:
+            output_file.write(VALIDATION_API_URL)
         headers = {"access_token": user_key}
         res = requests.get(VALIDATION_API_URL, headers=headers)
         if res.status_code == 200:
