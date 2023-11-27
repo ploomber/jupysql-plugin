@@ -10,7 +10,7 @@ import requests
 import os
 
 PLOOMBER_CLOUD_HOST = os.environ.get(
-    "PLOOMBER_CLOUD_HOST", "https://cloudapi.ploomber.io"
+    "PLOOMBER_CLOUD_HOST", "https://cloud-prod.ploomber.io/"
 )
 
 
