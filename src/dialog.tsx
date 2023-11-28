@@ -135,7 +135,6 @@ export const DialogContent = (props: any): JSX.Element => {
     const deployNotebook = async () => {
         setIsLoadingDeployStatus(true)
         const dataToSend = { 'notebook_path': notebook_relative_path, 'api_key': APIKey, 'project_id': projectId };
-
         await requestAPI<any>('job', {
             body: JSON.stringify(dataToSend),
             method: 'POST'
@@ -159,8 +158,7 @@ export const DialogContent = (props: any): JSX.Element => {
             else if (result?.detail || result?.message) {
                 errorMsg.detail = result.detail || result.message
                 setDeployErrorMessage(errorMsg)
-                }
-            else {
+                } else {
                 setDeploymentURL(DEPLOYMENT_ENDPOINTS.NEW_JOB + result?.project_id + "/" + result?.id)
                 props?.metadata?.set("ploomber", { "project_id": result?.project_id })
                 props?.context?.save()
