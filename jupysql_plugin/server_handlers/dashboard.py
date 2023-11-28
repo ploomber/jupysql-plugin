@@ -114,10 +114,8 @@ class ProjectsHandler(APIHandler):
         project_id = input_data["project_id"]
         access_token = input_data["api_key"]
         API_URL = f"{PLOOMBER_CLOUD_HOST}/projects"
-        make_request = partial(requests.get, f"{API_URL}/{project_id}")
-
         headers = {"access_token": access_token}
-        res = make_request(headers=headers)
+        res = requests.get(f"{API_URL}/{project_id}", headers=headers)
         self.finish(json.dumps({"project_details": res.json()}))
 
 

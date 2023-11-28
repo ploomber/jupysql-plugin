@@ -161,6 +161,11 @@ export const DialogContent = (props: any): JSX.Element => {
                 errorMsg.detail = result.detail || result.message
                 setDeployErrorMessage(errorMsg)
                 }
+            else {
+                setDeploymentURL(DEPLOYMENT_ENDPOINTS.NEW_JOB + result?.project_id + "/" + result?.id)
+                props?.metadata?.set("ploomber", { "project_id": result?.project_id })
+                props?.context?.save()
+            }
         })
         }
         else {
@@ -176,11 +181,13 @@ export const DialogContent = (props: any): JSX.Element => {
                 type: "generic",
                 detail: ""
             }
+            console.log(result)
             if (result?.detail || result?.message) {
                 errorMsg.detail = result.detail || result.message
                 setDeployErrorMessage(errorMsg)
             } else {
-                setDeploymentURL(DEPLOYMENT_ENDPOINTS.NEW_JOB + result?.project_id + "/" + result?.id)
+                setDeploymentURL(DEPLOYMENT_ENDPOINTS.NEW_JOB + result?.jobs[0]?.project_id +
+                "/" + result?.jobs[0]?.id)
                 props?.metadata?.set("ploomber", { "project_id": result?.project_id })
                 props?.context?.save()
             }
