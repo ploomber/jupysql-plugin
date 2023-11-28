@@ -59,7 +59,6 @@ class JobHandler(APIHandler):
         2. project_id (optional)
         3. notebook file path
         """
-
         API_URL = f"{PLOOMBER_CLOUD_HOST}/jobs/webservice"
         root_dir = filemanager.FileContentsManager().root_dir
 
@@ -70,7 +69,6 @@ class JobHandler(APIHandler):
 
         if project_id:
             make_request = partial(requests.put, f"{API_URL}/{project_id}")
-
         else:
             make_request = partial(requests.post, f"{API_URL}/voila")
 

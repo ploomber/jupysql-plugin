@@ -35,7 +35,6 @@ const ErrorMessageArea = (props: any): JSX.Element => {
             <div data-testid="error-message-area">
 
                 {/* <Chip label={deploymentURL} variant="outlined" onClick={() => {
-                {/* <Chip label={deploymentURL} variant="outlined" onClick={() => {
                                                     window.open(deploymentURL);
                                                     setIsShowSnackbar(true)
                                                     setSnakebarMessage("Deployment Success")
@@ -81,7 +80,6 @@ export const DialogContent = (props: any): JSX.Element => {
             if (!projectId) {
                 setIsShowFirstTimeDeployPrompt(true)
             } else {
-
                 setIsShowFirstTimeDeployPrompt(false)
                 deployNotebook()
             }
