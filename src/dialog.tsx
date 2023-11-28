@@ -136,7 +136,6 @@ export const DialogContent = (props: any): JSX.Element => {
         setIsLoadingDeployStatus(true)
         const dataToSend = { 'notebook_path': notebook_relative_path, 'api_key': APIKey, 'project_id': projectId };
 
-        if (isShowFirstTimeDeployPrompt) {
         await requestAPI<any>('job', {
             body: JSON.stringify(dataToSend),
             method: 'POST'
@@ -167,33 +166,6 @@ export const DialogContent = (props: any): JSX.Element => {
                 props?.context?.save()
             }
         })
-        }
-        else {
-            await requestAPI<any>('projects', {
-            body: JSON.stringify({'api_key': APIKey, 'project_id': projectId }),
-            method: 'POST'
-        }).then(reply => {
-            var result = reply["project_details"]
-            var errorMsg: {
-                type: string,
-                detail: any
-            } = {
-                type: "generic",
-                detail: ""
-            }
-            console.log(result)
-            if (result?.detail || result?.message) {
-                errorMsg.detail = result.detail || result.message
-                setDeployErrorMessage(errorMsg)
-            } else {
-                setDeploymentURL(DEPLOYMENT_ENDPOINTS.NEW_JOB + result?.jobs[0]?.project_id +
-                "/" + result?.jobs[0]?.id)
-                props?.metadata?.set("ploomber", { "project_id": result?.project_id })
-                props?.context?.save()
-            }
-            // Write into notebook projectID
-        })
-        }
 
         setIsLoadingDeployStatus(false)
 

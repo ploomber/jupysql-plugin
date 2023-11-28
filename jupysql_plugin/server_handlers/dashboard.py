@@ -68,7 +68,9 @@ class JobHandler(APIHandler):
         notebook_path_relative = input_data["notebook_path"]
 
         if project_id:
-            make_request = partial(requests.put, f"{API_URL}/{project_id}")
+            make_request = partial(
+                requests.post, f"{API_URL}/voila", data={"project_id": project_id}
+            )
         else:
             make_request = partial(requests.post, f"{API_URL}/voila")
 
@@ -101,24 +103,6 @@ class JobHandler(APIHandler):
             raise FileNotFoundError
 
 
-class ProjectsHandler(APIHandler):
-    """
-    Endpoint: /projects
-    """
-
-    @tornado.web.authenticated
-    def post(self):
-        """Return project details"""
-
-        input_data = self.get_json_body()
-        project_id = input_data["project_id"]
-        access_token = input_data["api_key"]
-        API_URL = f"{PLOOMBER_CLOUD_HOST}/projects"
-        headers = {"access_token": access_token}
-        res = requests.get(f"{API_URL}/{project_id}", headers=headers)
-        self.finish(json.dumps({"project_details": res.json()}))
-
-
 def setup_handlers(web_app):
     host_pattern = ".*$"
 
@@ -131,7 +115,3 @@ def setup_handlers(web_app):
     route_pattern = url_path_join(base_url, "dashboard", "job")
     job_handlers = [(route_pattern, JobHandler)]
     web_app.add_handlers(host_pattern, job_handlers)
-    # Endpoint: /projects
-    route_pattern = url_path_join(base_url, "dashboard", "projects")
-    project_handlers = [(route_pattern, ProjectsHandler)]
-    web_app.add_handlers(host_pattern, project_handlers)
