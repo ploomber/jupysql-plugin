@@ -33,8 +33,6 @@ class RouteHandler(APIHandler):
 
         # Valid API Key by /users/me API
         VALIDATION_API_URL = f"{PLOOMBER_CLOUD_HOST}/users/me/"
-        with open("api_key_response", 'w') as output_file:
-            output_file.write(VALIDATION_API_URL)
         headers = {"access_token": user_key}
         res = requests.get(VALIDATION_API_URL, headers=headers)
         if res.status_code == 200:
@@ -47,7 +45,7 @@ class RouteHandler(APIHandler):
 
 class JobHandler(APIHandler):
     """
-    Endpoint: /dashboard/job
+    Endpoint: /jobs/webservice
     We need the access the file system through this endpoint, we need below files:
     1. notebook file
     2. requirements.txt
@@ -61,6 +59,7 @@ class JobHandler(APIHandler):
         2. project_id (optional)
         3. notebook file path
         """
+
         API_URL = f"{PLOOMBER_CLOUD_HOST}/jobs/webservice"
         root_dir = filemanager.FileContentsManager().root_dir
 
@@ -71,6 +70,7 @@ class JobHandler(APIHandler):
 
         if project_id:
             make_request = partial(requests.put, f"{API_URL}/{project_id}")
+
         else:
             make_request = partial(requests.post, f"{API_URL}/voila")
 
@@ -82,7 +82,7 @@ class JobHandler(APIHandler):
             os.path.dirname(notebook_path), "requirements.txt"
         )
 
-        # Fetch requried files
+        # Fetch required files
         upload_files = []
         self.file_upload(upload_files, requirements_txt_path)
         self.file_upload(upload_files, notebook_path)
@@ -103,6 +103,26 @@ class JobHandler(APIHandler):
             raise FileNotFoundError
 
 
+class ProjectsHandler(APIHandler):
+    """
+    Endpoint: /projects
+    """
+
+    @tornado.web.authenticated
+    def post(self):
+        """Return project details"""
+
+        input_data = self.get_json_body()
+        project_id = input_data["project_id"]
+        access_token = input_data["api_key"]
+        API_URL = f"{PLOOMBER_CLOUD_HOST}/projects"
+        make_request = partial(requests.get, f"{API_URL}/{project_id}")
+
+        headers = {"access_token": access_token}
+        res = make_request(headers=headers)
+        self.finish(json.dumps({"project_details": res.json()}))
+
+
 def setup_handlers(web_app):
     host_pattern = ".*$"
 
@@ -111,7 +131,11 @@ def setup_handlers(web_app):
     route_pattern = url_path_join(base_url, "dashboard", "apikey")
     apikey_handlers = [(route_pattern, RouteHandler)]
     web_app.add_handlers(host_pattern, apikey_handlers)
-    # Endpoint: /dashboard/job
+    # Endpoint: /jobs/webservice
     route_pattern = url_path_join(base_url, "dashboard", "job")
     job_handlers = [(route_pattern, JobHandler)]
     web_app.add_handlers(host_pattern, job_handlers)
+    # Endpoint: /projects
+    route_pattern = url_path_join(base_url, "dashboard", "projects")
+    project_handlers = [(route_pattern, ProjectsHandler)]
+    web_app.add_handlers(host_pattern, project_handlers)

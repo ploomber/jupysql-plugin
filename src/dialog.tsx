@@ -35,6 +35,7 @@ const ErrorMessageArea = (props: any): JSX.Element => {
             <div data-testid="error-message-area">
 
                 {/* <Chip label={deploymentURL} variant="outlined" onClick={() => {
+                {/* <Chip label={deploymentURL} variant="outlined" onClick={() => {
                                                     window.open(deploymentURL);
                                                     setIsShowSnackbar(true)
                                                     setSnakebarMessage("Deployment Success")
@@ -80,6 +81,7 @@ export const DialogContent = (props: any): JSX.Element => {
             if (!projectId) {
                 setIsShowFirstTimeDeployPrompt(true)
             } else {
+
                 setIsShowFirstTimeDeployPrompt(false)
                 deployNotebook()
             }
@@ -135,6 +137,8 @@ export const DialogContent = (props: any): JSX.Element => {
     const deployNotebook = async () => {
         setIsLoadingDeployStatus(true)
         const dataToSend = { 'notebook_path': notebook_relative_path, 'api_key': APIKey, 'project_id': projectId };
+
+        if (isShowFirstTimeDeployPrompt) {
         await requestAPI<any>('job', {
             body: JSON.stringify(dataToSend),
             method: 'POST'
@@ -156,7 +160,25 @@ export const DialogContent = (props: any): JSX.Element => {
                 setDeployErrorMessage(errorMsg)
             }
             else if (result?.detail || result?.message) {
-
+                errorMsg.detail = result.detail || result.message
+                setDeployErrorMessage(errorMsg)
+                }
+        })
+        }
+        else {
+            await requestAPI<any>('projects', {
+            body: JSON.stringify({'api_key': APIKey, 'project_id': projectId }),
+            method: 'POST'
+        }).then(reply => {
+            var result = reply["project_details"]
+            var errorMsg: {
+                type: string,
+                detail: any
+            } = {
+                type: "generic",
+                detail: ""
+            }
+            if (result?.detail || result?.message) {
                 errorMsg.detail = result.detail || result.message
                 setDeployErrorMessage(errorMsg)
             } else {
@@ -166,6 +188,7 @@ export const DialogContent = (props: any): JSX.Element => {
             }
             // Write into notebook projectID
         })
+        }
 
         setIsLoadingDeployStatus(false)
 
