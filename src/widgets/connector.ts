@@ -6,6 +6,7 @@ import {
 
 import { MODULE_NAME, MODULE_VERSION } from '../version';
 
+import { specialToASCII } from '../utils/helper-functions';
 
 // Import the CSS
 import '../../style/connector.css';
@@ -155,7 +156,7 @@ export class ConnectorView extends DOMWidgetView {
         // Draw connection buttons
         connections.forEach((connection: Connection) => {
             const { name } = connection;
-            const name_without_spaces = name.replace(/ /g, "_");
+            const name_without_spaces = specialToASCII(name)
 
             const buttonContainer = document.createElement("DIV");
             buttonContainer.className = "connection-button-container";
@@ -339,7 +340,7 @@ export class ConnectorView extends DOMWidgetView {
         deleteConnectionMessage.querySelector(".actions").appendChild(deleteButton);
 
         // hide controllers
-        const deleteConnBtn = this.el.querySelector(`#deleteConnBtn_${connection["name"].replace(/ /g, "_")}`);
+        const deleteConnBtn = this.el.querySelector(`#deleteConnBtn_${specialToASCII(connection["name"])}`);
         const actionsContainer = <HTMLElement>deleteConnBtn.parentNode;
         actionsContainer.style.display = "none"
 
@@ -635,7 +636,7 @@ export class ConnectorView extends DOMWidgetView {
                 buttonEl.classList.add("secondary");
             });
 
-        const selectedButtonEl = (<HTMLButtonElement>this.el.querySelector(`#connBtn_${connectionName.replace(/ /g, "_")}`));
+        const selectedButtonEl = (<HTMLButtonElement>this.el.querySelector(`#connBtn_${specialToASCII(connectionName)}`));
         selectedButtonEl.innerText = "Connected";
         selectedButtonEl.classList.add("primary");
     }

@@ -645,3 +645,50 @@ test('test error if edit connection with existing name', async ({ page }) => {
 
     await expect(page.locator('.user-error-message')).toContainText("A connection named 'default' already exists in your connections file");
 });
+
+const specialAliases = [
+  {alias: 'db', id: 'db'},
+  {alias: 'db with space', id: 'db_with_space'},
+  {alias: 'db?', id: 'db63'},
+  {alias: 'db://', id: 'db584747'},
+  {alias: 'db! !', id: 'db33_33'},
+  {alias: ';db', id: '59db'},
+  {alias: ' db', id: '_db'},
+]
+
+for (const {alias, id} of specialAliases) {
+  test(`test delete button for aliases with special chars: ${alias}`, async ({ page }) => {
+    await displayWidget(page);
+
+    // create a new connection
+    await page.locator('#createNewConnection').click();
+    await page.locator('#connectionName').fill(alias);
+    await page.locator('#createConnectionFormButton').click();
+
+    // delete connection with special characters in alias
+    await page.locator(`#deleteConnBtn_${id}`).click();
+    await page.locator('#deleteConnectionButton').click();
+
+    expect(page.locator('#connectionsButtonsContainer')).toBeEmpty();
+
+  })
+}
+
+for (const {alias, id} of specialAliases) {
+  test(`test connect button for aliases with special chars: ${alias}`, async ({ page }) => {
+    // create default connection
+    await createDefaultConnection(page);
+
+    // create a new connection
+    await page.locator('#createNewConnection').click();
+    await page.locator('#connectionName').fill(alias);
+    await page.locator('#createConnectionFormButton').click();
+
+    // connect to default, then connect back to new connection
+    await page.locator('#connBtn_default').click();
+    await page.locator(`#connBtn_${id}`).click(); 
+
+    await page.locator(`#connBtn_${id}`).waitFor();
+    await expect(page.locator(`#connBtn_${id}`)).toContainText('Connected');
+  })
+}
