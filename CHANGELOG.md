@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.7
+
+* Fix `Deploy notebook` due to breaking change in API
+
 ## 0.2.6
 
 * Fix `Deploy notebook` functionality
