@@ -10,7 +10,7 @@ import requests
 import os
 
 PLOOMBER_CLOUD_HOST = os.environ.get(
-    "PLOOMBER_CLOUD_HOST", "https://cloudapi.ploomber.io"
+    "PLOOMBER_CLOUD_HOST", "https://cloud-prod.ploomber.io"
 )
 
 
@@ -45,7 +45,7 @@ class RouteHandler(APIHandler):
 
 class JobHandler(APIHandler):
     """
-    Endpoint: /dashboard/job
+    Endpoint: /jobs/webservice
     We need the access the file system through this endpoint, we need below files:
     1. notebook file
     2. requirements.txt
@@ -68,7 +68,9 @@ class JobHandler(APIHandler):
         notebook_path_relative = input_data["notebook_path"]
 
         if project_id:
-            make_request = partial(requests.put, f"{API_URL}/{project_id}")
+            make_request = partial(
+                requests.post, f"{API_URL}/voila?project_id={project_id}"
+            )
         else:
             make_request = partial(requests.post, f"{API_URL}/voila")
 
@@ -80,7 +82,7 @@ class JobHandler(APIHandler):
             os.path.dirname(notebook_path), "requirements.txt"
         )
 
-        # Fetch requried files
+        # Fetch required files
         upload_files = []
         self.file_upload(upload_files, requirements_txt_path)
         self.file_upload(upload_files, notebook_path)
@@ -109,7 +111,7 @@ def setup_handlers(web_app):
     route_pattern = url_path_join(base_url, "dashboard", "apikey")
     apikey_handlers = [(route_pattern, RouteHandler)]
     web_app.add_handlers(host_pattern, apikey_handlers)
-    # Endpoint: /dashboard/job
+    # Endpoint: /jobs/webservice
     route_pattern = url_path_join(base_url, "dashboard", "job")
     job_handlers = [(route_pattern, JobHandler)]
     web_app.add_handlers(host_pattern, job_handlers)
