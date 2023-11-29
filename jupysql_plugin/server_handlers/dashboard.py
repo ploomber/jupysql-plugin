@@ -69,7 +69,7 @@ class JobHandler(APIHandler):
 
         if project_id:
             make_request = partial(
-                requests.post, f"{API_URL}/voila", data={"project_id": project_id}
+                requests.post, f"{API_URL}/voila?project_id={project_id}"
             )
         else:
             make_request = partial(requests.post, f"{API_URL}/voila")
