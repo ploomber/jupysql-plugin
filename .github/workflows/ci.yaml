@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.9, '3.10', '3.11']
+        python-version: [3.8, 3.9, '3.10', '3.11']
         os: [macos-latest]
 
     env:
@@ -54,7 +54,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.9, '3.10', '3.11']
+        python-version: ['3.11']
         shard: [1-of-4, 2-of-4, 3-of-4, 4-of-4]
         # we're creating macos snapshots
         os: [macos-latest]
@@ -85,7 +85,7 @@ jobs:
           SHARD=${{ matrix.shard }}
           # convert 1-of-4 to 1/4
           SHARD_ARG=$(echo $SHARD | sed 's/-of-/\//g')
-          nox --session ui_test --verbose -- --shard $SHARD_ARG
+          nox --session ui_test --verbose -- --shard $SHARD_ARG --reporter list
 
       - name: Upload test snapshots
         uses: actions/upload-artifact@v3
