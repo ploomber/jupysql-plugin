@@ -55,7 +55,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.11']
-        shard: [1-of-4, 2-of-4, 3-of-4, 4-of-4]
+        shard: [1-of-6, 2-of-6, 3-of-6, 4-of-6, 5-of-6, 6-of-6]
         # we're creating macos snapshots
         os: [macos-latest]
 
