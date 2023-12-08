@@ -3,10 +3,7 @@ import nox
 from os import environ
 
 
-@nox.session(
-    python=environ.get("PYTHON_VERSION", "3.11"),
-)
-def test(session):
+def _setup(session):
     session.run("python", "--version")
     session.install("-r", "requirements.txt")
     session.install("-r", "requirements.dev.txt")
@@ -23,10 +20,23 @@ def test(session):
     session.install("-e", ".")
     session.run("python", "-c", "import jupysql_plugin")
 
+
+@nox.session(
+    python=environ.get("PYTHON_VERSION", "3.11"),
+)
+def test(session):
+    _setup(session)
+
     # unit tests
     session.run("pytest", "tests")
-
     session.run("jlpm", "test")
+
+
+@nox.session(
+    python=environ.get("PYTHON_VERSION", "3.11"),
+)
+def ui_test(session):
+    _setup(session)
 
     with session.chdir("ui-tests"):
         session.run("jlpm", "install")

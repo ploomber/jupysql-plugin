@@ -12,22 +12,18 @@ defaults:
     shell: bash -l {0}
 
 jobs:
-  test:
+  unit-test:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11']
-        shard: [1/4, 2/4, 3/4, 4/4]
-        # we're creating macos snapshots
+        python-version: [3.9, '3.10', '3.11']
         os: [macos-latest]
 
     env:
       PYTHON_VERSION: ${{ matrix.python-version }}
 
-
     steps:
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -51,11 +47,44 @@ jobs:
 
       - name: Install and test
         run: |
-          nox --session test --verbose -- --shard ${{ matrix.shard }}
+          nox --session test --verbose
+
+  ui-test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        python-version: [3.9, '3.10', '3.11']
+        shard: [1/4, 2/4, 3/4, 4/4]
+        # we're creating macos snapshots
+        os: [macos-latest]
+
+    env:
+      PYTHON_VERSION: ${{ matrix.python-version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install and test
+        run: |
+          nox --session ui_test --verbose -- --shard ${{ matrix.shard }}
 
       - name: Upload test snapshots
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.shard }}
           path: ui-tests/test-results

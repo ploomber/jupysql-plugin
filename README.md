@@ -100,8 +100,11 @@ To run the tests:
 ```sh
 pip install nox pyyaml
 
-# note that this will also create a venv
+# unit tests
 nox --session test
+
+# ui tests
+nox --session ui_test
 
 # to only run the python unit tests
 pytest tests
