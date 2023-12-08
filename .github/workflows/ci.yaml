@@ -84,7 +84,7 @@ jobs:
           python3 -m pip install --upgrade nox
           SHARD=${{ matrix.shard }}
           # convert 1-of-4 to 1/4
-          SHARD_ARG=$(echo $SHARD | sed 's/-over-/\//g')
+          SHARD_ARG=$(echo $SHARD | sed 's/-of-/\//g')
           nox --session ui_test --verbose -- --shard $SHARD_ARG
 
       - name: Upload test snapshots
