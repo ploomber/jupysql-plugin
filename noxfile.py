@@ -32,4 +32,4 @@ def test(session):
         session.run("jlpm", "install")
         # TODO: this will install all playwright browsers, but we only need one
         session.run("jlpm", "playwright", "install")
-        session.run("jlpm", "test")
+        session.run("jlpm", "test", *session.posargs)
