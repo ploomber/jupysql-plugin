@@ -65,7 +65,7 @@ class JobHandler(APIHandler):
 
         input_data = self.get_json_body()
         access_token = input_data["api_key"]
-        project_id = input_data["project_id"]
+        # project_id = input_data["project_id"]
         notebook_path_relative = input_data["notebook_path"]
 
         make_request = partial(requests.post, API_URL)
@@ -82,7 +82,7 @@ class JobHandler(APIHandler):
 
         # Fetch required files
         upload_files = []
-        # self.file_upload(upload_files, requirements_txt_path)
+        self.file_upload(upload_files, requirements_txt_path)
         self.file_upload(upload_files, notebook_path)
 
         headers = {"access_token": access_token}
