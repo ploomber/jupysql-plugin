@@ -12,21 +12,18 @@ defaults:
     shell: bash -l {0}
 
 jobs:
-  test:
+  unit-test:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         python-version: [3.8, 3.9, '3.10', '3.11']
-        # we're creating macos snapshots
         os: [macos-latest]
 
     env:
       PYTHON_VERSION: ${{ matrix.python-version }}
 
-
     steps:
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -48,13 +45,51 @@ jobs:
           node-version: 20
           cache: yarn
 
-      - name: Install and test
+      - name: Test
         run: |
           nox --session test --verbose
+
+  ui-test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        python-version: ['3.11']
+        shard: [1-of-3, 2-of-3, 3-of-3]
+        # we're creating macos snapshots
+        os: [macos-latest]
+
+    env:
+      PYTHON_VERSION: ${{ matrix.python-version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install and test
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade nox
+          SHARD=${{ matrix.shard }}
+          # convert 1-of-4 to 1/4
+          SHARD_ARG=$(echo $SHARD | sed 's/-of-/\//g')
+          nox --session ui_test --verbose -- --shard $SHARD_ARG --reporter list
 
       - name: Upload test snapshots
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.shard }}
           path: ui-tests/test-results
