@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, ANY
 import json
 from pathlib import Path
 
@@ -48,13 +48,10 @@ async def test_set_api_key(tmp_empty, monkeypatch, jp_fetch):
 
     assert response.body == b'{"result": "success"}'
     assert response.code == 200
-
-    # TODO: check mock_get was called with the right url
-
-
-# TODO: test invalid api key
-# TODO: test invalid request when trying to store api key
-# TODO: error when missing notebook file
+    mock_get.assert_called_once_with(
+        "https://cloud-prod.ploomber.io/users/me/",
+        headers={"access_token": "mykey"},
+    )
 
 
 async def test_notebook_deploy(tmp_empty, monkeypatch, jp_fetch):
@@ -81,5 +78,40 @@ async def test_notebook_deploy(tmp_empty, monkeypatch, jp_fetch):
 
     assert json.loads(response.body) == {"deployment_result": {"key": "value"}}
     assert response.code == 200
+    mock_post.assert_called_once_with(
+        "https://cloud-prod.ploomber.io/jobs/webservice/voila?project_id=myproject",
+        headers={"access_token": "mykey"},
+        files=[
+            ("files", ANY),
+            ("files", ANY),
+        ],
+    )
 
-    # TODO: check mock_post was called with the right url
+
+async def test_notebook_upload(tmp_empty, monkeypatch, jp_fetch):
+    mock_post = Mock()
+    mock_post.return_value.status_code = 200
+    mock_post.return_value.json.return_value = {"key": "value"}
+    monkeypatch.setattr(dashboard.requests, "post", mock_post)
+
+    Path("nb.ipynb").touch()
+
+    response = await jp_fetch(
+        "ploomber-cloud",
+        "nb-upload",
+        method="POST",
+        body=json.dumps(
+            {
+                "api_key": "mykey",
+                "notebook_path": "nb.ipynb",
+            }
+        ),
+    )
+
+    assert json.loads(response.body) == {"deployment_result": {"key": "value"}}
+    assert response.code == 200
+    mock_post.assert_called_once_with(
+        "https://cloud-prod.ploomber.io/notebooks",
+        headers={"access_token": "mykey"},
+        files=[("files", ANY)],
+    )
