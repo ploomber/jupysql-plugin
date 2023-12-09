@@ -12,10 +12,10 @@ async function displayWidget(page) {
     await page.notebook.enterCellEditingMode(0);
     const cell = await page.notebook.getCell(0)
     await cell?.type(`
-  %load_ext sql
-  %config SqlMagic.dsn_filename = 'connections.ini'
-  from jupysql_plugin.widgets import ConnectorWidget
-  ConnectorWidget()`)
+%load_ext sql
+%config SqlMagic.dsn_filename = 'connections.ini'
+from jupysql_plugin.widgets import ConnectorWidget
+ConnectorWidget()`)
     await page.notebook.run()
 }
 
