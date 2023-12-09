@@ -79,20 +79,20 @@ for (const { label, connectionName } of aliasDefaultsWithExistingConnection) {
         await page.notebook.enterCellEditingMode(0);
         const cell = await page.notebook.getCell(0)
         await cell?.type(`
-  from pathlib import Path
-  Path('connections.ini').write_text("""
-  [first]
-  drivername = sqlite
-  database = :memory:
-  
-  [second]
-  drivername = sqlite
-  database = :memory:
-  """)
-  %load_ext sql
-  %config SqlMagic.dsn_filename = 'connections.ini'
-  from jupysql_plugin.widgets import ConnectorWidget
-  ConnectorWidget()`)
+from pathlib import Path
+Path('connections.ini').write_text("""
+[first]
+drivername = sqlite
+database = :memory:
+
+[second]
+drivername = sqlite
+database = :memory:
+""")
+%load_ext sql
+%config SqlMagic.dsn_filename = 'connections.ini'
+from jupysql_plugin.widgets import ConnectorWidget
+ConnectorWidget()`)
         await page.notebook.run()
 
         await page.locator('#createNewConnection').click();
@@ -169,20 +169,20 @@ for (const { label, connectionName, port } of autoPopulatedFieldsExistingConnect
         await page.notebook.enterCellEditingMode(0);
         const cell = await page.notebook.getCell(0);
         await cell?.type(`
-  from pathlib import Path
-  Path('connections.ini').write_text("""
-  [first]
-  drivername = sqlite
-  database = :memory:
-  
-  [second]
-  drivername = sqlite
-  database = :memory:
-  """)
-  %load_ext sql
-  %config SqlMagic.dsn_filename = 'connections.ini'
-  from jupysql_plugin.widgets import ConnectorWidget
-  ConnectorWidget()`);
+from pathlib import Path
+Path('connections.ini').write_text("""
+[first]
+drivername = sqlite
+database = :memory:
+
+[second]
+drivername = sqlite
+database = :memory:
+""")
+%load_ext sql
+%config SqlMagic.dsn_filename = 'connections.ini'
+from jupysql_plugin.widgets import ConnectorWidget
+ConnectorWidget()`);
         await page.notebook.run();
 
         await page.locator("#createNewConnection").click();
