@@ -140,12 +140,12 @@ def setup_handlers(web_app):
 
     base_url = web_app.settings["base_url"]
     # Endpoint: /dashboard/apikey
-    route_pattern = url_path_join(base_url, "dashboard", "apikey")
+    route_pattern = url_path_join(base_url, "ploomber", "apikey")
     apikey_handlers = [(route_pattern, APIKeyHandler)]
     web_app.add_handlers(host_pattern, apikey_handlers)
 
     # Endpoint: /jobs/webservice
-    route_pattern = url_path_join(base_url, "dashboard", "job")
+    route_pattern = url_path_join(base_url, "ploomber", "job")
     job_handlers = [(route_pattern, NotebookAppHandler)]
     web_app.add_handlers(host_pattern, job_handlers)
 
@@ -153,7 +153,7 @@ def setup_handlers(web_app):
         host_pattern,
         [
             (
-                url_path_join(base_url, "ploomber-cloud", "nb-upload"),
+                url_path_join(base_url, "ploomber", "nb-upload"),
                 NotebookUploadHandler,
             )
         ],
