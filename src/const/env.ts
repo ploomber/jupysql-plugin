@@ -1,5 +1,6 @@
 export const DEPLOYMENT_ENDPOINTS = {
     NEW_JOB: "https://platform.ploomber.io/dashboards/",
+    NEW_NOTEBOOK: "https://platform.ploomber.io/notebooks",
 }
 
 export const DOCS = {
