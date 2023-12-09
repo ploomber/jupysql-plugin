@@ -48,10 +48,10 @@ export class DeployingExtension
         this.panel = panel;
 
         this.deployNotebookButton = new ToolbarButton({
-            className: 'deploy-nb-button',
-            label: 'Deploy Notebook',
+            className: 'share-nb-button',
+            label: 'Share Notebook',
             onClick: clickDeploy,
-            tooltip: 'Deploy Notebook as dashboards',
+            tooltip: 'Share notebook by uploading it to Ploomber Cloud',
         });
 
         this.deployNotebookButton.node.setAttribute("data-testid", "deploy-btn");
