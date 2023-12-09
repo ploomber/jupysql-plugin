@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { DialogContent } from "../dialog";
+import { DeployDialogContent } from "../dialog";
 import React from 'react'
 import '@testing-library/jest-dom'
 import { requestAPI } from '../utils/util';
@@ -47,15 +47,15 @@ const mockJobDeployResult = (projectID = "", deployment_result: object = {
     })
 }
 
-const renderDialogContent = (project_id: any = null) => {
+const renderDeployDialogContent = (project_id: any = null) => {
     if (!project_id) {
-        render(<DialogContent metadata={new Map()} />);
+        render(<DeployDialogContent metadata={new Map()} />);
     } else {
-        render(<DialogContent metadata={new Map([["ploomber", { project_id: project_id }]])} />);
+        render(<DeployDialogContent metadata={new Map([["ploomber", { project_id: project_id }]])} />);
     }
 }
 
-describe("Test DialogContent ", () => {
+describe("Test DeployDialogContent ", () => {
 
 
     describe("API Key Input Stage", () => {
@@ -72,7 +72,7 @@ describe("Test DialogContent ", () => {
         Ensure layout components render properly
         */
         test("Test API Key Layout", async () => {
-            renderDialogContent();
+            renderDeployDialogContent();
             await waitFor(() => {
                 expect(screen.getByLabelText('API Key')).toBeVisible()
                 expect(screen.getAllByRole('link')[1]).toHaveTextContent('Click here to get an API Key')
@@ -85,7 +85,7 @@ describe("Test DialogContent ", () => {
         */
         test("Test Invalid API Key Input", async () => {
             mockPostAPI("fail", DEFAULT_INVALID_API_KEY)
-            renderDialogContent();
+            renderDeployDialogContent();
             await waitFor(() => {
                 const inputBox = screen.getByLabelText('API Key')
                 fireEvent.change(inputBox, { target: { value: DEFAULT_INVALID_API_KEY } })
@@ -104,7 +104,7 @@ describe("Test DialogContent ", () => {
         */
         test("Test Valid API Key Input Will Move To Deploy Stage", async () => {
             mockPostAPI("success", DEFAULT_VALID_API_KEY)
-            renderDialogContent();
+            renderDeployDialogContent();
             await waitFor(() => {
                 const inputBox = screen.getByLabelText('API Key')
                 fireEvent.change(inputBox, { target: { value: DEFAULT_VALID_API_KEY } })
@@ -129,7 +129,7 @@ describe("Test DialogContent ", () => {
         Ensure layout components render properly
         */
         test("Test First Time Deployment Layout", async () => {
-            renderDialogContent();
+            renderDeployDialogContent();
 
             expect(await screen.findByText('Confirm that you want to deploy this notebook to Ploomber Cloud')).toBeVisible()
             expect(await screen.getByRole('button')).toHaveTextContent('CONFIRM')
@@ -140,7 +140,7 @@ describe("Test DialogContent ", () => {
         */
         test("Test First Time Deployment Click Confim", async () => {
             mockJobDeployResult();
-            renderDialogContent();
+            renderDeployDialogContent();
             expect(await screen.findByText('Confirm that you want to deploy this notebook to Ploomber Cloud')).toBeVisible()
             expect(await screen.getByRole('button')).toHaveTextContent('CONFIRM')
 
@@ -155,7 +155,7 @@ describe("Test DialogContent ", () => {
         */
         test("Test Existing Project Re-deployment Success", async () => {
             mockJobDeployResult(DEFAULT_PROJECT_ID);
-            renderDialogContent(DEFAULT_PROJECT_ID);
+            renderDeployDialogContent(DEFAULT_PROJECT_ID);
             // TODO: Somehow we need to wait for few seconds to pass the test
             await new Promise((r) => setTimeout(r, 3000));
             expect(await screen.findByText("Check your deployment status here:")).toBeVisible()
@@ -168,7 +168,7 @@ describe("Test DialogContent ", () => {
             mockJobDeployResult(DEFAULT_PROJECT_ID, {
                 "message": "Community users are only allowed to have a single active project. Delete your current project to create a new one."
             });
-            renderDialogContent(DEFAULT_PROJECT_ID);
+            renderDeployDialogContent(DEFAULT_PROJECT_ID);
             expect(await screen.findByText("Community users are only allowed to have a single active project. Delete your current project to create a new one.")).toBeVisible()
         })
         /* 
@@ -181,7 +181,7 @@ describe("Test DialogContent ", () => {
             });
 
 
-            renderDialogContent(DEFAULT_PROJECT_ID);
+            renderDeployDialogContent(DEFAULT_PROJECT_ID);
             await waitFor(() => {
                 expect(screen.getByTestId('error-message-area')).toHaveTextContent('A requirements.txt file with dependencies is required to deploy your notebook. Please add it at /Users/tonykuo/requirements.txt. To learn more, see the docs')
 
