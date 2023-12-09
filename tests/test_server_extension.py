@@ -49,6 +49,37 @@ async def test_set_api_key(tmp_empty, monkeypatch, jp_fetch):
     assert response.body == b'{"result": "success"}'
     assert response.code == 200
 
+    # TODO: check mock_get was called with the right url
+
 
 # TODO: test invalid api key
 # TODO: test invalid request when trying to store api key
+# TODO: error when missing notebook file
+
+
+async def test_notebook_deploy(tmp_empty, monkeypatch, jp_fetch):
+    mock_post = Mock()
+    mock_post.return_value.status_code = 200
+    mock_post.return_value.json.return_value = {"key": "value"}
+    monkeypatch.setattr(dashboard.requests, "post", mock_post)
+
+    Path("nb.ipynb").touch()
+    Path("requirements.txt").touch()
+
+    response = await jp_fetch(
+        "dashboard",
+        "job",
+        method="POST",
+        body=json.dumps(
+            {
+                "api_key": "mykey",
+                "notebook_path": "nb.ipynb",
+                "project_id": "myproject",
+            }
+        ),
+    )
+
+    assert json.loads(response.body) == {"deployment_result": {"key": "value"}}
+    assert response.code == 200
+
+    # TODO: check mock_post was called with the right url

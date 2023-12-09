@@ -60,17 +60,20 @@ class JobHandler(APIHandler):
         2. project_id (optional)
         3. notebook file path
         """
-        API_URL = f"{PLOOMBER_CLOUD_HOST}/notebooks"
+        API_URL = f"{PLOOMBER_CLOUD_HOST}/jobs/webservice"
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
         access_token = input_data["api_key"]
-        # project_id = input_data["project_id"]
+        project_id = input_data["project_id"]
         notebook_path_relative = input_data["notebook_path"]
 
-        make_request = partial(requests.post, API_URL)
-
-        # TODO: no longer check if requirements file exists
+        if project_id:
+            make_request = partial(
+                requests.post, f"{API_URL}/voila?project_id={project_id}"
+            )
+        else:
+            make_request = partial(requests.post, f"{API_URL}/voila")
 
         # Get the requirement file paths
         # 1. notebook_path: from request
@@ -87,6 +90,8 @@ class JobHandler(APIHandler):
 
         headers = {"access_token": access_token}
         res = make_request(headers=headers, files=upload_files)
+
+        # TODO: check status code
 
         # Forward request result
         self.finish(json.dumps({"deployment_result": res.json()}))
