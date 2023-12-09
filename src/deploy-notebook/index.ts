@@ -3,7 +3,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { IDisposable, DisposableDelegate } from '@lumino/disposable';
 
-import { showDeploymentDialog } from '../dialog';
+import { showUploadDialog } from '../dialog';
 import { settingsChanged, JupySQLSettings } from '../settings';
 
 /**
@@ -42,7 +42,7 @@ export class DeployingExtension
     ): IDisposable {
 
         const clickDeploy = () => {
-            showDeploymentDialog(panel, context)
+            showUploadDialog(panel, context)
         }
 
         this.panel = panel;
@@ -54,7 +54,7 @@ export class DeployingExtension
             tooltip: 'Share notebook by uploading it to Ploomber Cloud',
         });
 
-        this.deployNotebookButton.node.setAttribute("data-testid", "deploy-btn");
+        this.deployNotebookButton.node.setAttribute("data-testid", "share-btn");
 
         panel.toolbar.insertItem(10, 'deployNB', this.deployNotebookButton);
 
