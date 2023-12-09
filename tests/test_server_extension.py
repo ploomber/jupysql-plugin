@@ -10,7 +10,7 @@ from jupysql_plugin.server_handlers import dashboard
 async def test_get_api_key_empty(tmp_empty, monkeypatch, jp_fetch):
     monkeypatch.setattr(telemetry, "DEFAULT_HOME_DIR", "dir")
 
-    response = await jp_fetch("dashboard", "apikey", method="GET")
+    response = await jp_fetch("ploomber", "apikey", method="GET")
 
     assert response.body == b'{"data": null}'
     assert response.code == 200
@@ -23,7 +23,7 @@ async def test_get_api_key(tmp_empty, monkeypatch, jp_fetch):
     dir.mkdir(parents=True)
     (dir / "config.yaml").write_text("cloud_key: mykey")
 
-    response = await jp_fetch("dashboard", "apikey", method="GET")
+    response = await jp_fetch("ploomber", "apikey", method="GET")
 
     assert response.body == b'{"data": "mykey"}'
     assert response.code == 200
@@ -40,7 +40,7 @@ async def test_set_api_key(tmp_empty, monkeypatch, jp_fetch):
     (dir / "config.yaml").write_text("cloud_key: mykey")
 
     response = await jp_fetch(
-        "dashboard",
+        "ploomber",
         "apikey",
         method="POST",
         body=json.dumps({"api_key": "mykey"}),
@@ -64,7 +64,7 @@ async def test_notebook_deploy(tmp_empty, monkeypatch, jp_fetch):
     Path("requirements.txt").touch()
 
     response = await jp_fetch(
-        "dashboard",
+        "ploomber",
         "job",
         method="POST",
         body=json.dumps(
@@ -97,7 +97,7 @@ async def test_notebook_upload(tmp_empty, monkeypatch, jp_fetch):
     Path("nb.ipynb").touch()
 
     response = await jp_fetch(
-        "ploomber-cloud",
+        "ploomber",
         "nb-upload",
         method="POST",
         body=json.dumps(
