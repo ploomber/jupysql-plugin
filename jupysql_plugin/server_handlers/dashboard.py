@@ -35,6 +35,7 @@ class RouteHandler(APIHandler):
         VALIDATION_API_URL = f"{PLOOMBER_CLOUD_HOST}/users/me/"
         headers = {"access_token": user_key}
         res = requests.get(VALIDATION_API_URL, headers=headers)
+
         if res.status_code == 200:
             settings = UserSettings()
             settings.cloud_key = user_key
@@ -59,7 +60,7 @@ class JobHandler(APIHandler):
         2. project_id (optional)
         3. notebook file path
         """
-        API_URL = f"{PLOOMBER_CLOUD_HOST}/jobs/webservice"
+        API_URL = f"{PLOOMBER_CLOUD_HOST}/notebooks"
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
@@ -67,12 +68,9 @@ class JobHandler(APIHandler):
         project_id = input_data["project_id"]
         notebook_path_relative = input_data["notebook_path"]
 
-        if project_id:
-            make_request = partial(
-                requests.post, f"{API_URL}/voila?project_id={project_id}"
-            )
-        else:
-            make_request = partial(requests.post, f"{API_URL}/voila")
+        make_request = partial(requests.post, API_URL)
+
+        # TODO: no longer check if requirements file exists
 
         # Get the requirement file paths
         # 1. notebook_path: from request
@@ -84,7 +82,7 @@ class JobHandler(APIHandler):
 
         # Fetch required files
         upload_files = []
-        self.file_upload(upload_files, requirements_txt_path)
+        # self.file_upload(upload_files, requirements_txt_path)
         self.file_upload(upload_files, notebook_path)
 
         headers = {"access_token": access_token}

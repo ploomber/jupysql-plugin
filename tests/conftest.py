@@ -3,9 +3,27 @@ from pathlib import Path
 
 import pytest
 from IPython import InteractiveShell
+from traitlets.config import Config
+
 
 from sql.magic import SqlMagic, _set_sql_magic
 from sql import connection
+
+
+# https://github.com/jupyter-server/pytest-jupyter
+pytest_plugins = ["pytest_jupyter.jupyter_server"]
+
+
+@pytest.fixture()
+def jp_server_config():
+    """Allows tests to setup their specific configuration values."""
+    return Config(
+        {
+            "ServerApp": {
+                "jpserver_extensions": {"jupysql_plugin": True},
+            }
+        }
+    )
 
 
 def _init_sql_magic():
