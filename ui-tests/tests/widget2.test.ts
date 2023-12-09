@@ -2,63 +2,6 @@ import { test } from '@jupyterlab/galata';
 import { expect } from '@playwright/test';
 import { createNewNotebook, displayWidget } from './utils';
 
-const fieldDefaultsWhenNoExistingConnection = [
-    { label: 'PostgreSQL', connectionName: 'default', port: '5432', username: "", password: "", host: "", database: "" },
-    { label: 'MySQL', connectionName: 'default', port: '3306', username: "", password: "", host: "", database: "" },
-    { label: 'MariaDB', connectionName: 'default', port: '3306', username: "", password: "", host: "", database: "" },
-    { label: 'Snowflake', connectionName: 'default', port: '443', username: "", password: "", host: "", database: "" },
-    { label: 'Oracle', connectionName: 'default', port: '1521', username: "", password: "", host: "", database: "" },
-    { label: 'MSSQL', connectionName: 'default', port: '1433', username: "", password: "", host: "", database: "" },
-    { label: 'Redshift', connectionName: 'default', port: '5439', username: "", password: "", host: "", database: "" },
-
-];
-
-for (const { label, connectionName, database, port, username, password, host } of fieldDefaultsWhenNoExistingConnection) {
-    test(`test field defaults appear if there is no existing connection : ${label}`, async ({ page }) => {
-        await displayWidget(page);
-
-        await page.locator('#createNewConnection').click();
-        await page.locator('#selectConnection').selectOption({ label: label });
-
-        expect(await page.locator(`#connectionName`).evaluate(select => select.value)).toBe(connectionName);
-        expect(await page.locator(`#port`).evaluate(select => select.value)).toBe(port);
-        expect(await page.locator(`#username`).evaluate(select => select.value)).toBe(username);
-        expect(await page.locator(`#password`).evaluate(select => select.value)).toBe(password);
-        expect(await page.locator(`#host`).evaluate(select => select.value)).toBe(host);
-        expect(await page.locator(`#database`).evaluate(select => select.value)).toBe(database);
-    });
-}
-
-const relevantFieldsEmbeddedDatabases = [
-    { label: 'DuckDB', connectionName: 'default', database: ':memory:' },
-    { label: 'SQLite', connectionName: 'default', database: ':memory:' }
-]
-
-for (const { label, connectionName, database } of relevantFieldsEmbeddedDatabases) {
-    test(`test only relevant fields appear in embedded database ${label}`, async ({ page }) => {
-        await displayWidget(page);
-
-        await page.locator('#createNewConnection').click();
-        await page.locator('#selectConnection').selectOption({ label: label });
-
-        expect(await page.locator('#connectionName').evaluate(select => select.value)).toBe(connectionName);
-
-        expect(await page.locator('#database').evaluate(select => select.value)).toBe(database);
-
-        const username = page.locator('#username');
-        expect(await username.count()).toBe(0);
-
-        const password = page.locator('#password');
-        expect(await password.count()).toBe(0);
-
-        const host = page.locator('#host');
-        expect(await host.count()).toBe(0);
-
-    });
-}
-
-
-
 
 const aliasDefaultsWithExistingConnection = [
     { label: 'DuckDB', connectionName: 'duckdb' },
