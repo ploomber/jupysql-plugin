@@ -102,8 +102,6 @@ class NotebookAppHandler(FileUploadMixin, APIHandler):
         headers = {"access_token": access_token}
         res = make_request(headers=headers, files=upload_files)
 
-        # TODO: check status code
-
         # Forward request result
         self.finish(json.dumps({"deployment_result": res.json()}))
 
@@ -129,8 +127,6 @@ class NotebookUploadHandler(FileUploadMixin, APIHandler):
 
         headers = {"access_token": access_token}
         res = make_request(headers=headers, files=upload_files)
-
-        # TODO: check status code
 
         self.finish(json.dumps({"deployment_result": res.json()}))
 
