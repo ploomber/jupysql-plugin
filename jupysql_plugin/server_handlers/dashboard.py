@@ -14,7 +14,18 @@ PLOOMBER_CLOUD_HOST = os.environ.get(
 )
 
 
-class RouteHandler(APIHandler):
+class FileUploadMixin:
+    def file_upload(self, upload_files, file_path):
+        try:
+            upload_files.append(("files", open(file_path, "rb")))
+        except FileNotFoundError:
+            self.finish(
+                {"deployment_result": {"detail": file_path, "type": "missing file"}}
+            )
+            raise FileNotFoundError
+
+
+class APIKeyHandler(APIHandler):
     """
     Endpoint: /dashboard/apikey, setter/getter for the API Key through ploomber_core
     The File is located in: ~/.ploomber/stats/config.yaml
@@ -35,6 +46,7 @@ class RouteHandler(APIHandler):
         VALIDATION_API_URL = f"{PLOOMBER_CLOUD_HOST}/users/me/"
         headers = {"access_token": user_key}
         res = requests.get(VALIDATION_API_URL, headers=headers)
+
         if res.status_code == 200:
             settings = UserSettings()
             settings.cloud_key = user_key
@@ -43,7 +55,7 @@ class RouteHandler(APIHandler):
             self.finish({"result": "fail", "detail": res.json()})
 
 
-class JobHandler(APIHandler):
+class NotebookAppHandler(FileUploadMixin, APIHandler):
     """
     Endpoint: /jobs/webservice
     We need the access the file system through this endpoint, we need below files:
@@ -93,14 +105,30 @@ class JobHandler(APIHandler):
         # Forward request result
         self.finish(json.dumps({"deployment_result": res.json()}))
 
-    def file_upload(self, upload_files, file_path):
-        try:
-            upload_files.append(("files", open(file_path, "rb")))
-        except FileNotFoundError:
-            self.finish(
-                {"deployment_result": {"detail": file_path, "type": "missing file"}}
-            )
-            raise FileNotFoundError
+
+class NotebookUploadHandler(FileUploadMixin, APIHandler):
+    """Handler to upload a notebook to the cloud (to render it as a static file)"""
+
+    @tornado.web.authenticated
+    def post(self):
+        API_URL = f"{PLOOMBER_CLOUD_HOST}/notebooks"
+        root_dir = filemanager.FileContentsManager().root_dir
+
+        input_data = self.get_json_body()
+        access_token = input_data["api_key"]
+        notebook_path_relative = input_data["notebook_path"]
+
+        make_request = partial(requests.post, API_URL)
+
+        notebook_path = os.path.join(root_dir, notebook_path_relative)
+
+        upload_files = []
+        self.file_upload(upload_files, notebook_path)
+
+        headers = {"access_token": access_token}
+        res = make_request(headers=headers, files=upload_files)
+
+        self.finish(json.dumps({"deployment_result": res.json()}))
 
 
 def setup_handlers(web_app):
@@ -108,10 +136,21 @@ def setup_handlers(web_app):
 
     base_url = web_app.settings["base_url"]
     # Endpoint: /dashboard/apikey
-    route_pattern = url_path_join(base_url, "dashboard", "apikey")
-    apikey_handlers = [(route_pattern, RouteHandler)]
+    route_pattern = url_path_join(base_url, "ploomber", "apikey")
+    apikey_handlers = [(route_pattern, APIKeyHandler)]
     web_app.add_handlers(host_pattern, apikey_handlers)
+
     # Endpoint: /jobs/webservice
-    route_pattern = url_path_join(base_url, "dashboard", "job")
-    job_handlers = [(route_pattern, JobHandler)]
+    route_pattern = url_path_join(base_url, "ploomber", "job")
+    job_handlers = [(route_pattern, NotebookAppHandler)]
     web_app.add_handlers(host_pattern, job_handlers)
+
+    web_app.add_handlers(
+        host_pattern,
+        [
+            (
+                url_path_join(base_url, "ploomber", "nb-upload"),
+                NotebookUploadHandler,
+            )
+        ],
+    )

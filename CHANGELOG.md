@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.3.0
+
+* Removes `Deploy notebook`
+* Adds `Share notebook` button which uploads a notebook to render it as a static file
+
 ## 0.2.7
 
 * Fix `Deploy notebook` due to breaking change in API

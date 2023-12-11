@@ -3,6 +3,7 @@ build
 twine
 hatch
 pytest
+pytest-jupyter[server] # for testing the server extension
 duckdb-engine
 jupysql
 
