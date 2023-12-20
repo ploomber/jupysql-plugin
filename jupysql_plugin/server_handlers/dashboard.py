@@ -40,16 +40,16 @@ class APIKeyHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         input_data = self.get_json_body()
-        user_key = input_data["api_key"]
+        api_key = input_data["api_key"]
 
         # Valid API Key by /users/me API
         VALIDATION_API_URL = f"{PLOOMBER_CLOUD_HOST}/users/me/"
-        headers = {"access_token": user_key}
+        headers = {"api_key": api_key}
         res = requests.get(VALIDATION_API_URL, headers=headers)
 
         if res.status_code == 200:
             settings = UserSettings()
-            settings.cloud_key = user_key
+            settings.cloud_key = api_key
             self.finish({"result": "success"})
         else:
             self.finish({"result": "fail", "detail": res.json()})
@@ -75,7 +75,7 @@ class NotebookAppHandler(FileUploadMixin, APIHandler):
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
-        access_token = input_data["api_key"]
+        api_key = input_data["api_key"]
         project_id = input_data["project_id"]
         notebook_path_relative = input_data["notebook_path"]
 
@@ -99,7 +99,7 @@ class NotebookAppHandler(FileUploadMixin, APIHandler):
         self.file_upload(upload_files, requirements_txt_path)
         self.file_upload(upload_files, notebook_path)
 
-        headers = {"access_token": access_token}
+        headers = {"api_key": api_key}
         res = make_request(headers=headers, files=upload_files)
 
         # Forward request result
@@ -115,7 +115,7 @@ class NotebookUploadHandler(FileUploadMixin, APIHandler):
         root_dir = filemanager.FileContentsManager().root_dir
 
         input_data = self.get_json_body()
-        access_token = input_data["api_key"]
+        api_key = input_data["api_key"]
         notebook_path_relative = input_data["notebook_path"]
 
         make_request = partial(requests.post, API_URL)
@@ -125,7 +125,7 @@ class NotebookUploadHandler(FileUploadMixin, APIHandler):
         upload_files = []
         self.file_upload(upload_files, notebook_path)
 
-        headers = {"access_token": access_token}
+        headers = {"api_key": api_key}
         res = make_request(headers=headers, files=upload_files)
 
         self.finish(json.dumps({"deployment_result": res.json()}))

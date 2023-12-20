@@ -50,7 +50,7 @@ async def test_set_api_key(tmp_empty, monkeypatch, jp_fetch):
     assert response.code == 200
     mock_get.assert_called_once_with(
         "https://cloud-prod.ploomber.io/users/me/",
-        headers={"access_token": "mykey"},
+        headers={"api_key": "mykey"},
     )
 
 
@@ -80,7 +80,7 @@ async def test_notebook_deploy(tmp_empty, monkeypatch, jp_fetch):
     assert response.code == 200
     mock_post.assert_called_once_with(
         "https://cloud-prod.ploomber.io/jobs/webservice/voila?project_id=myproject",
-        headers={"access_token": "mykey"},
+        headers={"api_key": "mykey"},
         files=[
             ("files", ANY),
             ("files", ANY),
@@ -112,6 +112,6 @@ async def test_notebook_upload(tmp_empty, monkeypatch, jp_fetch):
     assert response.code == 200
     mock_post.assert_called_once_with(
         "https://cloud-prod.ploomber.io/notebooks",
-        headers={"access_token": "mykey"},
+        headers={"api_key": "mykey"},
         files=[("files", ANY)],
     )
