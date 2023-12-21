@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.3.1
+
+* Changes API header from `access_token` to `api_key`
+
 ## 0.3.0
 
 * Removes `Deploy notebook`
