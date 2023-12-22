@@ -8,7 +8,7 @@ import { ICompletionProviderManager } from '@jupyterlab/completer';
 import { INotebookTracker, NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
 
 
-import { CustomCompleterProvider } from './completer/customconnector';
+import { SQLCompleterProvider } from './completer/customconnector';
 
 
 import { IDisposable, DisposableDelegate } from '@lumino/disposable';
@@ -42,9 +42,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     completionManager: ICompletionProviderManager,
     notebooks: INotebookTracker
   ) => {
-    completionManager.registerProvider(new CustomCompleterProvider());
-
-    console.log('JupyterLab custom completer extension is activated!');
+    completionManager.registerProvider(new SQLCompleterProvider());
   }
 };
 
