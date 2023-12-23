@@ -23,8 +23,8 @@ To format JavaScript and TypeScript files, use `yarn run eslint`. To lint withou
 use `yarn run eslint:check`
 
 ```bash
-# Note: this command will take some time the first time as it has to install
-# and compile the frontend code
+# Note: this command will take some time the first time as it has to compile the
+# frontend code. If the command fails, see the "troubleshooting setup" section below
 pip install -e "."
 
 # upon installation, both the frontend and backend extensions must be activated
@@ -69,7 +69,28 @@ By default, the `jlpm build` command generates the source maps for this extensio
 jupyter lab build --minimize=False
 ```
 
-### adding dependencies
+### Troubleshooting setup
+
+If you encounter errors when installing the package for development, you can try the
+following to configure an environment from scratch:
+
+```sh
+# remove conda environment
+conda env remove --name jupysql-plugin
+
+# delete yarn.lock
+rm yarn.lock
+
+# delete all temporary files
+git clean -fdx
+```
+
+Then, create the conda environment again, install dependencies (`jlpm install`), and
+build the extension manually (`jupyter labextension build --development True .`).
+Finally, verify if `pip install -e "."` works.
+
+
+### Adding dependencies
 
 ```bash
 jlpm add PACKAGE
