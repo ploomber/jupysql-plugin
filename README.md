@@ -1,4 +1,12 @@
 # jupysql-plugin
+
+> [!NOTE]
+> Code in the `main` branch is compatible with JupyterLab 4 (0.4.x or higher releases),
+> the `jupyterlab3` branch contains code compatible with JupyterLab 3 (0.3.x releases).
+> We'll keep backporting some features and making 0.3.x releases for some time, but
+> we highly recommend upgrading to JupyterLab 4 for a better experience.
+
+
 ## Install
 
 ```bash
