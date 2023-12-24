@@ -5,7 +5,7 @@ import {
 import { ICompletionProviderManager } from '@jupyterlab/completer';
 import { INotebookTracker } from '@jupyterlab/notebook';
 
-import { CustomCompleterProvider } from './customconnector';
+import { SQLCompleterProvider } from './customconnector';
 
 /**
  * Initialization data for the extension.
@@ -20,9 +20,7 @@ const plugin_completer: JupyterFrontEndPlugin<void> = {
       completionManager: ICompletionProviderManager,
       notebooks: INotebookTracker
     ) => {
-      completionManager.registerProvider(new CustomCompleterProvider());
-
-      console.log('JupyterLab custom completer extension is activated!');
+      completionManager.registerProvider(new SQLCompleterProvider());
     }
 };
 
