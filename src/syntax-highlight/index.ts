@@ -12,27 +12,36 @@ class SqlCodeMirror {
         protected app: JupyterFrontEnd,
         protected tracker: INotebookTracker
     ) {
+        let currentCell = this.tracker?.activeCell;
+        let codeMirrorEditor: CodeMirrorEditor = currentCell?.editor as CodeMirrorEditor;
+
+        const debounced_on_change = _.debounce(() => {
+            if (!codeMirrorEditor) {
+                return;
+            }
+            // check for editor with first line starting with %%sql
+            const line = codeMirrorEditor
+                .getLine(codeMirrorEditor?.firstLine())
+                ?.trim();
+            if (line?.startsWith('%%sql')) {
+                codeMirrorEditor.setOption('mode', 'text/x-sql');
+            } else {
+                codeMirrorEditor.setOption('mode', 'text/x-ipython');
+            }
+        }, 300);
+
         this.tracker?.activeCellChanged?.connect(() => {
-            if (this.tracker?.activeCell !== null) {
-                const cell = this.tracker.activeCell;
-                if (cell !== null && cell?.model.type === 'code') {
-                    const code_mirror_editor = cell?.editor as CodeMirrorEditor;
-                    const debounced_on_change = _.debounce(() => {
-                        // check for editor with first line starting with %%sql
-                        const line = code_mirror_editor
-                            .getLine(code_mirror_editor.firstLine())
-                            ?.trim();
-                        if (line?.startsWith('%%sql')) {
-                            code_mirror_editor.setOption('mode', 'text/x-sql');
-                        } else {
-                            code_mirror_editor.setOption('mode', 'text/x-ipython');
-                        }
-                    }, 300);
-                    cell.model.sharedModel.changed.connect(debounced_on_change);
-                    debounced_on_change();
-                }
+            currentCell?.model.sharedModel.changed.disconnect(debounced_on_change);
+            currentCell = this.tracker?.activeCell;
+            codeMirrorEditor = currentCell?.editor as CodeMirrorEditor;
+            if (currentCell && currentCell.model.type === 'code') {
+                currentCell.model.sharedModel.changed.connect(debounced_on_change);
             }
         });
+
+        if (currentCell && currentCell.model.type === 'code') {
+            debounced_on_change();
+        }
     }
 }
 
