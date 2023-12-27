@@ -1,4 +1,3 @@
-
 import { INotebookTracker, NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
 import {
     JupyterFrontEnd,

@@ -4,14 +4,13 @@ import {
     JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
 import { INotebookTracker } from '@jupyterlab/notebook';
-import { CodeMirrorEditor, ICodeMirror } from '@jupyterlab/codemirror';
+import { CodeMirrorEditor } from '@jupyterlab/codemirror';
 import * as _ from 'underscore';
 
 class SqlCodeMirror {
     constructor(
         protected app: JupyterFrontEnd,
-        protected tracker: INotebookTracker,
-        protected code_mirror: ICodeMirror
+        protected tracker: INotebookTracker
     ) {
         this.tracker?.activeCellChanged?.connect(() => {
             if (this.tracker?.activeCell !== null) {
@@ -24,12 +23,12 @@ class SqlCodeMirror {
                             .getLine(code_mirror_editor.firstLine())
                             ?.trim();
                         if (line?.startsWith('%%sql')) {
-                            code_mirror_editor.editor.setOption('mode', 'text/x-sql');
+                            code_mirror_editor.setOption('mode', 'text/x-sql');
                         } else {
-                            code_mirror_editor.editor.setOption('mode', 'text/x-ipython');
+                            code_mirror_editor.setOption('mode', 'text/x-ipython');
                         }
                     }, 300);
-                    code_mirror_editor.editor.on('change', debounced_on_change);
+                    cell.model.sharedModel.changed.connect(debounced_on_change);
                     debounced_on_change();
                 }
             }
@@ -40,9 +39,8 @@ class SqlCodeMirror {
 function activate_syntax(
     app: JupyterFrontEnd,
     tracker: INotebookTracker,
-    code_mirror: ICodeMirror
 ): void {
-    new SqlCodeMirror(app, tracker, code_mirror);
+    new SqlCodeMirror(app, tracker);
     console.log('SQLCodeMirror loaded.');
 }
 
@@ -54,7 +52,7 @@ function activate_syntax(
 const plugin_syntax_highlight: JupyterFrontEndPlugin<void> = {
     id: '@ploomber/sql-syntax-highlighting',
     autoStart: true,
-    requires: [INotebookTracker, ICodeMirror],
+    requires: [INotebookTracker],
     optional: [],
     activate: activate_syntax
 };
