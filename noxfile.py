@@ -14,7 +14,7 @@ def _setup(session):
     )
 
     # on github actions, we often get a timeout when installing the dependencies
-    session.run("jlpm", "config", "set", "network-timeout", "600000", "-g")
+    session.run("jlpm", "config", "set", "httpTimeout", "600000")
 
     session.run("jlpm", "install")
     session.install("-e", ".")
