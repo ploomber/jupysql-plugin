@@ -3,6 +3,7 @@ const jestJupyterLab = require('@jupyterlab/testutils/lib/jest-config');
 const esModules = [
   '@jupyterlab/',
   'lib0',
+  'nanoid',
   'y\\-protocols',
   'y\\-websocket',
   'yjs'
@@ -36,11 +37,7 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['lcov', 'text'],
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json'
-    }
-  },
   testRegex: 'src/.*/.*.spec.ts[x]?$',
-  transformIgnorePatterns: [`/node_modules/(?!${esModules}).+`]
+  transformIgnorePatterns: [`/node_modules/(?!${esModules}).+`],
+  testEnvironment: 'jsdom'
 };

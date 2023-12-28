@@ -14,7 +14,7 @@ const DEFAULT_INVALID_API_KEY = "invalid_api_key"
 const DEFAULT_PROJECT_ID = "project_id_abc"
 const DEFAULT_JOB_ID = "job_id_abc"
 
-/* 
+/*
 Mock the GET /apikey API
 */
 const mockEnvWithAPI = (APIKey: any = null) => {
@@ -22,7 +22,7 @@ const mockEnvWithAPI = (APIKey: any = null) => {
         data: APIKey
     })
 }
-/* 
+/*
 Mock the POST /apikey API
 */
 const mockPostAPI = (result: any, api_key: string) => {
@@ -35,7 +35,7 @@ const mockPostAPI = (result: any, api_key: string) => {
 Mock the job deploy API
 There are three types of responses we are mocking:
 1. Successful first time deployment of the notebook, the projectID should be skipped
-2. Successful re-deplyoment of the notebook, the projectID should be provided 
+2. Successful re-deplyoment of the notebook, the projectID should be provided
 3. Failure deployment of the notebook, the projectID and the deployment_result should be provided
 */
 const mockJobDeployResult = (projectID = "", deployment_result: object = {
@@ -80,7 +80,7 @@ describe("Test DeployDialogContent ", () => {
             })
         })
 
-        /* 
+        /*
         Test Flow: When the user inputs invalid API Key
         */
         test("Test Invalid API Key Input", async () => {
@@ -97,8 +97,8 @@ describe("Test DeployDialogContent ", () => {
             })
         })
 
-        /* 
-        Test Flow: 
+        /*
+        Test Flow:
         1. When the user inputs valid API Key
         2. We will see the deploy button in next (assume the user)
         */
@@ -135,7 +135,7 @@ describe("Test DeployDialogContent ", () => {
             expect(await screen.getByRole('button')).toHaveTextContent('CONFIRM')
 
         })
-        /* 
+        /*
         Test Flow: When the notebook has not been deployed before
         */
         test("Test First Time Deployment Click Confim", async () => {
@@ -150,18 +150,16 @@ describe("Test DeployDialogContent ", () => {
             expect(await screen.findByText("Check your deployment status here:")).toBeVisible()
             expect(await screen.findByText(`https://platform.ploomber.io/dashboards/${DEFAULT_PROJECT_ID}/${DEFAULT_JOB_ID}`)).toBeVisible()
         })
-        /* 
+        /*
         Test Flow: When the notebook has been deployed before
         */
         test("Test Existing Project Re-deployment Success", async () => {
             mockJobDeployResult(DEFAULT_PROJECT_ID);
             renderDeployDialogContent(DEFAULT_PROJECT_ID);
-            // TODO: Somehow we need to wait for few seconds to pass the test
-            await new Promise((r) => setTimeout(r, 3000));
             expect(await screen.findByText("Check your deployment status here:")).toBeVisible()
             expect(await screen.findByText(`https://platform.ploomber.io/dashboards/${DEFAULT_PROJECT_ID}/${DEFAULT_JOB_ID}`)).toBeVisible()
         })
-        /* 
+        /*
         Test Flow: When the community user deploys more than one active project
         */
         test("Test Community Users Only One Project Fail", async () => {
@@ -171,7 +169,7 @@ describe("Test DeployDialogContent ", () => {
             renderDeployDialogContent(DEFAULT_PROJECT_ID);
             expect(await screen.findByText("Community users are only allowed to have a single active project. Delete your current project to create a new one.")).toBeVisible()
         })
-        /* 
+        /*
         Test Flow: When the directiory does not contain requirements.txt file
         */
         test("Test requirements.txt file is missing in directiory", async () => {
