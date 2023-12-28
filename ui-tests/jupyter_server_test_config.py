@@ -6,13 +6,12 @@ JavaScript objects through the global window variable.
 """
 from jupyterlab.galata import configure_jupyter_server
 from pathlib import Path
-from tempfile import mkdtemp
 
 from ploomber_core.telemetry import telemetry
 
-dot_ploomber = str(Path(temp_dir, "dot-ploomber"))
-
 configure_jupyter_server(c)  # noqa: F821
+
+dot_ploomber = str(Path(c.ServerApp.root_dir, "dot-ploomber"))  # noqa: F821
 
 # Uncomment to set server log level to debug level
 # c.ServerApp.log_level = "DEBUG"
