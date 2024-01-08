@@ -2,21 +2,25 @@ import { Compartment, EditorState, Extension } from "@codemirror/state"
 import { python } from "@codemirror/lang-python"
 import { sql } from '@codemirror/lang-sql'
 
-const languageConf = new Compartment
+const MAGIC = '%%sql';
+const languageConf = new Compartment;
 
+/**
+ * This function is called for every transaction (change in cell input).
+ * If the cell is an SQL cell (starting with '%%sql'), then the language is set to SQL.
+ */
 const autoLanguage = EditorState.transactionExtender.of(tr => {
-    // if (!tr.docChanged) return null
-    let docIsSQL = /^\s*%{1,2}sql/.test(tr.newDoc.sliceString(0, 100))
-    // let stateIsSQL = tr.startState.facet(language) == htmlLanguage
-    // if (docIsSQL == stateIsSQL) return null
+    // Check if the cell input content start with '%%sql', and configure the syntax
+    // highlighting to SQL if necessary (default to python).
+    const isSQL = tr.newDoc.sliceString(0, MAGIC.length) === MAGIC;
     return {
-        effects: languageConf.reconfigure(docIsSQL ? sql() : python())
-    }
+        effects: languageConf.reconfigure(isSQL ? sql() : python())
+    };
 })
 
 
 // Full extension composed of elemental extensions
-export function zebraStripes(): Extension {
+export function languageSelection(): Extension {
     return [
         languageConf.of(python()),
         autoLanguage,
