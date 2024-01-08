@@ -20,6 +20,7 @@ export function showDeploymentDialog(panel: any, context: any) {
                 displayType: "default",
                 iconClass: "",
                 iconLabel: "",
+                ariaLabel: "Close dialog",
             }
         ]
     })
@@ -31,6 +32,7 @@ export function showUploadDialog(panel: any, context: any) {
     var deploymentDialog = new jupyterlabDialog({
         title: 'Share Notebook', body: dialogWidget, buttons: [
             {
+                ariaLabel: "Close dialog",
                 label: "Close",
                 caption: "",
                 className: "bg-info",
@@ -48,7 +50,7 @@ export function showUploadDialog(panel: any, context: any) {
 const ErrorMessageArea = (props: any): JSX.Element => {
 
 
-    // Special handle for missing file 
+    // Special handle for missing file
     if (props?.message?.type == "missing file") {
         return (
             <div data-testid="error-message-area">
@@ -73,7 +75,7 @@ const ErrorMessageArea = (props: any): JSX.Element => {
 
 export const DeployDialogContent = (props: any): JSX.Element => {
     // For deployment workflow, we need:
-    // 1. The path of notebook file 
+    // 1. The path of notebook file
     // 2. project_id value stored in notebook file
     const notebook_relative_path = props.notebook_path;
     const [projectId] = useState(props?.metadata?.get("ploomber")?.project_id || "");
@@ -106,7 +108,7 @@ export const DeployDialogContent = (props: any): JSX.Element => {
     }, [APIValidStatus])
 
 
-    // The API Key should stored in config file 
+    // The API Key should stored in config file
     const fetchAPIKey = async () => {
 
         await requestAPI<any>('apikey')
@@ -315,7 +317,7 @@ export const UploadDialogContent = (props: any): JSX.Element => {
     }, [APIValidStatus])
 
 
-    // The API Key should stored in config file 
+    // The API Key should stored in config file
     const fetchAPIKey = async () => {
 
         await requestAPI<any>('apikey')

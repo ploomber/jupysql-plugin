@@ -4,32 +4,34 @@
 // Modified from jupyterlab/packages/completer/src/contextconnector.ts
 
 import { CodeEditor } from '@jupyterlab/codeeditor';
-import { DataConnector } from '@jupyterlab/statedb';
-import { CompletionHandler } from '@jupyterlab/completer';
-
 import {
-  ISessionContext
-} from '@jupyterlab/apputils';
+  CompletionHandler,
+  ICompletionContext,
+  ICompletionProvider
+} from '@jupyterlab/completer';
 
-import keywords from './keywords.json';
+import { keywords } from './keywords.json';
 
 /**
  * A custom connector for completion handlers.
  */
-export class CustomConnector extends DataConnector<
-  CompletionHandler.IReply,
-  void,
-  CompletionHandler.IRequest
-> {
+export class SQLCompleterProvider implements ICompletionProvider {
+  constructor() {
+    // Build the completion item from the JSON file.
+    this._items = keywords.map(item => {
+      return {
+        label: item.value,
+        type: 'keyword'
+      }
+    })
+  }
+
   /**
-   * Create a new custom connector for completion requests.
-   *
-   * @param options - The instatiation options for the custom connector.
+   * The context completion provider is applicable on all cases.
+   * @param context - additional information about context of completion request
    */
-  constructor(options: CustomConnector.IOptions) {
-    super();
-    this._editor = options.editor;
-    this._sessionContext = options.sessionContext;
+  async isApplicable(context: ICompletionContext): Promise<boolean> {
+    return true;
   }
 
   /**
@@ -39,74 +41,85 @@ export class CustomConnector extends DataConnector<
    * @returns Completion reply
    */
   fetch(
-    request: CompletionHandler.IRequest
-  ): Promise<CompletionHandler.IReply> {
-    if (!this._editor) {
+    request: CompletionHandler.IRequest,
+    context: ICompletionContext
+  ): Promise<CompletionHandler.ICompletionItemsReply> {
+    const editor = context.editor;
+    if (!editor) {
       return Promise.reject('No editor');
     }
-    return new Promise<CompletionHandler.IReply>((resolve) => {
-      resolve(Private.completionHint(this._editor, this._sessionContext));
+    return new Promise<CompletionHandler.ICompletionItemsReply>(resolve => {
+      resolve(Private.completionHint(editor!, this._items));
     });
   }
 
-  private _editor: CodeEditor.IEditor | null;
-  private _sessionContext: ISessionContext | null;
-
+  readonly identifier = 'CompletionProvider:custom';
+  readonly renderer: any = null;
+  private _items: CompletionHandler.ICompletionItem[];
 }
-
-/**
- * A namespace for custom connector statics.
- */
-export namespace CustomConnector {
-  /**
-   * The instantiation options for cell completion handlers.
-   */
-  export interface IOptions {
-    /**
-     * The session used by the custom connector.
-     */
-    editor: CodeEditor.IEditor | null;
-    sessionContext: ISessionContext | null;
-  }
-
-}
-
-
 
 /**
  * A namespace for Private functionality.
  */
 namespace Private {
   /**
-   * Get a list of mocked completion hints.
+   * Get a list of completion hints.
    *
    * @param editor Editor
    * @returns Completion reply
    */
-
-
-
-
   export function completionHint(
     editor: CodeEditor.IEditor,
-    sessionContext: ISessionContext
-  ): CompletionHandler.IReply {
+    baseItems: CompletionHandler.ICompletionItem[]
+  ): CompletionHandler.ICompletionItemsReply {
     // Find the token at the cursor
-    const cursor = editor.getCursorPosition();
-    const token = editor.getTokenForPosition(cursor);
+    const token = editor.getTokenAtCursor();
 
-    var newTokenList = keywords["keywords"]
+    // Find all the items containing the token value.
+    let items = baseItems.filter(
+      item => item.label.toLowerCase().includes(token.value.toLowerCase())
+    );
 
-    const completionList = newTokenList.filter((t) => t.value.startsWith(token.value.toUpperCase())).map((t) => t.value);
-
-    // Remove duplicate completions from the list
-    const matches = Array.from(new Set<string>(completionList));
+    // Sort the items.
+    items = items.sort((a, b) => {
+      return sortItems(
+        token.value.toLowerCase(),
+        a.label.toLowerCase(),
+        b.label.toLowerCase()
+      );
+    });
 
     return {
       start: token.offset,
       end: token.offset + token.value.length,
-      matches,
-      metadata: {},
+      items: items
     };
+  }
+
+  /**
+   * Compare function to sort items.
+   * The comparison is based on the position of the token in the label. If the positions
+   * are the same, it is sorted alphabetically, starting at the token.
+   *
+   * @param token - the value of the token in lower case.
+   * @param a - the label of the first item in lower case.
+   * @param b - the label of the second item in lower case.
+   */
+  function sortItems(
+    token: string,
+    a: string,
+    b: string
+  ): number {
+    const ind1 = a.indexOf(token);
+    const ind2 = b.indexOf(token);
+    if (ind1 < ind2) {
+      return -1;
+    } else if (ind1 > ind2) {
+      return 1;
+    } else {
+      const end1 = a.slice(ind1);
+      const end2 = b.slice(ind1);
+      return end1 <= end2 ? -1 : 1;
+    }
   }
 }

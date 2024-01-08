@@ -40,5 +40,7 @@
     "src/completer/connector.ts",
     "src/completer/customconnector.ts",
     "src/deploy-notebook/index.ts",
+    "src/editor/editor.ts",
+    "src/editor/index.ts",
   ]
 }

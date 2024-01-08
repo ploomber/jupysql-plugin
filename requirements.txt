@@ -1,4 +1,4 @@
-jupyterlab<4 # this will install jlpm
+jupyterlab>=4
 build
 twine
 hatch
