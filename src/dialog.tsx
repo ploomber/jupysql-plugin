@@ -182,7 +182,7 @@ export const DeployDialogContent = (props: any): JSX.Element => {
                 setDeployErrorMessage(errorMsg)
             } else {
                 setDeploymentURL(DEPLOYMENT_ENDPOINTS.NEW_JOB + result?.project_id + "/" + result?.id)
-                props?.metadata?.set("ploomber", { "project_id": result?.project_id })
+                props.metadata.ploomber = { "project_id": result?.project_id }
                 props?.context?.save()
             }
             // Write into notebook projectID
@@ -250,7 +250,7 @@ export const DeployDialogContent = (props: any): JSX.Element => {
                                 </Grid>
                             </div>
                         }
-                        {APIValidStatus == "success" &&
+                        {APIValidStatus === "success" &&
                             <Grid item container alignItems="center" spacing={4} direction="column">
                                 {!isShowFirstTimeDeployPrompt ? <>
                                     {deployErrorMessage ? <ErrorMessageArea message={deployErrorMessage} /> :
@@ -391,7 +391,7 @@ export const UploadDialogContent = (props: any): JSX.Element => {
                 setDeployErrorMessage(errorMsg)
             } else {
                 setDeploymentURL(DEPLOYMENT_ENDPOINTS.NEW_NOTEBOOK + "/" + result?.id)
-                props?.metadata?.set("ploomber", { "project_id": result?.project_id })
+                props.metadata.ploomber = { "project_id": result?.project_id }
                 props?.context?.save()
             }
             // Write into notebook projectID
@@ -459,7 +459,7 @@ export const UploadDialogContent = (props: any): JSX.Element => {
                                 </Grid>
                             </div>
                         }
-                        {APIValidStatus == "success" &&
+                        {APIValidStatus === "success" &&
                             <Grid item container alignItems="center" spacing={4} direction="column">
                                 {!isShowFirstTimeDeployPrompt ? <>
                                     {deployErrorMessage ? <ErrorMessageArea message={deployErrorMessage} /> :

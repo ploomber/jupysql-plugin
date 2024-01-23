@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.4.1dev
+* Fix `Share notebook` bug not showing URL (#95)
+
 ## 0.4.0
 
 * Support for JupyterLab 4 (for JupyterLab 3, install `pip install jupysql-plugin<0.4`)
