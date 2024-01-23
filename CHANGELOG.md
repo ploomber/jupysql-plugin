@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## 0.4.1dev
+## 0.4.1
+
 * Fix `Share notebook` bug not showing URL (#95)
 
 ## 0.4.0
