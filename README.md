@@ -1,5 +1,8 @@
 # jupysql-plugin
 
+> [!TIP]
+> Deploy AI apps for free on [Ploomber Cloud!](https://ploomber.io/?utm_medium=github&utm_source=jupysql-plugin)
+
 > [!NOTE]
 > Code in the `main` branch is compatible with JupyterLab 4 (`0.4.x` or higher releases),
 > the `jupyterlab3` branch contains code compatible with JupyterLab 3 (`0.3.x` releases).
