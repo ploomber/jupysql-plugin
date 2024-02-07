@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.2
+
+* Removed `Share notebook` button
+
 ## 0.4.1
 
 * Fix `Share notebook` bug not showing URL (#95)
