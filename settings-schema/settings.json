@@ -10,7 +10,7 @@
         },
         "showDeployNotebook": {
             "type": "boolean",
-            "title": "Show Deploy Notebook button",
+            "title": "Show Share Notebook button",
             "description": "If set, a button will be shown in the toolbar to deploy the notebook to Ploomber Cloud.",
             "default": true
         }
