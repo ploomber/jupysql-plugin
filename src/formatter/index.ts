@@ -8,7 +8,6 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 
 import { JupyterlabNotebookCodeFormatter } from './formatter';
-import { DeployingExtension } from '../deploy-notebook/index';
 import { RegisterNotebookCommListener } from '../comm';
 import { settingsChanged, JupySQLSettings } from '../settings';
 
@@ -87,7 +86,6 @@ const plugin_formatting: JupyterFrontEndPlugin<void> = {
         app.docRegistry.addWidgetExtension('Notebook', new FormattingExtension(
             tracker,
         ));
-        app.docRegistry.addWidgetExtension('Notebook', new DeployingExtension());
         app.docRegistry.addWidgetExtension('Notebook', new RegisterNotebookCommListener());
 
     },
