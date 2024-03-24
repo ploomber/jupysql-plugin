@@ -4618,7 +4618,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@popperjs/core@npm:^2.11.8, @popperjs/core@npm:^2.9.2":
+"@popperjs/core@npm:^2.11.8":
   version: 2.11.8
   resolution: "@popperjs/core@npm:2.11.8"
   checksum: e5c69fdebf52a4012f6a1f14817ca8e9599cb1be73dd1387e1785e2ed5e5f0862ff817f420a87c7fc532add1f88a12e25aeb010ffcbdc98eace3d55ce2139cf0
@@ -5194,15 +5194,6 @@ __metadata:
     "@types/jquery": "*"
     "@types/underscore": "*"
   checksum: 4f44bfb71d75332b5de610be7687f4ae523ad4ef02da844a828403b534b6a94a6288b32cab64371d0ad526e35cfed511652ac53af22d0b9caaac3f4cfb4375dd
-  languageName: node
-  linkType: hard
-
-"@types/bootstrap@npm:^5.2.6":
-  version: 5.2.7
-  resolution: "@types/bootstrap@npm:5.2.7"
-  dependencies:
-    "@popperjs/core": ^2.9.2
-  checksum: f808b40e7c5760d9822b3d3d6e6a0adf840616791ec0f4b8a5da0a0d04d60cee20b8004e9c95acc84ddd21de28a1a0dd1d08786094221c99c8f02617a286c2db
   languageName: node
   linkType: hard
 
@@ -6352,15 +6343,6 @@ __metadata:
   version: 5.2.2
   resolution: "big.js@npm:5.2.2"
   checksum: b89b6e8419b097a8fb4ed2399a1931a68c612bce3cfd5ca8c214b2d017531191070f990598de2fc6f3f993d91c0f08aa82697717f6b3b8732c9731866d233c9e
-  languageName: node
-  linkType: hard
-
-"bootstrap@npm:^5.2.3":
-  version: 5.3.2
-  resolution: "bootstrap@npm:5.3.2"
-  peerDependencies:
-    "@popperjs/core": ^2.11.8
-  checksum: d5580b253d121ffc137388d41da58dce8d15f1ccd574e12f28d4a08e7649ca15e95db645b2b677cb8025bccd446bff04138fc0fe64f8cba0ccc5dc004a8644cf
   languageName: node
   linkType: hard
 
@@ -9803,14 +9785,12 @@ __metadata:
     "@mui/material": ^5.13.4
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^12.1.2
-    "@types/bootstrap": ^5.2.6
     "@types/codemirror": ^5.60.7
     "@types/jest": ^29.0.0
     "@types/jest-when": ^3.5.2
     "@types/underscore": ^1.11.4
     "@typescript-eslint/eslint-plugin": ^4.8.1
     "@typescript-eslint/parser": ^4.8.1
-    bootstrap: ^5.2.3
     clean: ^4.0.2
     eslint: ^7.14.0
     eslint-config-prettier: ^6.15.0
