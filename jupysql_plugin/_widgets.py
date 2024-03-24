@@ -49,19 +49,3 @@ class FormWidget(DOMWidget):
 
     def send_confirmation_message(self, message):
         self.send({"method": "display_confirmation_message", "message": message})
-
-
-class TableWidget(DOMWidget):
-    """Example widget showing how to display a tooltip"""
-
-    _model_name = Unicode("TableModel").tag(sync=True)
-    _model_module = Unicode(_module_name).tag(sync=True)
-    _model_module_version = Unicode(__version__).tag(sync=True)
-    _view_name = Unicode("TableView").tag(sync=True)
-    _view_module = Unicode(_module_name).tag(sync=True)
-    _view_module_version = Unicode(__version__).tag(sync=True)
-
-    def __init__(self, data=None, **kwargs):
-        if data is not None:
-            self.data = data
-        super().__init__(**kwargs)
