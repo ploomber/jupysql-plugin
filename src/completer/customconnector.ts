@@ -12,6 +12,9 @@ import {
 
 import { keywords } from './keywords.json';
 
+const CELL_MAGIC = '%%sql';
+const LINE_MAGIC = '%sql';
+
 /**
  * A custom connector for completion handlers.
  */
@@ -31,7 +34,19 @@ export class SQLCompleterProvider implements ICompletionProvider {
    * @param context - additional information about context of completion request
    */
   async isApplicable(context: ICompletionContext): Promise<boolean> {
-    return true;
+    const editor = context.editor;
+    if (editor === undefined)
+      return false;
+
+    // If this is a SQL magic cell, then we can complete
+    const firstLine = editor.getLine(0);
+    if (firstLine.slice(0, CELL_MAGIC.length) === CELL_MAGIC)
+      return true;
+
+    // Otherwise, if we're to the right of a line magic, we can complete
+    const currPos = editor.getCursorPosition();
+    const lineMagicPos = editor.getLine(currPos.line).indexOf(LINE_MAGIC);
+    return (lineMagicPos > -1 && lineMagicPos + LINE_MAGIC.length < currPos.column);
   }
 
   /**

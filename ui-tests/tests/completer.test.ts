@@ -14,17 +14,17 @@ async function createNotebook(page: IJupyterLabPageFixture) {
 
 const samples = {
   'upper case': {
-    input: 'SEL',
+    input: '%sql SEL',
     expected: ['SELECT', 'SELECT DISTINCT', 'SELECT INTO', 'SELECT TOP'],
     unexpected: ['INSERT']
   },
   'lower case': {
-    input: 'sel',
+    input: '%sql sel',
     expected: ['SELECT', 'SELECT DISTINCT', 'SELECT INTO', 'SELECT TOP'],
     unexpected: ['INSERT']
   },
   'in-word': {
-    input: 'se',
+    input: '%sql se',
     expected: ['SELECT', 'SELECT DISTINCT', 'SELECT INTO', 'SELECT TOP', 'INSERT INTO'],
     unexpected: []
   }
@@ -56,7 +56,7 @@ test('test complete updates cell', async ({ page }) => {
   await createNotebook(page);
 
   await page.notebook.enterCellEditingMode(0);
-  await page.keyboard.type('SEL');
+  await page.keyboard.type('%sql SEL');
 
   await page.keyboard.press('Tab');
 
@@ -69,4 +69,59 @@ test('test complete updates cell', async ({ page }) => {
       expect(text).toContain('SELECT');
   });
 
+});
+
+const contexts = {
+  'valid cell magic': {
+    input: '%%sql\nSEL',
+    completion: true
+  },
+  'invalid cell magic': {
+    input: ' %%sql\nSEL',
+    completion: false
+  },
+  'line magic': {
+    input: '%sql SEL',
+    completion: true
+  },
+  'line magic with python': {
+    input: 'result = %sql SEL',
+    completion: true
+  },
+  'line magic new line': {
+    input: '%sql SEL\nSEL',
+    completion: false
+  },
+  'no magic': {
+    input: 'SEL',
+    completion: false
+  }
+}
+
+for (const [ name, { input, completion} ] of Object.entries(contexts))
+  test(`test ${name} ${completion ? 'does' : 'does not'} complete`, async ({ page }) => {
+    await createNotebook(page);
+
+    await page.notebook.enterCellEditingMode(0);
+    await page.keyboard.type(input);
+
+    await page.keyboard.press('Tab');
+    const suggestions = page.locator('.jp-Completer');
+    if (completion)
+      await expect(suggestions).toBeVisible();
+    else
+      await expect(suggestions).not.toBeVisible();
+  });
+
+test('test no completion before line magic', async ({ page }) => {
+  await createNotebook(page);
+
+  await page.notebook.enterCellEditingMode(0);
+  await page.keyboard.type('SEL = %sql SEL');
+  for (let i=0; i<11; i++)
+    await page.keyboard.press('ArrowLeft');
+
+  await page.keyboard.press('Tab');
+  const suggestions = page.locator('.jp-Completer');
+  await expect(suggestions).not.toBeVisible();
 });
