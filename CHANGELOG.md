@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.3
+
+* Trigger autocomplete only when the cell begins with `%sql` or `%%sql`
+
 ## 0.4.2
 
 * Removed `Share notebook` button
