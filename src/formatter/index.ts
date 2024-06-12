@@ -30,6 +30,7 @@ export class FormattingExtension
     private panel: NotebookPanel;
     private extensionSettings: boolean;
 
+
     constructor(
         tracker: INotebookTracker
     ) {
@@ -66,6 +67,7 @@ export class FormattingExtension
         });
         this.formatSQLButton.node.setAttribute("data-testid", "format-btn");
 
+        panel.toolbar.insertItem(10, 'formatSQL', this.formatSQLButton);
         if (!this.extensionSettings) {
             this.formatSQLButton.parent = null;
         } else {
