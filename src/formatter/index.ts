@@ -28,6 +28,8 @@ export class FormattingExtension
     private notebookCodeFormatter: JupyterlabNotebookCodeFormatter;
     private formatSQLButton: ToolbarButton;
     private panel: NotebookPanel;
+    private extensionSettings: boolean;
+
 
     constructor(
         tracker: INotebookTracker
@@ -39,6 +41,7 @@ export class FormattingExtension
     }
 
     private _onSettingsChanged = (sender: any, settings: JupySQLSettings) => {
+        this.extensionSettings = settings.showFormatSQL;
         if (!settings.showFormatSQL) {
             this.formatSQLButton.parent = null;
         } else {
@@ -65,6 +68,11 @@ export class FormattingExtension
         this.formatSQLButton.node.setAttribute("data-testid", "format-btn");
 
         panel.toolbar.insertItem(10, 'formatSQL', this.formatSQLButton);
+        if (!this.extensionSettings) {
+            this.formatSQLButton.parent = null;
+        } else {
+            this.panel.toolbar.insertItem(10, 'formatSQL', this.formatSQLButton);
+        }
 
         return new DisposableDelegate(() => {
             this.formatSQLButton.dispose();

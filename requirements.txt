@@ -1,4 +1,4 @@
-jupyterlab>=4,<4.0.12
+jupyterlab>=4
 build
 twine
 hatch
