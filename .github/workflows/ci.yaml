@@ -36,8 +36,8 @@ jobs:
 
       - name: Lint
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade pkgmt nox
+          pip install --upgrade pip
+          pip install --upgrade pkgmt nox
           pkgmt lint
 
       - name: Setup node
@@ -81,8 +81,8 @@ jobs:
 
       - name: Install and test
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade nox
+          pip install --upgrade pip
+          pip install --upgrade nox
           SHARD=${{ matrix.shard }}
           # convert 1-of-4 to 1/4
           SHARD_ARG=$(echo $SHARD | sed 's/-of-/\//g')
