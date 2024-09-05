@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.4.4
+
+* Fixes error that caused the `Format SQL` bitton to appear even when disabled in the settings
+
+## 0.4.3
+
+* Trigger autocomplete only when the cell begins with `%sql` or `%%sql`
+
 ## 0.4.2
 
 * Removed `Share notebook` button
