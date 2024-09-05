@@ -28,8 +28,6 @@
     "src/utils/*",
     "src/const/*",
     "src/completer/keywords.json",
-    "src/widgets/table.ts",
-    "src/widgets/form.ts",
     "src/widgets/connector.ts",
     "src/widgets/index.ts",
     "src/formatter/formatter.ts",
