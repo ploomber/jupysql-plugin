@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.5
+
+* Removes bootstrap since it was breaking JupyterLab UI
+
 ## 0.4.4
 
 * Fixes error that caused the `Format SQL` bitton to appear even when disabled in the settings
