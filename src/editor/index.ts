@@ -4,6 +4,7 @@ import {
 } from '@jupyterlab/application';
 import {
   EditorExtensionRegistry,
+  IEditorExtensionFactory,
   IEditorExtensionRegistry
 } from '@jupyterlab/codemirror';
 
@@ -24,11 +25,16 @@ const plugin_editor: JupyterFrontEndPlugin<void> = {
         name: 'jupysql-plugin:syntax-highlighting',
         // Default CodeMirror extension parameters
         default: 2,
-        factory: () =>
+        factory: (options: IEditorExtensionFactory.IOptions) => {
+          // Only apply syntax highlighting to code cells
+          if (options.model.mimeType !== 'text/x-ipython') {
+            return null;
+          }
           // The factory will be called for every new CodeMirror editor
-          EditorExtensionRegistry.createConfigurableExtension(() =>
+          return EditorExtensionRegistry.createConfigurableExtension(() =>
               languageSelection()
-          )
+          );
+        }
       })
     );
   }
